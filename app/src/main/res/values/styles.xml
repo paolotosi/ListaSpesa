@@ -2,18 +2,31 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Material.Light">
-        <!-- Customize your theme here. -->
+
+        <!-- Color customisation. -->
         <item name="android:colorPrimary">@color/colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+
+        <!-- Enables activity transitions. -->
+        <item name="android:windowContentTransitions">true</item>
+
     </style>
 
-    <!-- Base application theme without toolbar. -->
-    <style name="AppThemeNoToolbar" parent="android:Theme.Material.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+    <!-- Base application theme without toolbar and status bar. -->
+    <style name="AppThemeNoToolbar" parent="android:Theme.Material.Light.NoActionBar.Fullscreen">
+
+        <!-- Color customisation. -->
         <item name="android:colorPrimary">@color/colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:colorAccent">@color/colorAccent</item>
+
+        <!-- Enables activity transitions. -->
+        <item name="android:windowContentTransitions">true</item>
+
     </style>
+
+
 
 </resources>

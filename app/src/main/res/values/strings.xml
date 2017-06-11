@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Lista Spesa</string>
+
+    <!-- WelcomeActivity strings. -->
+    <string name="login_button">Login</string>
+    <string name="register_button">Registrati</string>
+    <string name="welcome_message_top">Benvenuto!</string>
+    <string name="welcome_message_detail">Sei già un utente? Effettua il login! Oppure registrati.</string>
+
 </resources>

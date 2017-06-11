@@ -21,9 +21,9 @@
             </intent-filter>
         </activity>
 
-        <!-- The login activity. -->
+        <!-- The welcome activity. -->
         <activity
-            android:name=".LoginActivity">
+            android:name=".WelcomeActivity">
         </activity>
 
     </application>
