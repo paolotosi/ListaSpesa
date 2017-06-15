@@ -2,9 +2,24 @@
     <string name="app_name">Lista Spesa</string>
 
     <!-- WelcomeActivity strings. -->
-    <string name="login_button">Login</string>
+    <string name="login_button">Accedi</string>
     <string name="register_button">Registrati</string>
     <string name="welcome_message_top">Benvenuto!</string>
     <string name="welcome_message_detail">Sei già un utente? Effettua il login! Oppure registrati.</string>
+
+    <!-- LoginActivity strings. -->
+    <string name="username">Nome utente</string>
+    <string name="password">Password</string>
+
+    <!-- RegisterActivity strings. -->
+    <string name="address">Indirizzo</string>
+    <string name="empty_username_error">Inserisci un nome utente</string>
+    <string name="empty_password_error">Inserisci una password</string>
+    <string name="empty_address_error">Inserisci un indirizzo</string>
+    <string name="USER_KEY">name</string>
+    <string name="PASS_KEY">pass</string>
+    <string name="ADDR_KEY">addr</string>
+    <string name="insertion_OK">Utente aggiunto con successo!</string>
+    <string name="insertion_KO">Si sono verificati problemi in fase di aggiunta.</string>
 
 </resources>

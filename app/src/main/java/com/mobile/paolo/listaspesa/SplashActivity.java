@@ -13,9 +13,9 @@ import android.view.View;
 import android.widget.ImageView;
 
 /*
-    -- SplashActivity --
-    Animates a logo making it spinning on itself and coloring the background at the same time.
-    Fades away once the animations are over.
+ * -- SplashActivity --
+ *  Animates a logo making it spinning on itself and coloring the background at the same time.
+ *  Fades away once the animations are over.
  */
 
 
@@ -29,7 +29,6 @@ public class SplashActivity extends Activity {
         // Retrieve components by id
         ImageView logo = (ImageView) findViewById(R.id.logo);
 
-        findViewById(R.id.splashView).setBackgroundColor(Color.parseColor("#3F51B5"));
         logo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,7 +55,7 @@ public class SplashActivity extends Activity {
         });
 
         // colorAnimator colors the background from white to colorPrimary in a second
-        ValueAnimator colorAnimator = ValueAnimator.ofArgb(Color.parseColor("#3F51B5"), Color.parseColor("#FFFFFF"));
+        ValueAnimator colorAnimator = ValueAnimator.ofArgb(Color.parseColor("#FFFFFF"), Color.parseColor("#3F51B5"));
         colorAnimator.setDuration(aSecond);
         colorAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override

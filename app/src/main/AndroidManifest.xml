@@ -12,19 +12,21 @@
 
         <!-- The splash activity. -->
         <!-- It's the first activity loaded. -->
-        <activity
-            android:name=".SplashActivity">
+        <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <!-- The welcome activity. -->
-        <activity
-            android:name=".WelcomeActivity">
-        </activity>
-
+        <activity android:name=".WelcomeActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".RegisterActivity"></activity>
     </application>
+
+    <!--  Internet Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

@@ -15,7 +15,7 @@
 
         <item name="colorControlHighlight">@color/colorPrimaryLight</item>
         <item name="colorButtonNormal">@color/colorPrimary</item>
-        <item name="colorControlActivated">#0cf427</item>
+        <!--<item name="colorControlActivated">#0cf427</item>-->
 
         <!-- use to make contextual action mode overlap the Toolbar -->
         <item name="windowActionModeOverlay">true</item>
