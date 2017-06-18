@@ -129,6 +129,7 @@ public class RegisterActivity extends AppCompatActivity {
                         Log.d("RESPONSE_MSG", response);
                         try {
                             JSONObject json = new JSONObject(response);
+                            // TODO: check feedback logic
                             if(json.getInt(TAG_SUCCESS) == 1)
                             {
                                 insertionOK = true;

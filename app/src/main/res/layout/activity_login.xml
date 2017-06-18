@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/loginLayout"
     tools:context="com.mobile.paolo.listaspesa.LoginActivity">
 
     <LinearLayout
@@ -15,13 +16,13 @@
         android:layout_centerHorizontal="true">
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/inputLayoutFullName"
+            android:id="@+id/usernameInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <!--app:errorTextAppearance="@style/error_appearance"-->
 
             <EditText
-                android:id="@+id/username"
+                android:id="@+id/usernameField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/username"/>
@@ -29,14 +30,14 @@
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/inputLayoutPassword"
+            android:id="@+id/passwordInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp">
             <!--app:errorTextAppearance="@style/error_appearance"-->
 
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/passwordField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/password"

@@ -10,6 +10,11 @@
     <!-- LoginActivity strings. -->
     <string name="username">Nome utente</string>
     <string name="password">Password</string>
+    <string name="login_OK">Login effettuato con successo!</string>
+    <string name="login_KO_no_user">L\'utente inserito non esiste.</string>
+    <string name="login_KO_wrong_password">La coppia utente/password inserita non è valida.</string>
+    <string name="generic_error">Errore sconosciuto.</string>
+    <string name="connection_error">Errore di connessione al database.</string>
 
     <!-- RegisterActivity strings. -->
     <string name="address">Indirizzo</string>
