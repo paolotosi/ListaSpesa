@@ -21,15 +21,18 @@ import android.widget.ImageView;
 
 public class SplashActivity extends Activity {
 
+    ImageView logoBlue, logoWhite;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
         // Retrieve components by id
-        ImageView logo = (ImageView) findViewById(R.id.logo);
+        logoBlue = (ImageView) findViewById(R.id.logo_blue);
+        logoWhite = (ImageView) findViewById(R.id.logo_white);
 
-        logo.setOnClickListener(new View.OnClickListener() {
+        logoBlue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 rotateLogoAndColorBackground();
@@ -50,7 +53,8 @@ public class SplashActivity extends Activity {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float value = Float.parseFloat(animation.getAnimatedValue().toString());
-                findViewById(R.id.logo).setRotation(value);
+                logoBlue.setRotation(value);
+                logoWhite.setRotation(value);
             }
         });
 
@@ -73,15 +77,25 @@ public class SplashActivity extends Activity {
             }
         });
 
+        ValueAnimator opacityAnimator = ValueAnimator.ofFloat(1f, 0f);
+        opacityAnimator.setDuration(aSecond);
+        opacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                logoBlue.setAlpha((Float) animation.getAnimatedValue());
+            }
+        });
+
         // Start the animations
         rotationAnimator.start();
         colorAnimator.start();
+        opacityAnimator.start();
     }
 
     public void transitionToNextActivity()
     {
         // Shared element transition
-        Pair sharedElements = new Pair<View, String>(findViewById(R.id.logo), "logo_shared");
+        Pair sharedElements = new Pair<View, String>(logoWhite, "logo_shared");
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, sharedElements);
         Intent intent = new Intent(SplashActivity.this, WelcomeActivity.class);
         startActivity(intent, options.toBundle());
