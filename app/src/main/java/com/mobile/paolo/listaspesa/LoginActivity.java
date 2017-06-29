@@ -1,5 +1,6 @@
 package com.mobile.paolo.listaspesa;
 
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -67,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
 
     private void initializeWidgets()
@@ -155,6 +157,7 @@ public class LoginActivity extends AppCompatActivity {
             if(json.getInt(TAG_SUCCESS) == 1)
             {
                 showFeedback(LOGIN_OK);
+                goHome();
             }
             else
             {
@@ -185,6 +188,12 @@ public class LoginActivity extends AppCompatActivity {
             default:                        snackShowStatus = Snackbar.make(findViewById(R.id.loginLayout), R.string.generic_error, Snackbar.LENGTH_LONG); break;
         }
         snackShowStatus.show();
+    }
+
+    private void goHome()
+    {
+        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+        startActivity(intent);
     }
 
 }
