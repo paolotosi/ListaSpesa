@@ -31,7 +31,7 @@ public class HomeActivity extends AppCompatActivity {
                                 selectedFragment = ItemTwoFragment.newInstance();
                                 break;
                             case R.id.action_item3:
-                                selectedFragment = ItemThreeFragment.newInstance();
+                                selectedFragment = CreateGroupFragment.newInstance();
                                 break;
                         }
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

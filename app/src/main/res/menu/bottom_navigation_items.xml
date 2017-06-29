@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_item1"
-        android:icon="@drawable/ic_account_box_black_24dp"
-        android:title="Allah Akbar"/>
+        android:icon="@drawable/ic_list_black_24dp"
+        android:title="Lista della Spesa"/>
     <item
         android:id="@+id/action_item2"
         android:icon="@drawable/ic_account_circle_black_24dp"
         android:title="Islamabad"/>
     <item
         android:id="@+id/action_item3"
-        android:icon="@drawable/ic_assignment_ind_black_24dp"
-        android:title="Raqqa"/>
+        android:icon="@drawable/ic_group_black_24dp"
+        android:title="Gruppo"/>
 </menu>

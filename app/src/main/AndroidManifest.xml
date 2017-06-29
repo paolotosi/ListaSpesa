@@ -29,7 +29,8 @@
         <activity android:name=".RegisterActivity" />
         <activity
             android:name=".HomeActivity"
-            android:label="@string/title_activity_home"></activity>
+            android:label="@string/title_activity_home" />
+        <fragment android:name=".CreateGroupFragment"></fragment>
     </application>
 
 </manifest>

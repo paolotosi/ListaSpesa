@@ -3,9 +3,11 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorPrimaryLight">#C5CAE9</color>
+    <color name="white">#FFFFFF</color>
     <color name="colorAccent">#FF6E40</color>
     <color name="overflowMenuBackground">#ede2b2</color>
     <color name="grey_800">#838493</color>
     <color name="contextual_background">#5ce2be</color>
     <color name="contextualText">#e18383</color>
+    <color name="blackText">#000000</color>
 </resources>

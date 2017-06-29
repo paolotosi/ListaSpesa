@@ -16,7 +16,7 @@
     <string name="generic_error">Errore sconosciuto.</string>
     <string name="connection_error">Errore di connessione al database.</string>
 
-    <!-- RegisterActivity strings. -->
+        <!-- RegisterActivity strings. -->
     <string name="address">Indirizzo</string>
     <string name="empty_username_error">Inserisci un nome utente</string>
     <string name="empty_password_error">Inserisci una password</string>
@@ -30,5 +30,8 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+
+    <!-- CreateGroupActivity strings. -->
+    <string name="group_name">Nome del gruppo</string>
 
 </resources>
