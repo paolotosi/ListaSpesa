@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.android.volley.Request;
@@ -41,9 +42,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class CreateGroupFragment extends Fragment {
     public static CreateGroupFragment newInstance() {
@@ -51,8 +49,9 @@ public class CreateGroupFragment extends Fragment {
         return fragment;
     }
 
-    ListView list;
-    private static String url_login = "http://10.0.2.2/listaspesa/android_connect/users/get_all_users.php";
+    private ListView listView;
+    private ArrayList<String> userList = new ArrayList<>();
+    private static final String url_login = "http://10.0.2.2/listaspesa/android_connect/users/get_all_users.php";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,19 +59,20 @@ public class CreateGroupFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         View view = inflater.inflate(R.layout.fragment_create_group, container, false);
+        bindUserList(view);
         sendHTTPRequest(view);
 
         return view;
     }
 
-    private void getUserList(View fragment)
+    private void bindUserList(View fragment)
     {
-        list = (ListView) fragment.findViewById(R.id.userList);
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item, listaDelleMenate);
-        //list.setAdapter(adapter);
+        listView = (ListView) fragment.findViewById(R.id.userList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item, userList);
+        listView.setAdapter(adapter);
 
     }
 
@@ -94,7 +94,9 @@ public class CreateGroupFragment extends Fragment {
                             for(int i = 0; i < dataJsonArray.length(); i++)
                             {
                                 JSONObject dataObj = (JSONObject) dataJsonArray.get(i);
-                                //TO DO... dataObj.getString("nome");
+                                Log.d("JSON", dataObj.getString("nome"));
+                                userList.add(dataObj.getString("nome"));
+                                ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
                             }
 
                         } catch (JSONException e) {
