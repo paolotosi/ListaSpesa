@@ -35,7 +35,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.mobile.paolo.listaspesa.network.NetworkManager;
+import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
+import com.mobile.paolo.listaspesa.network.NetworkQueueManager;
+import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,14 +45,18 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class CreateGroupFragment extends Fragment {
-    public static CreateGroupFragment newInstance() {
+public class CreateGroupFragment extends Fragment
+{
+    public static CreateGroupFragment newInstance()
+    {
         CreateGroupFragment fragment = new CreateGroupFragment();
         return fragment;
     }
 
     private ListView listView;
     private ArrayList<String> userList = new ArrayList<>();
+    private NetworkResponseHandler networkResponseHandler;
+    private UsersDatabaseHelper usersDatabaseHelper;
     private static final String url_login = "http://10.0.2.2/listaspesa/android_connect/users/get_all_users.php";
 
     @Override
@@ -61,13 +67,22 @@ public class CreateGroupFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+        // Load fragment
         View view = inflater.inflate(R.layout.fragment_create_group, container, false);
+
+        // Tell listView which items to show
         bindUserList(view);
-        sendHTTPRequest(view);
+
+        // Define what to do when the server response is received
+        setupNetworkMessageHandler();
+
+        // Send the network request to get all users
+        UsersDatabaseHelper.sendGetAllUsersRequest(getActivity().getApplicationContext(), networkResponseHandler);
 
         return view;
     }
 
+    // Bind the ListView with the list of users
     private void bindUserList(View fragment)
     {
         listView = (ListView) fragment.findViewById(R.id.userList);
@@ -76,41 +91,43 @@ public class CreateGroupFragment extends Fragment {
 
     }
 
-    private void sendHTTPRequest(View view)
+    private void setupNetworkMessageHandler()
     {
-        // Get the RequestQueue from NetworkManager
-        RequestQueue queue = NetworkManager.getInstance(getActivity().getApplicationContext()).getRequestQueue();
+        this.networkResponseHandler = new NetworkResponseHandler() {
 
-        // Request a string response from the provided URL
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url_login,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Parse JSON response and check if the login was successful
-                        Log.d("RESPONSE_MSG", response);
-                        try {
-                            JSONObject json = new JSONObject(response);
-                            JSONArray dataJsonArray = json.getJSONArray("users");
-                            for(int i = 0; i < dataJsonArray.length(); i++)
-                            {
-                                JSONObject dataObj = (JSONObject) dataJsonArray.get(i);
-                                Log.d("JSON", dataObj.getString("nome"));
-                                userList.add(dataObj.getString("nome"));
-                                ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
-                            }
+            @Override
+            public void onSuccess(JSONObject jsonResponse) {
+                Log.d("RESPONSE_MSG", jsonResponse.toString());
+                populateUserList(jsonResponse);
+            }
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                    }
+            @Override
+            public void onError(VolleyError error) {
 
-                });
-        // Add the request to the RequestQueue
-        queue.add(stringRequest);
+            }
+        };
+    }
+
+    // Populate userList with server response
+    private void populateUserList(JSONObject serverResponse)
+    {
+        try {
+            // Split the response in a list
+            JSONArray jsonUserList = serverResponse.getJSONArray("users");
+
+            // For each user, take his name and add it to the list shown in the ListView
+            for(int i = 0; i < jsonUserList.length(); i++)
+            {
+                JSONObject jsonUser = (JSONObject) jsonUserList.get(i);
+                Log.d("JSON", jsonUser.getString("nome"));
+                userList.add(jsonUser.getString("nome"));
+            }
+
+            // Tell the ListView to reload elements
+            ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

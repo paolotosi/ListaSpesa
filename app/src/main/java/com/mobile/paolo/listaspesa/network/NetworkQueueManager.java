@@ -13,19 +13,19 @@ import com.android.volley.toolbox.Volley;
  * using the Singleton pattern.
  */
 
-public class NetworkManager {
-    private static NetworkManager instance;
+public class NetworkQueueManager {
+    private static NetworkQueueManager instance;
     private RequestQueue requestQueue;
     private static Context context;
 
-    private NetworkManager(Context context) {
-        NetworkManager.context = context;
+    private NetworkQueueManager(Context context) {
+        NetworkQueueManager.context = context;
         requestQueue = getRequestQueue();
     }
 
-    public static synchronized NetworkManager getInstance(Context context) {
+    public static synchronized NetworkQueueManager getInstance(Context context) {
         if (instance == null) {
-            instance = new NetworkManager(context);
+            instance = new NetworkQueueManager(context);
         }
         return instance;
     }

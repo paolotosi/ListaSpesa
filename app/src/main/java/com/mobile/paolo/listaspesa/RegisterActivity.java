@@ -14,7 +14,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.mobile.paolo.listaspesa.network.NetworkManager;
+import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
+import com.mobile.paolo.listaspesa.network.NetworkQueueManager;
+import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 
 
 import org.json.JSONException;
@@ -37,8 +39,8 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText usernameField, passwordField, addressField;
     private TextInputLayout usernameInputLayout, passwordInputLayout, addressInputLayout;
 
-    // URL to create new user
-    private static String url_add_user = "http://10.0.2.2/listaspesa/android_connect/users/add_user.php";
+    // The NetworkResponseHandler
+    NetworkResponseHandler networkResponseHandler;
 
     // A boolean to show if there were problems during the insertion
     private boolean insertionOK;
@@ -53,12 +55,14 @@ public class RegisterActivity extends AppCompatActivity {
 
         initializeWidgets();
 
+        setupNetworkResponseHandler();
+
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(isInsertionValid())
                 {
-                    sendHTTPRequest();
+                    sendRegistrationRequest();
                 }
             }
         });
@@ -115,51 +119,47 @@ public class RegisterActivity extends AppCompatActivity {
         return isValid;
     }
 
-    private void sendHTTPRequest()
+    private void setupNetworkResponseHandler()
     {
-        // Get the RequestQueue from NetworkManager
-        RequestQueue queue = NetworkManager.getInstance(this.getApplicationContext()).getRequestQueue();
-
-        // Request a string response from the provided URL
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url_add_user,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Parse JSON response and check if the insertion was successful
-                        Log.d("RESPONSE_MSG", response);
-                        try {
-                            JSONObject json = new JSONObject(response);
-                            // TODO: check feedback logic
-                            if(json.getInt(TAG_SUCCESS) == 1)
-                            {
-                                insertionOK = true;
-                                showFeedback();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        insertionOK = false;
+        this.networkResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response)
+            {
+                try {
+                    if (response.getInt(TAG_SUCCESS) == 1) {
+                        insertionOK = true;
                         showFeedback();
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
 
-                }) {
             @Override
-            protected Map<String, String> getParams() {
-                // The POST parameters
-                Map<String, String> params = new HashMap<>();
-                params.put(getResources().getString(R.string.USER_KEY), usernameField.getText().toString());
-                params.put(getResources().getString(R.string.PASS_KEY), passwordField.getText().toString());
-                params.put(getResources().getString(R.string.ADDR_KEY), addressField.getText().toString());
-                return params;
+            public void onError(VolleyError error)
+            {
+                insertionOK = false;
+                showFeedback();
             }
         };
-        // Add the request to the RequestQueue
-        queue.add(stringRequest);
+    }
+
+    private void sendRegistrationRequest()
+    {
+        // The POST parameters.
+        Map<String, String> params = new HashMap<>();
+        params.put(getResources().getString(R.string.USER_KEY), usernameField.getText().toString());
+        params.put(getResources().getString(R.string.PASS_KEY), passwordField.getText().toString());
+        params.put(getResources().getString(R.string.ADDR_KEY), addressField.getText().toString());
+
+        // Encapsulate in JSON.
+        JSONObject jsonPostParameters = new JSONObject(params);
+
+        // Print parameters to console for debug purposes.
+        Log.d("JSON_REGISTER_PARAM", jsonPostParameters.toString());
+
+        // Send request.
+        UsersDatabaseHelper.sendRegistrationRequest(jsonPostParameters, getApplicationContext(), networkResponseHandler);
     }
 
     private void showFeedback()

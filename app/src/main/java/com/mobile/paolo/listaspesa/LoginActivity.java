@@ -15,7 +15,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.mobile.paolo.listaspesa.network.NetworkManager;
+import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
+import com.mobile.paolo.listaspesa.network.NetworkQueueManager;
+import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +41,10 @@ public class LoginActivity extends AppCompatActivity {
 
     // Login URL
     private static String url_login = "http://10.0.2.2/listaspesa/android_connect/users/login.php";
+
+    // NetworkResponseHandler & UsersDatabaseHelper
+    private NetworkResponseHandler networkResponseHandler;
+    private UsersDatabaseHelper usersDatabaseHelper;
 
     // JSON Node names
     private static final String TAG_SUCCESS = "success";
@@ -64,7 +70,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(isInsertionValid())
                 {
-                    sendHTTPRequest();
+                    setupNetworkResponseHandler();
+                    sendLoginRequest();
                 }
             }
         });
@@ -111,8 +118,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void sendHTTPRequest()
     {
-        // Get the RequestQueue from NetworkManager
-        RequestQueue queue = NetworkManager.getInstance(this.getApplicationContext()).getRequestQueue();
+        // Get the RequestQueue from NetworkQueueManager
+        RequestQueue queue = NetworkQueueManager.getInstance(this.getApplicationContext()).getRequestQueue();
 
         // Request a string response from the provided URL
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url_login,
@@ -194,6 +201,40 @@ public class LoginActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
         startActivity(intent);
+    }
+
+    private void setupNetworkResponseHandler()
+    {
+        this.networkResponseHandler = new NetworkResponseHandler() {
+
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("RESPONSE_MSG", response.toString());
+                verifyLogin(response);
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                showFeedback(CONNECTION_ERROR);
+            }
+        };
+    }
+
+    private void sendLoginRequest()
+    {
+        // The POST parameters.
+        Map<String, String> params = new HashMap<>();
+        params.put(getResources().getString(R.string.USER_KEY), usernameField.getText().toString());
+        params.put(getResources().getString(R.string.PASS_KEY), passwordField.getText().toString());
+
+        // Encapsulate in JSON.
+        JSONObject jsonPostParameters = new JSONObject(params);
+
+        // Print parameters to console for debug purposes.
+        Log.d("JSON_LOGIN_PARAM", jsonPostParameters.toString());
+
+        // Send request.
+        UsersDatabaseHelper.sendLoginRequest(jsonPostParameters, getApplicationContext(), networkResponseHandler);
     }
 
 }
