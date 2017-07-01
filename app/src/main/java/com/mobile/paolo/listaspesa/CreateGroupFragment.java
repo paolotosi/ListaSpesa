@@ -26,17 +26,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
-import com.mobile.paolo.listaspesa.network.NetworkQueueManager;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 
 import org.json.JSONArray;
@@ -70,6 +71,8 @@ public class CreateGroupFragment extends Fragment
         // Load fragment
         View view = inflater.inflate(R.layout.fragment_create_group, container, false);
 
+        setupConfirmButtonListener(view);
+
         // Tell listView which items to show
         bindUserList(view);
 
@@ -79,6 +82,8 @@ public class CreateGroupFragment extends Fragment
         // Send the network request to get all users
         UsersDatabaseHelper.sendGetAllUsersRequest(getActivity().getApplicationContext(), networkResponseHandler);
 
+
+
         return view;
     }
 
@@ -86,7 +91,7 @@ public class CreateGroupFragment extends Fragment
     private void bindUserList(View fragment)
     {
         listView = (ListView) fragment.findViewById(R.id.userList);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item, userList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.user_list_item, R.id.userListItemTextView, userList);
         listView.setAdapter(adapter);
 
     }
@@ -99,6 +104,9 @@ public class CreateGroupFragment extends Fragment
             public void onSuccess(JSONObject jsonResponse) {
                 Log.d("RESPONSE_MSG", jsonResponse.toString());
                 populateUserList(jsonResponse);
+                //setupListViewItemClickListener();
+                setupListViewCheckboxListeners();
+                checkSelectedItems();
             }
 
             @Override
@@ -130,4 +138,64 @@ public class CreateGroupFragment extends Fragment
             e.printStackTrace();
         }
     }
+
+    private void checkSelectedItems()
+    {
+        RelativeLayout element;
+        Integer result = 0;
+        for(int i = 0; i < listView.getAdapter().getCount(); i++)
+        {
+            element = (RelativeLayout) listView.getAdapter().getView(i, null, listView);
+            CheckBox check = (CheckBox) element.findViewById(R.id.userListItemCheckbox);
+            if(check.isChecked())
+            {
+                result++;
+            }
+        }
+        Log.d("Check count", result.toString());
+
+    }
+
+    private void setupConfirmButtonListener(View fragment)
+    {
+        fragment.findViewById(R.id.confirmButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
+                checkSelectedItems();
+            }
+        });
+    }
+
+//    private void setupListViewItemClickListener()
+//    {
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int i, long id) {
+//                Toast.makeText(getActivity().getApplicationContext(), "Selected position: " + i,
+//                        Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
+
+    private void setupListViewCheckboxListeners()
+    {
+        RelativeLayout element;
+        for(int i = 0; i < listView.getAdapter().getCount(); i++)
+        {
+            element = (RelativeLayout) listView.getAdapter().getView(i, null, listView);
+            Log.d("Check", ((TextView) element.findViewById(R.id.userListItemTextView)).getText().toString());
+            CheckBox checkbox = (CheckBox) element.findViewById(R.id.userListItemCheckbox);
+            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    Log.d("Check", ((Boolean)isChecked).toString());
+                    CheckBox checkbox = (CheckBox)buttonView;
+                    boolean isChecked2 = checkbox.isChecked();
+                    Log.d("Check", ((Boolean)isChecked2).toString());
+                }
+            });
+        }
+    }
+
 }
