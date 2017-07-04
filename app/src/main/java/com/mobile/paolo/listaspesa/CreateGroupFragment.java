@@ -1,43 +1,22 @@
-/*
- * Copyright (c) 2017. Truiton (http://www.truiton.com/).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * Contributors:
- * Mohit Gupt (https://github.com/mohitgupt)
- *
- */
-
 package com.mobile.paolo.listaspesa;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
+import com.mobile.paolo.listaspesa.model.User;
+import com.mobile.paolo.listaspesa.model.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 
 import org.json.JSONArray;
@@ -45,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CreateGroupFragment extends Fragment
 {
@@ -54,11 +34,15 @@ public class CreateGroupFragment extends Fragment
         return fragment;
     }
 
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager mLayoutManager;
     private ListView listView;
+    private ArrayList<User> userModelList = new ArrayList<>();
     private ArrayList<String> userList = new ArrayList<>();
+    private ArrayList<String> selectedUserList = new ArrayList<>();
     private NetworkResponseHandler networkResponseHandler;
     private UsersDatabaseHelper usersDatabaseHelper;
-    private static final String url_login = "http://10.0.2.2/listaspesa/android_connect/users/get_all_users.php";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,32 +52,22 @@ public class CreateGroupFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        // Load fragment
-        View view = inflater.inflate(R.layout.fragment_create_group, container, false);
+        // Load fragment.
+        View loadedFragment = inflater.inflate(R.layout.fragment_create_group, container, false);
 
-        setupConfirmButtonListener(view);
+        // Initialize the RecyclerView.
+        setupRecyclerView(loadedFragment);
 
-        // Tell listView which items to show
-        bindUserList(view);
-
-        // Define what to do when the server response is received
+        // Define what to do when the server response is received.
         setupNetworkMessageHandler();
 
-        // Send the network request to get all users
+        // Send the network request to get all users.
         UsersDatabaseHelper.sendGetAllUsersRequest(getActivity().getApplicationContext(), networkResponseHandler);
 
+        // Setup the confirm button listener.
+        setupConfirmButtonListener(loadedFragment);
 
-
-        return view;
-    }
-
-    // Bind the ListView with the list of users
-    private void bindUserList(View fragment)
-    {
-        listView = (ListView) fragment.findViewById(R.id.userList);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.user_list_item, R.id.userListItemTextView, userList);
-        listView.setAdapter(adapter);
-
+        return loadedFragment;
     }
 
     private void setupNetworkMessageHandler()
@@ -102,11 +76,7 @@ public class CreateGroupFragment extends Fragment
 
             @Override
             public void onSuccess(JSONObject jsonResponse) {
-                Log.d("RESPONSE_MSG", jsonResponse.toString());
                 populateUserList(jsonResponse);
-                //setupListViewItemClickListener();
-                setupListViewCheckboxListeners();
-                checkSelectedItems();
             }
 
             @Override
@@ -120,40 +90,22 @@ public class CreateGroupFragment extends Fragment
     private void populateUserList(JSONObject serverResponse)
     {
         try {
-            // Split the response in a list
+            // Split the response in a list.
             JSONArray jsonUserList = serverResponse.getJSONArray("users");
 
-            // For each user, take his name and add it to the list shown in the ListView
+            // For each user, create a User object and add it to the list.
             for(int i = 0; i < jsonUserList.length(); i++)
             {
                 JSONObject jsonUser = (JSONObject) jsonUserList.get(i);
-                Log.d("JSON", jsonUser.getString("nome"));
-                userList.add(jsonUser.getString("nome"));
+                userModelList.add(new User(jsonUser));
             }
 
-            // Tell the ListView to reload elements
-            ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
+            // Tell the RecyclerView to reload elements
+            adapter.notifyDataSetChanged();
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    private void checkSelectedItems()
-    {
-        RelativeLayout element;
-        Integer result = 0;
-        for(int i = 0; i < listView.getAdapter().getCount(); i++)
-        {
-            element = (RelativeLayout) listView.getAdapter().getView(i, null, listView);
-            CheckBox check = (CheckBox) element.findViewById(R.id.userListItemCheckbox);
-            if(check.isChecked())
-            {
-                result++;
-            }
-        }
-        Log.d("Check count", result.toString());
-
     }
 
     private void setupConfirmButtonListener(View fragment)
@@ -161,41 +113,43 @@ public class CreateGroupFragment extends Fragment
         fragment.findViewById(R.id.confirmButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
                 checkSelectedItems();
             }
         });
     }
 
-//    private void setupListViewItemClickListener()
-//    {
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int i, long id) {
-//                Toast.makeText(getActivity().getApplicationContext(), "Selected position: " + i,
-//                        Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-
-    private void setupListViewCheckboxListeners()
+    private void checkSelectedItems()
     {
-        RelativeLayout element;
-        for(int i = 0; i < listView.getAdapter().getCount(); i++)
-        {
-            element = (RelativeLayout) listView.getAdapter().getView(i, null, listView);
-            Log.d("Check", ((TextView) element.findViewById(R.id.userListItemTextView)).getText().toString());
-            CheckBox checkbox = (CheckBox) element.findViewById(R.id.userListItemCheckbox);
-            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Log.d("Check", ((Boolean)isChecked).toString());
-                    CheckBox checkbox = (CheckBox)buttonView;
-                    boolean isChecked2 = checkbox.isChecked();
-                    Log.d("Check", ((Boolean)isChecked2).toString());
-                }
-            });
+        String data = "";
+        List<User> userList = ((UserCardViewDataAdapter) adapter).getUserList();
+
+        for (int i = 0; i < userList.size(); i++) {
+            User singleStudent = userList.get(i);
+            if (singleStudent.isChecked())
+            {
+                data = data + "\n" + singleStudent.getUsername().toString();
+            }
         }
+
+        Toast.makeText(getActivity(), "Selected Users: \n" + data, Toast.LENGTH_LONG).show();
+    }
+
+    private void setupRecyclerView(View loadedFragment)
+    {
+        recyclerView = (RecyclerView) loadedFragment.findViewById(R.id.recyclerViewUsers);
+
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        recyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+
+        // create an Object for Adapter
+        adapter = new UserCardViewDataAdapter(userModelList);
+
+        // set the adapter object to the Recyclerview
+        recyclerView.setAdapter(adapter);
     }
 
 }

@@ -4,16 +4,26 @@
     android:layout_height="wrap_content"
     android:id="@+id/listItem">
 
-    <CheckBox
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <!--<CheckBox-->
+        <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--android:id="@+id/userListItemCheckbox"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:gravity="center_vertical|right"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:focusable="false"-->
+        <!--android:focusableInTouchMode="false"/>-->
+
+    <ImageView
         android:id="@+id/userListItemCheckbox"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center_vertical|right"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:focusable="false"
-        android:focusableInTouchMode="false"/>
+        android:visibility="invisible"
+        android:src="@drawable/ic_check_blue_24dp"/>
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/userListItemTextView"
