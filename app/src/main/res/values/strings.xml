@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Lista Spesa</string>
 
+    <!-- SharedPreferences strings. -->
+    <string name="LOGGED_USER">LOGGED_USER</string>
+
     <!-- WelcomeActivity strings. -->
     <string name="login_button">Accedi</string>
     <string name="register_button">Registrati</string>

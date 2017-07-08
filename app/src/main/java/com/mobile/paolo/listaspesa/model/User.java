@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Created by paolo on 04/07/17.
@@ -11,6 +12,7 @@ import java.io.Serializable;
 
 public class User implements Serializable
 {
+    private int id;
     private String username;
     private String password;
     private String address;
@@ -19,15 +21,17 @@ public class User implements Serializable
     private boolean isChecked;
 
     // Default constructor
-    public User(String username, String password, String address)
+    public User(int id, String username, String password, String address)
     {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.address = address;
     }
 
-    public User(String username, String password, String address, boolean isChecked)
+    public User(int id, String username, String password, String address, boolean isChecked)
     {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.address = address;
@@ -37,6 +41,7 @@ public class User implements Serializable
     public User(JSONObject jsonUser)
     {
         try {
+            this.id = jsonUser.getInt("id");
             this.username = jsonUser.getString("nome");
             this.address = jsonUser.getString("indirizzo");
         } catch (JSONException e) {
@@ -44,8 +49,21 @@ public class User implements Serializable
         }
     }
 
+    public JSONObject toJSON()
+    {
+        HashMap<String, String> values = new HashMap();
+        values.put("id", ((Integer) id).toString());
+        values.put("username", username);
+        values.put("address", address);
+        return new JSONObject(values);
+    }
+
     public String getUsername() {
         return username;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getPassword() {

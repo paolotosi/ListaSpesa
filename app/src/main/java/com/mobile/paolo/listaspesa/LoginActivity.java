@@ -1,6 +1,8 @@
 package com.mobile.paolo.listaspesa;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +18,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
+import com.mobile.paolo.listaspesa.model.User;
 import com.mobile.paolo.listaspesa.network.NetworkQueueManager;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 
@@ -116,54 +119,19 @@ public class LoginActivity extends AppCompatActivity {
         return isValid;
     }
 
-    private void sendHTTPRequest()
-    {
-        // Get the RequestQueue from NetworkQueueManager
-        RequestQueue queue = NetworkQueueManager.getInstance(this.getApplicationContext()).getRequestQueue();
 
-        // Request a string response from the provided URL
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url_login,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Parse JSON response and check if the login was successful
-                        Log.d("RESPONSE_MSG", response);
-                        try {
-                            JSONObject json = new JSONObject(response);
-                            verifyLogin(json);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        showFeedback(CONNECTION_ERROR);
-                    }
-
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                // The POST parameters
-                Map<String, String> params = new HashMap<>();
-                params.put(getResources().getString(R.string.USER_KEY), usernameField.getText().toString());
-                params.put(getResources().getString(R.string.PASS_KEY), passwordField.getText().toString());
-                return params;
-            }
-        };
-        // Add the request to the RequestQueue
-        queue.add(stringRequest);
-    }
-
-    private void verifyLogin(JSONObject json)
+    private void verifyLogin(JSONObject json, User user)
     {
         try
         {
             if(json.getInt(TAG_SUCCESS) == 1)
             {
                 showFeedback(LOGIN_OK);
+                SharedPreferences sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getResources().getString(R.string.LOGGED_USER), user.toJSON().toString());
+                editor.commit();
+
                 goHome();
             }
             else
@@ -210,7 +178,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(JSONObject response) {
                 Log.d("RESPONSE_MSG", response.toString());
-                verifyLogin(response);
+                User user = null;
+                try {
+                    user = new User(response.getInt("userId"), response.getString("userName"), null, response.getString("userAddress"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                verifyLogin(response, user);
             }
 
             @Override
