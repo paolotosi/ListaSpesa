@@ -15,10 +15,16 @@ public class GroupsDatabaseHelper
 {
     // The URLs.
     private static final String URL_CREATE_GROUP = "http://10.0.2.2/listaspesa/android_connect/groups/create_group.php";
+    private static final String URL_GET_GROUP_DETAILS = "http://10.0.2.2/listaspesa/android_connect/groups/get_user_group_details.php";
 
     public static void sendCreateGroupRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
         NetworkMessageSender.sendHTTPRequest(URL_CREATE_GROUP, jsonPostData, context, networkResponseHandler);
+    }
+
+    public static void sendGetGroupDetailsRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
+    {
+        NetworkMessageSender.sendHTTPRequest(URL_GET_GROUP_DETAILS, jsonPostData, context, networkResponseHandler);
     }
 
 
