@@ -42,8 +42,8 @@ public class User implements Serializable
     {
         try {
             this.id = jsonUser.getInt("id");
-            this.username = jsonUser.getString("nome");
-            this.address = jsonUser.getString("indirizzo");
+            this.username = jsonUser.getString("username");
+            this.address = jsonUser.getString("address");
         } catch (JSONException e) {
             e.printStackTrace();
         }

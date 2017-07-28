@@ -3,6 +3,7 @@ package com.mobile.paolo.listaspesa;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,12 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
@@ -33,11 +30,16 @@ import java.util.List;
 
 public class CreateGroupFragment extends Fragment
 {
-    public static CreateGroupFragment newInstance()
-    {
-        CreateGroupFragment fragment = new CreateGroupFragment();
-        return fragment;
-    }
+    // JSON tags
+    private static final String TAG_SUCCESS = "success";
+    private static final int SUCCESS = 1;
+
+    // Feedback codes
+    private static final int GROUP_CREATION_OK = 1;
+    private static final int GROUP_CREATION_KO_NO_NAME = 2;
+    private static final int GROUP_CREATION_KO_NO_USERS = 3;
+    private static final int CONNECTION_ERROR = 4;
+    private static final int REMOTE_ERROR = 5;
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
@@ -48,6 +50,12 @@ public class CreateGroupFragment extends Fragment
     private ArrayList<String> selectedUserList = new ArrayList<>();
     private NetworkResponseHandler networkResponseHandler;
     private UsersDatabaseHelper usersDatabaseHelper;
+
+    public static CreateGroupFragment newInstance()
+    {
+        CreateGroupFragment fragment = new CreateGroupFragment();
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -132,28 +140,43 @@ public class CreateGroupFragment extends Fragment
 
     private void checkSelectedItems(View fragment)
     {
-//        String data = "";
-//        List<User> userList = ((UserCardViewDataAdapter) adapter).getUserList();
-//
-//        for (int i = 0; i < userList.size(); i++) {
-//            User singleUser = userList.get(i);
-//            if (singleUser.isChecked())
-//            {
-//                data = data + "\n" + singleUser.getUsername().toString();
-//            }
-//        }
         sendCreateGroupRequest(fragment);
     }
 
     private void sendCreateGroupRequest(View fragment)
     {
+        /*
+            JSON structure:
+                groupName => name
+                selectedUsers => [id1, id2...]
+         */
+
+        boolean okToSend = true;
         JSONObject jsonRequest = new JSONObject();
         try {
-            jsonRequest.put("groupName", ((EditText) fragment.findViewById(R.id.groupNameField)).getText().toString());
+            // Add user inserted group name in JSON
+            String groupName = ((EditText) fragment.findViewById(R.id.groupNameField)).getText().toString();
+            if(!groupName.isEmpty())
+            {
+                jsonRequest.put("groupName", groupName);
+            }
+            else
+            {
+                okToSend = false;
+                showFeedback(GROUP_CREATION_KO_NO_NAME);
+            }
+
+            // selectedIDs will contain the IDs of every member
             JSONArray selectedIDs = new JSONArray();
+
+            // The first one is the logged user
+            selectedIDs.put(0, getLoggedUser().getId());
+
+            // userList will be used to store checkbox-selected users
             List<User> userList = ((UserCardViewDataAdapter) adapter).getUserList();
 
-            int pos = 0;
+            // For each user in the list, if he's checked add him to selectedIDs
+            int pos = 1;
             for (int i = 0; i < userList.size(); i++)
             {
                 User singleUser = userList.get(i);
@@ -163,27 +186,46 @@ public class CreateGroupFragment extends Fragment
                     pos++;
                 }
             }
+            // Add all IDs in JSON
             jsonRequest.put("selectedUsers", selectedIDs);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        // Debug JSON
         Log.d("Json request", jsonRequest.toString());
 
         NetworkResponseHandler createGroupLogic = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
+                // Debug
                 Log.d("serverResponse", response.toString());
+
+                // Read success tag and show feedback
+                try {
+                    if(response.getInt(TAG_SUCCESS) == SUCCESS)
+                    {
+                        showFeedback(GROUP_CREATION_OK);
+                    }
+                    else
+                        showFeedback(REMOTE_ERROR);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onError(VolleyError error) {
+                showFeedback(CONNECTION_ERROR);
 
             }
         };
 
-        GroupsDatabaseHelper.sendCreateGroupRequest(jsonRequest, getContext(), createGroupLogic);
-
+        if(okToSend)
+        {
+            GroupsDatabaseHelper.sendCreateGroupRequest(jsonRequest, getContext(), createGroupLogic);
+        }
 
     }
 
@@ -216,6 +258,21 @@ public class CreateGroupFragment extends Fragment
             e.printStackTrace();
         }
         return user;
+    }
+
+    private void showFeedback(int feedbackCode)
+    {
+        Snackbar snackShowStatus;
+        switch (feedbackCode)
+        {
+            case GROUP_CREATION_OK:            snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.creation_OK, Snackbar.LENGTH_LONG); break;
+            case GROUP_CREATION_KO_NO_NAME:    snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.creation_KO_no_name, Snackbar.LENGTH_LONG); break;
+            case GROUP_CREATION_KO_NO_USERS:   snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.creation_KO_no_users, Snackbar.LENGTH_LONG); break;
+            case CONNECTION_ERROR:             snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.connection_error, Snackbar.LENGTH_LONG); break;
+            case REMOTE_ERROR:                 snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.remote_group_creation_error, Snackbar.LENGTH_LONG); break;
+            default:                           snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.generic_error, Snackbar.LENGTH_LONG); break;
+        }
+        snackShowStatus.show();
     }
 
 }

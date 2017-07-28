@@ -130,6 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferences sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString(getResources().getString(R.string.LOGGED_USER), user.toJSON().toString());
+                Log.d("SHARED_PREF", user.toJSON().toString());
                 editor.commit();
 
                 goHome();
