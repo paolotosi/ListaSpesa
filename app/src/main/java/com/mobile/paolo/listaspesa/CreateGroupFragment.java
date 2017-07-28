@@ -250,7 +250,7 @@ public class CreateGroupFragment extends Fragment
     private User getLoggedUser()
     {
         User user = null;
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE);
         String jsonLoggedUser = sharedPref.getString(getResources().getString(R.string.LOGGED_USER), "No user logged");
         try {
             user = new User(new JSONObject(jsonLoggedUser));

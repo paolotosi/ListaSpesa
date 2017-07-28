@@ -127,12 +127,7 @@ public class LoginActivity extends AppCompatActivity {
             if(json.getInt(TAG_SUCCESS) == 1)
             {
                 showFeedback(LOGIN_OK);
-                SharedPreferences sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString(getResources().getString(R.string.LOGGED_USER), user.toJSON().toString());
-                Log.d("SHARED_PREF", user.toJSON().toString());
-                editor.commit();
-
+                saveLoggedUserInSharedPreferences(user);
                 goHome();
             }
             else
@@ -166,9 +161,30 @@ public class LoginActivity extends AppCompatActivity {
         snackShowStatus.show();
     }
 
+    private void saveLoggedUserInSharedPreferences(User loggedUser)
+    {
+        // Get shared preferences file
+        SharedPreferences sharedPref = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE);
+
+        // Get the editor
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        // Save logged user as JSON String
+        editor.putString(getResources().getString(R.string.LOGGED_USER), loggedUser.toJSON().toString());
+
+        // Debug
+        Log.d("SHARED_PREF", loggedUser.toJSON().toString());
+
+        // Commit changes
+        editor.commit();
+    }
+
     private void goHome()
     {
         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+        // Remove this activity from stack after loading the new one
+        // This way we can avoid returning to the login page after the login with the back button
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 
