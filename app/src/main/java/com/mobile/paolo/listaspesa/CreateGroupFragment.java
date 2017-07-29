@@ -20,6 +20,7 @@ import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.User;
 import com.mobile.paolo.listaspesa.model.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -107,7 +108,7 @@ public class CreateGroupFragment extends Fragment
             JSONArray jsonUserList = serverResponse.getJSONArray("users");
 
             // Get logged user to exclude him from the list
-            User loggedUser = getLoggedUser();
+            User loggedUser = GlobalValuesManager.getInstance(getContext()).getLoggedUser();
 
             // For each user, create a User object and add it to the list.
             for(int i = 0; i < jsonUserList.length(); i++)
@@ -170,7 +171,9 @@ public class CreateGroupFragment extends Fragment
             JSONArray selectedIDs = new JSONArray();
 
             // The first one is the logged user
-            selectedIDs.put(0, getLoggedUser().getId());
+            //selectedIDs.put(0, getLoggedUser().getId());
+            User loggedUser = GlobalValuesManager.getInstance(getContext()).getLoggedUser();
+            selectedIDs.put(0, loggedUser.getId());
 
             // userList will be used to store checkbox-selected users
             List<User> userList = ((UserCardViewDataAdapter) adapter).getUserList();

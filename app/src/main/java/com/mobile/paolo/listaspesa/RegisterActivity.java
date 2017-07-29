@@ -21,6 +21,7 @@ import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.User;
 import com.mobile.paolo.listaspesa.network.NetworkQueueManager;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 
 
 import org.json.JSONException;
@@ -143,7 +144,8 @@ public class RegisterActivity extends AppCompatActivity {
                         insertionOK = true;
                         showFeedback();
                         User user = new User(response.getInt("userId"), response.getString("userName"), null, response.getString("userAddress"));
-                        saveLoggedUserInSharedPreferences(user);
+                        //saveLoggedUserInSharedPreferences(user);
+                        GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUser(user);
                         goHome();
                     }
                 } catch (JSONException e) {
@@ -178,23 +180,23 @@ public class RegisterActivity extends AppCompatActivity {
         UsersDatabaseHelper.sendRegistrationRequest(jsonPostParameters, getApplicationContext(), networkResponseHandler);
     }
 
-    private void saveLoggedUserInSharedPreferences(User loggedUser)
-    {
-        // Get shared preferences file
-        SharedPreferences sharedPref = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE);
-
-        // Get the editor
-        SharedPreferences.Editor editor = sharedPref.edit();
-
-        // Save logged user as JSON String
-        editor.putString(getResources().getString(R.string.LOGGED_USER), loggedUser.toJSON().toString());
-
-        // Debug
-        Log.d("SHARED_PREF", loggedUser.toJSON().toString());
-
-        // Commit changes
-        editor.commit();
-    }
+//    private void saveLoggedUserInSharedPreferences(User loggedUser)
+//    {
+//        // Get shared preferences file
+//        SharedPreferences sharedPref = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE);
+//
+//        // Get the editor
+//        SharedPreferences.Editor editor = sharedPref.edit();
+//
+//        // Save logged user as JSON String
+//        editor.putString(getResources().getString(R.string.LOGGED_USER), loggedUser.toJSON().toString());
+//
+//        // Debug
+//        Log.d("SHARED_PREF", loggedUser.toJSON().toString());
+//
+//        // Commit changes
+//        editor.commit();
+//    }
 
     private void showFeedback()
     {

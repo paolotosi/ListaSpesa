@@ -12,15 +12,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.User;
-import com.mobile.paolo.listaspesa.network.NetworkQueueManager;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -120,23 +116,23 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void verifyLogin(JSONObject json, User user)
+    private void verifyLogin(JSONObject jsonServerResponse, User user)
     {
         try
         {
-            if(json.getInt(TAG_SUCCESS) == 1)
+            if(jsonServerResponse.getInt(TAG_SUCCESS) == 1)
             {
                 showFeedback(LOGIN_OK);
-                saveLoggedUserInSharedPreferences(user);
+                GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUser(user);
                 goHome();
             }
             else
             {
-                if(json.getString(TAG_MESSAGE).equals(USER_ERROR))
+                if(jsonServerResponse.getString(TAG_MESSAGE).equals(USER_ERROR))
                 {
                     showFeedback(LOGIN_KO_NO_USER);
                 }
-                if(json.getString(TAG_MESSAGE).equals(PASSWORD_ERROR))
+                if(jsonServerResponse.getString(TAG_MESSAGE).equals(PASSWORD_ERROR))
                 {
                     showFeedback(LOGIN_KO_WRONG_PASSWORD);
                 }
@@ -159,24 +155,6 @@ public class LoginActivity extends AppCompatActivity {
             default:                        snackShowStatus = Snackbar.make(findViewById(R.id.loginLayout), R.string.generic_error, Snackbar.LENGTH_LONG); break;
         }
         snackShowStatus.show();
-    }
-
-    private void saveLoggedUserInSharedPreferences(User loggedUser)
-    {
-        // Get shared preferences file
-        SharedPreferences sharedPref = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE);
-
-        // Get the editor
-        SharedPreferences.Editor editor = sharedPref.edit();
-
-        // Save logged user as JSON String
-        editor.putString(getResources().getString(R.string.LOGGED_USER), loggedUser.toJSON().toString());
-
-        // Debug
-        Log.d("SHARED_PREF", loggedUser.toJSON().toString());
-
-        // Commit changes
-        editor.commit();
     }
 
     private void goHome()
