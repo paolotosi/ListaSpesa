@@ -42,5 +42,16 @@ public class SharedPreferencesManager
         return sharedPreferences.getString(key, RETRIEVE_ERROR);
     }
 
+    public void writeBoolean(String key, boolean value)
+    {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(key, value);
+        editor.commit();
+    }
+
+    public boolean readBoolean(String key)
+    {
+        return sharedPreferences.getBoolean(key, false);
+    }
 
 }

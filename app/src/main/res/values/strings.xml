@@ -2,7 +2,9 @@
     <string name="app_name">Lista Spesa</string>
 
     <!-- SharedPreferences strings. -->
-    <string name="LOGGED_USER">LOGGED_USER</string>
+    <string name="logged_user">LOGGED_USER</string>
+    <string name="is_user_part_of_a_group">IS_USER_PART_OF_A_GROUP</string>
+    <string name="logged_user_group">LOGGED_USER_GROUP</string>
 
     <!-- WelcomeActivity strings. -->
     <string name="login_button">Accedi</string>
@@ -17,7 +19,7 @@
     <string name="login_KO_no_user">L\'utente inserito non esiste.</string>
     <string name="login_KO_wrong_password">La coppia utente/password inserita non è valida.</string>
 
-        <!-- RegisterActivity strings. -->
+    <!-- RegisterActivity strings. -->
     <string name="address">Indirizzo</string>
     <string name="empty_username_error">Inserisci un nome utente</string>
     <string name="empty_password_error">Inserisci una password</string>
@@ -42,5 +44,8 @@
     <!-- Generic error strings. -->
     <string name="generic_error">Errore sconosciuto.</string>
     <string name="connection_error">Errore di connessione al database.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

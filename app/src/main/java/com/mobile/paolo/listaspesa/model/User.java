@@ -51,7 +51,7 @@ public class User implements Serializable
 
     public JSONObject toJSON()
     {
-        HashMap<String, String> values = new HashMap();
+        HashMap<String, String> values = new HashMap<>();
         values.put("id", ((Integer) id).toString());
         values.put("username", username);
         values.put("address", address);

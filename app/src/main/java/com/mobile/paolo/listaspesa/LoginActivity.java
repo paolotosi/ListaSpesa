@@ -1,8 +1,6 @@
 package com.mobile.paolo.listaspesa;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -37,9 +35,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin;
     private EditText usernameField, passwordField;
     private TextInputLayout usernameInputLayout, passwordInputLayout;
-
-    // Login URL
-    private static String url_login = "http://10.0.2.2/listaspesa/android_connect/users/login.php";
 
     // NetworkResponseHandler & UsersDatabaseHelper
     private NetworkResponseHandler networkResponseHandler;

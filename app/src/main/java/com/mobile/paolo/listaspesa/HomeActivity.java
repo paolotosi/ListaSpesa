@@ -13,24 +13,36 @@ import android.view.MenuItem;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
+import com.mobile.paolo.listaspesa.model.Group;
 import com.mobile.paolo.listaspesa.model.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
     // The networkResponseHandler
-    NetworkResponseHandler networkResponseHandler;
+    private NetworkResponseHandler networkResponseHandler;
+
+    // Response codes
+    private static final int NETWORK_ERROR = 0;
+    private static final int USER_HAS_GROUP = 1;
+    private static final int USER_DOESNT_HAVE_GROUP = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // Determine if logged user is already part of a group
+        sendGetGroupDetailsRequest();
+
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
 
         bottomNavigationView.setOnNavigationItemSelectedListener
@@ -46,7 +58,14 @@ public class HomeActivity extends AppCompatActivity {
                                 selectedFragment = ItemTwoFragment.newInstance();
                                 break;
                             case R.id.action_item3:
-                                selectedFragment = CreateGroupFragment.newInstance();
+                                if(isUserPartOfAGroup())
+                                {
+                                    selectedFragment = ManageGroupFragment.newInstance();
+                                }
+                                else
+                                {
+                                    selectedFragment = CreateGroupFragment.newInstance();
+                                }
                                 break;
                         }
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -61,7 +80,7 @@ public class HomeActivity extends AppCompatActivity {
         transaction.replace(R.id.frame_layout, ItemOneFragment.newInstance());
         transaction.commit();
 
-        sendGetGroupDetailsRequest();
+
         //Used to select an item programmatically
         //bottomNavigationView.getMenu().getItem(2).setChecked(true);
     }
@@ -71,7 +90,29 @@ public class HomeActivity extends AppCompatActivity {
         this.networkResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
+                // Debug
                 Log.d("GROUP_DETAILS", response.toString());
+
+                try {
+                    int responseCode = response.getInt("success");
+                    switch (responseCode)
+                    {
+                        case NETWORK_ERROR: break;
+                        case USER_HAS_GROUP:
+                            // Create group from response
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(true);
+                            Group group = new Group(response.getInt("groupID"), response.getString("groupName"), response.getJSONArray("members"));
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUserGroup(group);
+                            break;
+                        case USER_DOESNT_HAVE_GROUP:
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(false);
+                            break;
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
 
             @Override
@@ -81,24 +122,11 @@ public class HomeActivity extends AppCompatActivity {
         };
     }
 
-    private User getLoggedUser()
-    {
-        User user = null;
-        SharedPreferences sharedPref = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE);
-        String jsonLoggedUser = sharedPref.getString(getResources().getString(R.string.LOGGED_USER), "No user logged");
-        try {
-            user = new User(new JSONObject(jsonLoggedUser));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return user;
-    }
-
     private void sendGetGroupDetailsRequest()
     {
         setupNetworkResponseHandler();
 
-        User loggedUser = getLoggedUser();
+        User loggedUser = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser();
 
         // The POST parameters.
         Map<String, String> params = new HashMap<>();
@@ -111,6 +139,11 @@ public class HomeActivity extends AppCompatActivity {
         Log.d("JSON_LOGIN_PARAM", jsonPostParameters.toString());
 
         GroupsDatabaseHelper.sendGetGroupDetailsRequest(jsonPostParameters, getApplicationContext(), networkResponseHandler);
+    }
+
+    private boolean isUserPartOfAGroup()
+    {
+        return GlobalValuesManager.getInstance(getApplicationContext()).isUserPartOfAGroup();
     }
 
 }

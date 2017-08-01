@@ -244,23 +244,10 @@ public class CreateGroupFragment extends Fragment
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
 
         // create an Object for Adapter
-        adapter = new UserCardViewDataAdapter(userModelList);
+        adapter = new UserCardViewDataAdapter(userModelList, 1);
 
         // set the adapter object to the Recyclerview
         recyclerView.setAdapter(adapter);
-    }
-
-    private User getLoggedUser()
-    {
-        User user = null;
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE);
-        String jsonLoggedUser = sharedPref.getString(getResources().getString(R.string.LOGGED_USER), "No user logged");
-        try {
-            user = new User(new JSONObject(jsonLoggedUser));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return user;
     }
 
     private void showFeedback(int feedbackCode)

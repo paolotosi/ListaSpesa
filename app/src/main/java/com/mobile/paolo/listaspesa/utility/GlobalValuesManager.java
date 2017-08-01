@@ -3,6 +3,7 @@ package com.mobile.paolo.listaspesa.utility;
 import android.content.Context;
 
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.model.Group;
 import com.mobile.paolo.listaspesa.model.User;
 
 import org.json.JSONException;
@@ -35,12 +36,12 @@ public class GlobalValuesManager
 
     public void saveLoggedUser(User loggedUser)
     {
-        sharedPreferencesManager.writeString(context.getResources().getString(R.string.LOGGED_USER), loggedUser.toJSON().toString());
+        sharedPreferencesManager.writeString(context.getResources().getString(R.string.logged_user), loggedUser.toJSON().toString());
     }
 
     public User getLoggedUser()
     {
-        String jsonLoggedUser = sharedPreferencesManager.readString(context.getResources().getString(R.string.LOGGED_USER));
+        String jsonLoggedUser = sharedPreferencesManager.readString(context.getResources().getString(R.string.logged_user));
         User loggedUser = null;
         try {
             loggedUser = new User(new JSONObject(jsonLoggedUser));
@@ -48,6 +49,33 @@ public class GlobalValuesManager
             e.printStackTrace();
         }
         return loggedUser;
+    }
+
+    public void saveIsUserPartOfAGroup(boolean isUserPartOfAGroup)
+    {
+        sharedPreferencesManager.writeBoolean(context.getResources().getString(R.string.is_user_part_of_a_group), isUserPartOfAGroup);
+    }
+
+    public boolean isUserPartOfAGroup()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_part_of_a_group));
+    }
+
+    public void saveLoggedUserGroup(Group group)
+    {
+        sharedPreferencesManager.writeString(context.getResources().getString(R.string.logged_user_group), group.toJSON().toString());
+    }
+
+    public Group getLoggedUserGroup()
+    {
+        String jsonLoggedUserGroup = sharedPreferencesManager.readString(context.getResources().getString(R.string.logged_user_group));
+        Group loggedUserGroup = null;
+        try {
+            loggedUserGroup = Group.fromJSON(new JSONObject(jsonLoggedUserGroup));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return loggedUserGroup;
     }
 
 }

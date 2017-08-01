@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mobile.paolo.listaspesa.R;
 
@@ -23,9 +22,15 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
     // The data to show.
     private List<User> userList;
 
-    public UserCardViewDataAdapter(List<User> students)
+    // visualizationMode determines how to display single elements
+    private int visualizationMode;
+    private static final int CREATION_MODE = 1;
+    private static final int MANAGEMENT_MODE = 2;
+
+    public UserCardViewDataAdapter(List<User> users, int visualizationMode)
     {
-        this.userList = students;
+        this.userList = users;
+        this.visualizationMode = visualizationMode;
     }
 
     // Create new views
@@ -33,7 +38,16 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
     public UserCardViewDataAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         // Create a new view using the .xml file that defines a row
-        View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_row, null);
+        View itemLayoutView = null;
+        if(visualizationMode == CREATION_MODE)
+        {
+            itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.create_group_user_layout, null);
+        }
+        if(visualizationMode == MANAGEMENT_MODE)
+        {
+            itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.manage_group_user_layout, null);
+        }
+
 
         // Create ViewHolder. (A ViewHolder describes an item view and metadata about its place within the RecyclerView.)
         ViewHolder viewHolder = new ViewHolder(itemLayoutView);
@@ -51,25 +65,28 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
 
         viewHolder.cardTextViewAddress.setText(userList.get(position).getAddress());
 
-        viewHolder.cardCheckbox.setChecked(userList.get(position).isChecked());
+        if(visualizationMode == CREATION_MODE)
+        {
+            viewHolder.cardCheckbox.setChecked(userList.get(position).isChecked());
 
-        // Save the user in the tag field of the checkbox, it'll be used later.
-        viewHolder.cardCheckbox.setTag(userList.get(position));
+            // Save the user in the tag field of the checkbox, it'll be used later.
+            viewHolder.cardCheckbox.setTag(userList.get(position));
 
-        // When a checkbox is clicked:
-        viewHolder.cardCheckbox.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+            // When a checkbox is clicked:
+            viewHolder.cardCheckbox.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
 
-                // Retrieve the corresponding user.
-                CheckBox checkbox = (CheckBox) v;
-                User user = (User) checkbox.getTag();
+                    // Retrieve the corresponding user.
+                    CheckBox checkbox = (CheckBox) v;
+                    User user = (User) checkbox.getTag();
 
-                // Set the 'checked' field of the user both in the checkbox tag field and in the list
-                user.setChecked(checkbox.isChecked());
-                userList.get(pos).setChecked(checkbox.isChecked());
+                    // Set the 'checked' field of the user both in the checkbox tag field and in the list
+                    user.setChecked(checkbox.isChecked());
+                    userList.get(pos).setChecked(checkbox.isChecked());
 
-            }
-        });
+                }
+            });
+        }
     }
 
     // Return the size of the model list.
