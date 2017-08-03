@@ -25,11 +25,18 @@
 
         <!-- The welcome activity. -->
         <activity android:name=".WelcomeActivity" />
+
+        <!-- The login activity. -->
         <activity android:name=".LoginActivity" />
+
+        <!-- The register activity. -->
         <activity android:name=".RegisterActivity" />
+
+        <!-- The home activity. -->
         <activity
             android:name=".HomeActivity"
-            android:label="@string/title_activity_home" />
+            android:label="@string/title_activity_home"
+            android:windowSoftInputMode="adjustPan"/>
         <fragment android:name=".CreateGroupFragment"></fragment>
     </application>
 

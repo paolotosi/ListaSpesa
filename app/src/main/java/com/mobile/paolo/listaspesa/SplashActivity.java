@@ -16,6 +16,8 @@ import android.view.Window;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
+import com.mobile.paolo.listaspesa.utility.SharedPreferencesManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +25,9 @@ import static android.R.attr.animation;
 
 /*
  * -- SplashActivity --
- *  Animates a logo making it spinning on itself and coloring the background at the same time.
- *  Fades away once the animations are over.
+ * Flushes SharedPreferences.
+ * Animates a logo making it spinning on itself and coloring the background at the same time.
+ * Fades away once the animations are over.
  */
 
 
@@ -36,6 +39,9 @@ public class SplashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        // Delete SharedPreferences content
+        flushSharedPreferences();
 
         // Retrieve components by id
         logoBlue = (ImageView) findViewById(R.id.logo_blue);
@@ -123,5 +129,10 @@ public class SplashActivity extends Activity {
         // Remove this activity from stack after loading the new one
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent, options);
+    }
+
+    private void flushSharedPreferences()
+    {
+        SharedPreferencesManager.getInstance(getApplicationContext()).flush();
     }
 }

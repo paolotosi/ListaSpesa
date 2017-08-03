@@ -61,6 +61,16 @@ public class GlobalValuesManager
         return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_part_of_a_group));
     }
 
+    public void saveHasUserTemplates(boolean hasUserTemplates)
+    {
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_templates), hasUserTemplates);
+    }
+
+    public boolean hasUserTemplates()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_templates));
+    }
+
     public void saveLoggedUserGroup(Group group)
     {
         sharedPreferencesManager.writeString(context.getResources().getString(R.string.logged_user_group), group.toJSON().toString());

@@ -41,11 +41,11 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
         View itemLayoutView = null;
         if(visualizationMode == CREATION_MODE)
         {
-            itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.create_group_user_layout, null);
+            itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_create_group_user_layout, null);
         }
         if(visualizationMode == MANAGEMENT_MODE)
         {
-            itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.manage_group_user_layout, null);
+            itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_manage_group_user_layout, null);
         }
 
 

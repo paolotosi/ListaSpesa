@@ -1,7 +1,5 @@
 package com.mobile.paolo.listaspesa;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -12,23 +10,26 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.android.volley.VolleyError;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.Group;
 import com.mobile.paolo.listaspesa.model.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
     // The networkResponseHandler
-    private NetworkResponseHandler networkResponseHandler;
+    private NetworkResponseHandler groupResponseHandler;
+    private NetworkResponseHandler templateResponseHandler;
 
     // Response codes
     private static final int NETWORK_ERROR = 0;
@@ -41,9 +42,12 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         // Determine if logged user is already part of a group
+        // NOTE: it also contains the request to verify if the group has already defined some templates
         sendGetGroupDetailsRequest();
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationViewEx bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.home_bottom_navigation);
+        bottomNavigationView.enableShiftingMode(false);
+        bottomNavigationView.enableItemShiftingMode(false);
 
         bottomNavigationView.setOnNavigationItemSelectedListener
                 (new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -51,33 +55,43 @@ public class HomeActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         Fragment selectedFragment = null;
                         switch (item.getItemId()) {
-                            case R.id.action_item1:
-                                selectedFragment = ItemOneFragment.newInstance();
+                            case R.id.tab_supermarket:
+                                selectedFragment = new ItemOneFragment();
                                 break;
-                            case R.id.action_item2:
-                                selectedFragment = ItemTwoFragment.newInstance();
-                                break;
-                            case R.id.action_item3:
-                                if(isUserPartOfAGroup())
+                            case R.id.tab_templates:
+                                if(hasUserTemplates())
                                 {
-                                    selectedFragment = ManageGroupFragment.newInstance();
+                                    selectedFragment = new CreateTemplateFragment();
                                 }
                                 else
                                 {
-                                    selectedFragment = CreateGroupFragment.newInstance();
+                                    selectedFragment = new EmptyTemplateFragment();
+                                }
+                                break;
+                            case R.id.tab_list:
+                                selectedFragment = new ItemTwoFragment();
+                                break;
+                            case R.id.tab_group:
+                                if(isUserPartOfAGroup())
+                                {
+                                    selectedFragment = new ManageGroupFragment();
+                                }
+                                else
+                                {
+                                    selectedFragment = new CreateGroupFragment();
                                 }
                                 break;
                         }
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                        transaction.replace(R.id.frame_layout, selectedFragment);
+                        transaction.replace(R.id.home_main_content, selectedFragment);
                         transaction.commit();
                         return true;
                     }
                 });
 
-        //Manually displaying the first fragment - one time only
+        // Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, ItemOneFragment.newInstance());
+        transaction.replace(R.id.home_main_content, ItemOneFragment.newInstance());
         transaction.commit();
 
 
@@ -85,9 +99,9 @@ public class HomeActivity extends AppCompatActivity {
         //bottomNavigationView.getMenu().getItem(2).setChecked(true);
     }
 
-    private void setupNetworkResponseHandler()
+    private void setupGroupResponseHandler()
     {
-        this.networkResponseHandler = new NetworkResponseHandler() {
+        this.groupResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
                 // Debug
@@ -108,6 +122,7 @@ public class HomeActivity extends AppCompatActivity {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(false);
                             break;
                     }
+                    sendGetTemplatesRequest();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -124,7 +139,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void sendGetGroupDetailsRequest()
     {
-        setupNetworkResponseHandler();
+        setupGroupResponseHandler();
 
         User loggedUser = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser();
 
@@ -136,14 +151,96 @@ public class HomeActivity extends AppCompatActivity {
         JSONObject jsonPostParameters = new JSONObject(params);
 
         // Print parameters to console for debug purposes.
-        Log.d("JSON_LOGIN_PARAM", jsonPostParameters.toString());
+        Log.d("JSON_GET_GROUP_DETAILS", jsonPostParameters.toString());
 
-        GroupsDatabaseHelper.sendGetGroupDetailsRequest(jsonPostParameters, getApplicationContext(), networkResponseHandler);
+        GroupsDatabaseHelper.sendGetGroupDetailsRequest(jsonPostParameters, getApplicationContext(), groupResponseHandler);
     }
 
     private boolean isUserPartOfAGroup()
     {
         return GlobalValuesManager.getInstance(getApplicationContext()).isUserPartOfAGroup();
     }
+
+    private void setupTemplateResponseHandler()
+    {
+        this.templateResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    Log.d("TEMPLATE_RESPONSE", response.toString());
+                    if(response.getInt("success") == 1)
+                    {
+                        JSONArray templates = response.getJSONArray("templates");
+                        if(templates.length() == 0)
+                        {
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserTemplates(false);
+                        }
+                        else
+                        {
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserTemplates(true);
+                        }
+                    }
+                    else
+                    {
+                        GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserTemplates(false);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+
+            }
+        };
+    }
+
+    private void sendGetTemplatesRequest()
+    {
+        setupTemplateResponseHandler();
+
+        Integer groupID = -1;
+
+        if(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup() != null)
+        {
+            groupID = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID();
+        }
+
+        Map<String, String> params = new HashMap<>();
+        params.put("groupID", groupID.toString());
+
+        JSONObject jsonPostParameters = new JSONObject(params);
+
+        Log.d("JSON_TEMPLATES", jsonPostParameters.toString());
+
+        TemplatesDatabaseHelper.sendGetGroupTemplatesRequest(jsonPostParameters, getApplicationContext(), templateResponseHandler);
+
+    }
+
+    private boolean hasUserTemplates()
+    {
+        return GlobalValuesManager.getInstance(getApplicationContext()).hasUserTemplates();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

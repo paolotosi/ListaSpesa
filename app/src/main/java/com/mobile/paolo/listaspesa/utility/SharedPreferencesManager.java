@@ -30,6 +30,13 @@ public class SharedPreferencesManager
         return instance;
     }
 
+    public void flush()
+    {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.commit();
+    }
+
     public void writeString(String key, String value)
     {
         SharedPreferences.Editor editor = sharedPreferences.edit();

@@ -3,8 +3,9 @@
 
     <!-- SharedPreferences strings. -->
     <string name="logged_user">LOGGED_USER</string>
-    <string name="is_user_part_of_a_group">IS_USER_PART_OF_A_GROUP</string>
     <string name="logged_user_group">LOGGED_USER_GROUP</string>
+    <string name="is_user_part_of_a_group">IS_USER_PART_OF_A_GROUP</string>
+    <string name="has_user_templates">HAS_USER_TEMPLATES</string>
 
     <!-- WelcomeActivity strings. -->
     <string name="login_button">Accedi</string>
@@ -29,10 +30,13 @@
     <string name="ADDR_KEY">addr</string>
     <string name="insertion_OK">Utente aggiunto con successo!</string>
     <string name="insertion_KO">Si sono verificati problemi in fase di aggiunta.</string>
+
+    <!-- HomeActivity strings. -->
     <string name="title_activity_home">HomeActivity</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="tab_name_supermarket">Supermercati</string>
+    <string name="tab_name_templates">Template</string>
+    <string name="tab_name_list">Lista</string>
+    <string name="tab_name_group">Gruppo</string>
 
     <!-- CreateGroupActivity strings. -->
     <string name="group_name">Nome del gruppo</string>
@@ -41,11 +45,16 @@
     <string name="creation_KO_no_users">Seleziona almeno un utente.</string>
     <string name="remote_group_creation_error">Errore nella creazione del gruppo sul database.</string>
 
+    <!-- CreateTemplateFragment strings. -->
+    <string name="no_templates_message">Il tuo gruppo non ha ancora definito dei template.\nI template ti aiutano a creare più velocemente la lista della spesa.</string>
+    <string name="create_new_template_button">Crea nuovo template</string>
+
     <!-- Generic error strings. -->
     <string name="generic_error">Errore sconosciuto.</string>
     <string name="connection_error">Errore di connessione al database.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
 </resources>
