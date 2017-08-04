@@ -26,12 +26,6 @@ public class ManageGroupFragment extends Fragment {
     private List<User> groupMembersModelList = new ArrayList<>();
     private String groupName;
 
-    public static ManageGroupFragment newInstance()
-    {
-        ManageGroupFragment fragment = new ManageGroupFragment();
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {

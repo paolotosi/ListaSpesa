@@ -27,6 +27,12 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
+    // The fragments
+    private CreateGroupFragment createGroupFragment;
+    private ManageGroupFragment manageGroupFragment;
+    private EmptyTemplateFragment emptyTemplateFragment;
+    private CreateTemplateFragment createTemplateFragment;
+
     // The networkResponseHandler
     private NetworkResponseHandler groupResponseHandler;
     private NetworkResponseHandler templateResponseHandler;
@@ -52,36 +58,8 @@ public class HomeActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener
                 (new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        Fragment selectedFragment = null;
-                        switch (item.getItemId()) {
-                            case R.id.tab_supermarket:
-                                selectedFragment = new ItemOneFragment();
-                                break;
-                            case R.id.tab_templates:
-                                if(hasUserTemplates())
-                                {
-                                    selectedFragment = new CreateTemplateFragment();
-                                }
-                                else
-                                {
-                                    selectedFragment = new EmptyTemplateFragment();
-                                }
-                                break;
-                            case R.id.tab_list:
-                                selectedFragment = new ItemTwoFragment();
-                                break;
-                            case R.id.tab_group:
-                                if(isUserPartOfAGroup())
-                                {
-                                    selectedFragment = new ManageGroupFragment();
-                                }
-                                else
-                                {
-                                    selectedFragment = new CreateGroupFragment();
-                                }
-                                break;
-                        }
+                    public boolean onNavigationItemSelected(@NonNull MenuItem selectedTab) {
+                        Fragment selectedFragment = selectCorrectFragment(selectedTab);
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.home_main_content, selectedFragment);
                         transaction.commit();
@@ -223,8 +201,69 @@ public class HomeActivity extends AppCompatActivity {
         return GlobalValuesManager.getInstance(getApplicationContext()).hasUserTemplates();
     }
 
+    private Fragment selectCorrectFragment(MenuItem selectedTab)
+    {
+        Fragment selectedFragment = null;
+        switch (selectedTab.getItemId()) {
+            case R.id.tab_supermarket:
+                selectedFragment = new ItemOneFragment();
+                break;
+            case R.id.tab_templates:
+                selectedFragment = selectTemplateFragment();
+                break;
+            case R.id.tab_list:
+                selectedFragment = new ItemTwoFragment();
+                break;
+            case R.id.tab_group:
+                selectedFragment = selectGroupFragment();
+                break;
+        }
+        return selectedFragment;
+    }
 
+    private Fragment selectTemplateFragment()
+    {
+        Fragment selectedFragment;
+        if(hasUserTemplates())
+        {
+            if(createTemplateFragment == null)
+            {
+                createTemplateFragment = new CreateTemplateFragment();
+            }
+            selectedFragment = createTemplateFragment;
+        }
+        else
+        {
+            if(emptyTemplateFragment == null)
+            {
+                emptyTemplateFragment = new EmptyTemplateFragment();
+            }
+            selectedFragment = emptyTemplateFragment;
+        }
+        return selectedFragment;
+    }
 
+    private Fragment selectGroupFragment()
+    {
+        Fragment selectedFragment;
+        if(isUserPartOfAGroup())
+        {
+            if(manageGroupFragment == null)
+            {
+                manageGroupFragment = new ManageGroupFragment();
+            }
+            selectedFragment = manageGroupFragment;
+        }
+        else
+        {
+            if(createGroupFragment == null)
+            {
+                createGroupFragment = new CreateGroupFragment();
+            }
+            selectedFragment = createGroupFragment;
+        }
+        return selectedFragment;
+    }
 
 
 
