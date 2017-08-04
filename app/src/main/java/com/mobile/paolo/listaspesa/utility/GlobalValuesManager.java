@@ -3,8 +3,8 @@ package com.mobile.paolo.listaspesa.utility;
 import android.content.Context;
 
 import com.mobile.paolo.listaspesa.R;
-import com.mobile.paolo.listaspesa.model.Group;
-import com.mobile.paolo.listaspesa.model.User;
+import com.mobile.paolo.listaspesa.model.objects.Group;
+import com.mobile.paolo.listaspesa.model.objects.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;

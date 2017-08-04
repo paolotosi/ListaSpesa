@@ -13,8 +13,8 @@ import com.android.volley.VolleyError;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.TemplatesDatabaseHelper;
-import com.mobile.paolo.listaspesa.model.Group;
-import com.mobile.paolo.listaspesa.model.User;
+import com.mobile.paolo.listaspesa.model.objects.Group;
+import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 

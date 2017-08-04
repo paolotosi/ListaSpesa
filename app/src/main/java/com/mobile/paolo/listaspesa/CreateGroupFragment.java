@@ -1,7 +1,5 @@
 package com.mobile.paolo.listaspesa;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -17,8 +15,8 @@ import android.widget.ListView;
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
-import com.mobile.paolo.listaspesa.model.User;
-import com.mobile.paolo.listaspesa.model.UserCardViewDataAdapter;
+import com.mobile.paolo.listaspesa.model.objects.User;
+import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 

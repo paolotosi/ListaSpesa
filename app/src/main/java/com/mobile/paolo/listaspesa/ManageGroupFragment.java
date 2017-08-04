@@ -10,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mobile.paolo.listaspesa.model.Group;
-import com.mobile.paolo.listaspesa.model.User;
-import com.mobile.paolo.listaspesa.model.UserCardViewDataAdapter;
+import com.mobile.paolo.listaspesa.model.objects.Group;
+import com.mobile.paolo.listaspesa.model.objects.User;
+import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 
 import java.util.ArrayList;

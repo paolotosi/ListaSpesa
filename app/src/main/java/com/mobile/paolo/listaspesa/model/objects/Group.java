@@ -1,4 +1,4 @@
-package com.mobile.paolo.listaspesa.model;
+package com.mobile.paolo.listaspesa.model.objects;
 
 import org.json.JSONArray;
 import org.json.JSONException;

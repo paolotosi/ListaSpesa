@@ -1,6 +1,5 @@
 package com.mobile.paolo.listaspesa;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
@@ -13,7 +12,7 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
-import com.mobile.paolo.listaspesa.model.Group;
+import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 

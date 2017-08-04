@@ -12,7 +12,7 @@ import android.widget.EditText;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
-import com.mobile.paolo.listaspesa.model.User;
+import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 

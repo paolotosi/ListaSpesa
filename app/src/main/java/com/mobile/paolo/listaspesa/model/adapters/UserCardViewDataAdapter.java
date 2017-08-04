@@ -1,4 +1,4 @@
-package com.mobile.paolo.listaspesa.model;
+package com.mobile.paolo.listaspesa.model.adapters;
 
 import java.util.List;
 
@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.model.objects.User;
 
 
 /**
