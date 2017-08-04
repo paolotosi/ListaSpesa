@@ -32,6 +32,9 @@
         <!-- The register activity. -->
         <activity android:name=".RegisterActivity" />
 
+        <!-- The edit group activity. -->
+        <activity android:name=".EditGroupActivity" />
+
         <!-- The home activity. -->
         <activity
             android:name=".HomeActivity"

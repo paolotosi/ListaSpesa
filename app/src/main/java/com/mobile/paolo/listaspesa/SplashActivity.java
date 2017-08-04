@@ -127,8 +127,9 @@ public class SplashActivity extends Activity {
         Bundle options = ActivityOptions.makeSceneTransitionAnimation(this, pairs.toArray(new Pair[pairs.size()])).toBundle();
         Intent intent = new Intent(SplashActivity.this, WelcomeActivity.class);
         // Remove this activity from stack after loading the new one
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent, options);
+        finish();
     }
 
     private void flushSharedPreferences()

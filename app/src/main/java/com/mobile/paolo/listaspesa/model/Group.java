@@ -14,20 +14,20 @@ import java.util.List;
 public class Group
 {
     private int id;
-    private String groupName;
+    private String name;
     private List<User> members;
 
     public Group(int id, String groupName, List<User> members)
     {
         this.id = id;
-        this.groupName = groupName;
+        this.name = groupName;
         this.members = members;
     }
 
     public Group(int id, String groupName, JSONArray members)
     {
         this.id = id;
-        this.groupName = groupName;
+        this.name = groupName;
         this.members = new ArrayList<>();
         for(int i = 0; i<members.length(); i++)
         {
@@ -61,7 +61,7 @@ public class Group
         JSONObject jsonGroup = new JSONObject();
         try {
             jsonGroup.put("groupID", this.id);
-            jsonGroup.put("groupName", this.groupName);
+            jsonGroup.put("groupName", this.name);
             JSONArray members = new JSONArray();
             for(int i = 0; i<this.members.size(); i++)
             {
@@ -84,14 +84,14 @@ public class Group
         this.id = id;
     }
 
-    public String getGroupName()
+    public String getName()
     {
-        return this.groupName;
+        return this.name;
     }
 
-    public void setGroupName(String groupName)
+    public void setName(String groupName)
     {
-        this.groupName = groupName;
+        this.name = groupName;
     }
 
     public List<User> getMembers()

@@ -1,7 +1,6 @@
 package com.mobile.paolo.listaspesa;
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
@@ -10,9 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
 
 import com.mobile.paolo.listaspesa.model.Group;
 import com.mobile.paolo.listaspesa.model.User;
@@ -47,16 +43,20 @@ public class ManageGroupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         // Load fragment.
-        View loadedFragment = inflater.inflate(R.layout.fragment_manage_group, container, false);
+        return inflater.inflate(R.layout.fragment_manage_group, container, false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         loadGroupInfo();
 
-        setupToolbar(loadedFragment);
+        setupToolbar(this.getView());
 
-        setupRecyclerView(loadedFragment);
+        setupEditButtonListener(this.getView());
 
-
-        return loadedFragment;
+        setupRecyclerView(this.getView());
     }
 
     private void setupRecyclerView(View loadedFragment)
@@ -77,15 +77,12 @@ public class ManageGroupFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         adapter.notifyDataSetChanged();
-
-
-
     }
 
     private void loadGroupInfo()
     {
         Group userGroup = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup();
-        groupName = userGroup.getGroupName();
+        groupName = userGroup.getName();
         groupMembersModelList = userGroup.getMembers();
     }
 
@@ -94,6 +91,19 @@ public class ManageGroupFragment extends Fragment {
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) loadedFragment.findViewById(R.id.collapsingToolbarGroup);
         collapsingToolbarLayout.setTitle(groupName);
     }
+
+    private void setupEditButtonListener(View loadedFragment)
+    {
+        loadedFragment.findViewById(R.id.editGroupFAB).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), EditGroupActivity.class);
+                intent.putExtra("groupName", groupName);
+                startActivity(intent);
+            }
+        });
+    }
+
 
 
 }
