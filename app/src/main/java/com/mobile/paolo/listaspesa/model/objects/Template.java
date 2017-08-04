@@ -73,5 +73,40 @@ public class Template
         return jsonTemplate;
     }
 
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public Integer getGroupID()
+    {
+        return this.groupID;
+    }
+
+    public void setGroupID(Integer groupID)
+    {
+        this.groupID = groupID;
+    }
+
+    public List<Product> getProductList()
+    {
+        return this.productList;
+    }
+
+    public void setProductList(List<Product> productList)
+    {
+        this.productList = productList;
+    }
+
+
+
+
+
+
 
 }

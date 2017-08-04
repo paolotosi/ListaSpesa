@@ -4,10 +4,15 @@ import android.content.Context;
 
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.objects.Group;
+import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.model.objects.User;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class manages the access to a small number of global variables, such ad the logged user.
@@ -86,6 +91,40 @@ public class GlobalValuesManager
             e.printStackTrace();
         }
         return loggedUserGroup;
+    }
+
+    public void saveUserTemplates(List<Template> templateList)
+    {
+        JSONArray jsonTemplateList = new JSONArray();
+        for(int i = 0; i < templateList.size(); i++)
+        {
+            try {
+                jsonTemplateList.put(i, templateList.get(i).toJSON());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_templates), jsonTemplateList.toString());
+    }
+
+    public void saveUserTemplates(JSONArray jsonTemplateList)
+    {
+        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_templates), jsonTemplateList.toString());
+    }
+
+    public List<Template> getUserTemplates()
+    {
+        List<Template> templateList = new ArrayList<>();
+        try {
+            JSONArray jsonTemplateList = new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.logged_user_templates)));
+            for(int i = 0; i < jsonTemplateList.length(); i++)
+            {
+                templateList.add(Template.fromJSON(jsonTemplateList.getJSONObject(i)));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return templateList;
     }
 
 }

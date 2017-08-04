@@ -4,6 +4,7 @@
     <!-- SharedPreferences strings. -->
     <string name="logged_user">LOGGED_USER</string>
     <string name="logged_user_group">LOGGED_USER_GROUP</string>
+    <string name="logged_user_templates">LOGGED_USER_TEMPLATES</string>
     <string name="is_user_part_of_a_group">IS_USER_PART_OF_A_GROUP</string>
     <string name="has_user_templates">HAS_USER_TEMPLATES</string>
 

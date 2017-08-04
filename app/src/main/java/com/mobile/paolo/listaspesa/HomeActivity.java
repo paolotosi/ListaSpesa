@@ -156,6 +156,7 @@ public class HomeActivity extends AppCompatActivity {
                         else
                         {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserTemplates(true);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveUserTemplates(templates);
                         }
                     }
                     else
