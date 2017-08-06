@@ -1,4 +1,4 @@
-package com.mobile.paolo.listaspesa;
+package com.mobile.paolo.listaspesa.view.home.template;
 
 
 import android.os.Bundle;
@@ -7,10 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mobile.paolo.listaspesa.R;
+
 
 /**
- * A simple {@link Fragment} subclass.
+ * -- EmptyTemplateFragment --
+ * An empty state shown when the user selects the "Template" tab but his group hasn't defined
+ * any template yet.
+ * It has a button that guides the user to the template creation section.
  */
+
 public class EmptyTemplateFragment extends Fragment
 {
     @Override

@@ -1,18 +1,20 @@
-package com.mobile.paolo.listaspesa;
+package com.mobile.paolo.listaspesa.view.home.group;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ListView;
 
 import com.android.volley.VolleyError;
+import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.User;
@@ -27,6 +29,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * -- CreateGroupFragment --
+ * This fragment is loaded when the user wants to create a group.
+ * Specifically, it's loaded when the user selects the tab "Gruppo" and he's not part of any group.
+ * It has a text field for the group name.
+ * It shows the list of all users (except the logged one); each user as a checkbox.
+ * In order to create a group, the user enters a name and checks all the users he wants to add.
+ * When he's done, it touches the floating action button in order to confirm.
+ */
+
 public class CreateGroupFragment extends Fragment
 {
     // JSON tags
@@ -40,21 +52,14 @@ public class CreateGroupFragment extends Fragment
     private static final int CONNECTION_ERROR = 4;
     private static final int REMOTE_ERROR = 5;
 
+    // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private ListView listView;
     private ArrayList<User> userModelList = new ArrayList<>();
-    private ArrayList<String> userList = new ArrayList<>();
-    private ArrayList<String> selectedUserList = new ArrayList<>();
-    private NetworkResponseHandler networkResponseHandler;
-    private UsersDatabaseHelper usersDatabaseHelper;
 
-    public static CreateGroupFragment newInstance()
-    {
-        CreateGroupFragment fragment = new CreateGroupFragment();
-        return fragment;
-    }
+    // Network response logic
+    private NetworkResponseHandler fetchUsersResponseHandler;
+    private NetworkResponseHandler createGroupResponseHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,14 +72,17 @@ public class CreateGroupFragment extends Fragment
         // Load fragment.
         View loadedFragment = inflater.inflate(R.layout.fragment_create_group, container, false);
 
+        // Setup toolbar
+        setupToolbar(loadedFragment);
+
         // Initialize the RecyclerView.
         setupRecyclerView(loadedFragment);
 
-        // Define what to do when the server response is received.
-        setupNetworkMessageHandler();
+        // Define what to do when the server response to get all users is received.
+        setupFetchUsersResponseHandler();
 
         // Send the network request to get all users.
-        UsersDatabaseHelper.sendGetAllUsersRequest(getActivity().getApplicationContext(), networkResponseHandler);
+        UsersDatabaseHelper.sendGetAllUsersRequest(getActivity().getApplicationContext(), fetchUsersResponseHandler);
 
         // Setup the confirm button listener.
         setupConfirmButtonListener(loadedFragment);
@@ -82,9 +90,9 @@ public class CreateGroupFragment extends Fragment
         return loadedFragment;
     }
 
-    private void setupNetworkMessageHandler()
+    private void setupFetchUsersResponseHandler()
     {
-        this.networkResponseHandler = new NetworkResponseHandler() {
+        this.fetchUsersResponseHandler = new NetworkResponseHandler() {
 
             @Override
             public void onSuccess(JSONObject jsonResponse) {
@@ -132,14 +140,9 @@ public class CreateGroupFragment extends Fragment
         fragment.findViewById(R.id.confirmButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkSelectedItems(fragment);
+                sendCreateGroupRequest(fragment);
             }
         });
-    }
-
-    private void checkSelectedItems(View fragment)
-    {
-        sendCreateGroupRequest(fragment);
     }
 
     private void sendCreateGroupRequest(View fragment)
@@ -169,11 +172,10 @@ public class CreateGroupFragment extends Fragment
             JSONArray selectedIDs = new JSONArray();
 
             // The first one is the logged user
-            //selectedIDs.put(0, getLoggedUser().getId());
             User loggedUser = GlobalValuesManager.getInstance(getContext()).getLoggedUser();
             selectedIDs.put(0, loggedUser.getId());
 
-            // userList will be used to store checkbox-selected users
+            // Get the user list
             List<User> userList = ((UserCardViewDataAdapter) adapter).getUserList();
 
             // For each user in the list, if he's checked add him to selectedIDs
@@ -187,6 +189,7 @@ public class CreateGroupFragment extends Fragment
                     pos++;
                 }
             }
+
             // Add all IDs in JSON
             jsonRequest.put("selectedUsers", selectedIDs);
 
@@ -196,7 +199,19 @@ public class CreateGroupFragment extends Fragment
         // Debug JSON
         Log.d("Json request", jsonRequest.toString());
 
-        NetworkResponseHandler createGroupLogic = new NetworkResponseHandler() {
+        // Define what to do on server response
+        setupCreateGroupResponseHandler();
+
+        if(okToSend)
+        {
+            GroupsDatabaseHelper.sendCreateGroupRequest(jsonRequest, getContext(), createGroupResponseHandler);
+        }
+
+    }
+
+    private void setupCreateGroupResponseHandler()
+    {
+        this.createGroupResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
                 // Debug
@@ -222,12 +237,6 @@ public class CreateGroupFragment extends Fragment
 
             }
         };
-
-        if(okToSend)
-        {
-            GroupsDatabaseHelper.sendCreateGroupRequest(jsonRequest, getContext(), createGroupLogic);
-        }
-
     }
 
     private void setupRecyclerView(View loadedFragment)
@@ -246,6 +255,13 @@ public class CreateGroupFragment extends Fragment
 
         // set the adapter object to the Recyclerview
         recyclerView.setAdapter(adapter);
+    }
+
+    private void setupToolbar(View loadedFragment)
+    {
+        Toolbar toolbar = (Toolbar) loadedFragment.findViewById(R.id.createGroupToolbar);
+        toolbar.setTitle(getString(R.string.create_group_toolbar));
+        toolbar.setTitleTextColor(0xFFFFFFFF);
     }
 
     private void showFeedback(int feedbackCode)

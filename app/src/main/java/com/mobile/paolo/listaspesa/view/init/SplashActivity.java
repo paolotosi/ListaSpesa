@@ -1,29 +1,19 @@
-package com.mobile.paolo.listaspesa;
+package com.mobile.paolo.listaspesa.view.init;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.transition.Fade;
-import android.transition.Transition;
-import android.util.Pair;
 import android.view.View;
-import android.view.Window;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
+import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.utility.SharedPreferencesManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.R.attr.animation;
-
-/*
+/**
  * -- SplashActivity --
  * Flushes SharedPreferences.
  * Animates a logo making it spinning on itself and coloring the background at the same time.
@@ -33,7 +23,7 @@ import static android.R.attr.animation;
 
 public class SplashActivity extends Activity {
 
-    ImageView logoBlue, logoWhite;
+    private ImageView logoBlue, logoWhite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +45,7 @@ public class SplashActivity extends Activity {
         });
     }
 
-    public void rotateLogoAndColorBackground()
+    private void rotateLogoAndColorBackground()
     {
         final int aSecond = 1000;
         final float fullCircle = 360f;
@@ -74,25 +64,12 @@ public class SplashActivity extends Activity {
         });
 
         // colorAnimator colors the background from white to colorPrimary in a second
-        ValueAnimator colorAnimator = ValueAnimator.ofArgb(Color.parseColor("#FFFFFF"), Color.parseColor("#3F51B5"));
+        ValueAnimator colorAnimator = ValueAnimator.ofArgb(Color.parseColor("#FFFFFF"), Color.parseColor("#303F9F"));
         colorAnimator.setDuration(aSecond);
         colorAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 findViewById(R.id.splashView).setBackgroundColor((Integer) animation.getAnimatedValue());
-            }
-        });
-
-        // When the second animation finishes, the transition is started
-        colorAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                TranslateAnimation animationCleaner = new TranslateAnimation(0.0f, 0.0f, 0.0f, 0.0f);
-                animationCleaner.setDuration(aSecond);
-                findViewById(R.id.splashView).startAnimation(animationCleaner);
-                findViewById(R.id.splashView).startAnimation(animationCleaner);
-                transitionToNextActivity();
             }
         });
 
@@ -105,30 +82,25 @@ public class SplashActivity extends Activity {
             }
         });
 
+        colorAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                transitionToNextActivity();
+            }
+        });
+
         // Start the animations
         rotationAnimator.start();
         colorAnimator.start();
         opacityAnimator.start();
     }
 
-    public void transitionToNextActivity()
-    {
-        // Shared element transition
-        View statusBar = findViewById(android.R.id.statusBarBackground);
-        View navigationBar = findViewById(android.R.id.navigationBarBackground);
-        View background = findViewById(android.R.id.background);
-        Pair sharedElements = new Pair<View, String>(logoWhite, "logo_shared");
-        List<Pair<View, String>> pairs = new ArrayList<>();
-        pairs.add(Pair.create(statusBar, Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME));
-        pairs.add(Pair.create(navigationBar, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME));
-        //pairs.add(Pair.create(background, "Background"));
-        pairs.add(sharedElements);
 
-        Bundle options = ActivityOptions.makeSceneTransitionAnimation(this, pairs.toArray(new Pair[pairs.size()])).toBundle();
+    private void transitionToNextActivity()
+    {
         Intent intent = new Intent(SplashActivity.this, WelcomeActivity.class);
-        // Remove this activity from stack after loading the new one
-        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent, options);
+        startActivity(intent);
         finish();
     }
 

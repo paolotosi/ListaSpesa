@@ -40,7 +40,8 @@
     <string name="tab_name_group">Gruppo</string>
 
     <!-- CreateGroupActivity strings. -->
-    <string name="group_name">Nome del gruppo</string>
+    <string name="group_name_hint">Inserisci il nome del gruppo…</string>
+    <string name="create_group_toolbar">Crea gruppo</string>
     <string name="creation_OK">Gruppo creato con successo!</string>
     <string name="creation_KO_no_name">Inserisci il nome del gruppo.</string>
     <string name="creation_KO_no_users">Seleziona almeno un utente.</string>
@@ -53,9 +54,12 @@
     <string name="same_name_warning">Il nome inserito è identico al precedente.</string>
     <string name="success_feedback">Modifica avvenuta con successo!</string>
 
-    <!-- CreateTemplateFragment strings. -->
+    <!-- EmptyTemplateFragment strings. -->
     <string name="no_templates_message">Il tuo gruppo non ha ancora definito dei template.\nI template ti aiutano a creare più velocemente la lista della spesa.</string>
     <string name="create_new_template_button">Crea nuovo template</string>
+
+    <!-- ManageTemplateFragment strings. -->
+    <string name="manage_fragment_toolbar">I tuoi template</string>
 
     <!-- Generic error strings. -->
     <string name="generic_error">Errore sconosciuto.</string>

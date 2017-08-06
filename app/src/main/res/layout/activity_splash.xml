@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mobile.paolo.listaspesa.SplashActivity"
+    tools:context="com.mobile.paolo.listaspesa.view.init.SplashActivity"
     android:id="@+id/splashView">
 
     <ImageView

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.mobile.paolo.listaspesa.CreateTemplateFragment">
+    tools:context="com.mobile.paolo.listaspesa.view.home.template.ManageTemplateFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,14 +11,11 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar2"
+            android:id="@+id/manageTemplateToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
-            android:title="Toolbar"
-            android:titleTextColor="@color/white"/>
+            android:minHeight="?attr/actionBarSize" />
 
         <SearchView
             android:layout_width="match_parent"

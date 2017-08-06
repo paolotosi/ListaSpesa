@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.widget.FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/registerLayout"
-    tools:context="com.mobile.paolo.listaspesa.RegisterActivity">
+    tools:context="com.mobile.paolo.listaspesa.view.auth.RegisterActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,8 +12,7 @@
         android:orientation="vertical"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true">
+        android:layout_gravity="center">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/usernameInputLayout"
@@ -63,6 +62,7 @@
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:elevation="@dimen/button_elevation"
             android:layout_marginTop="70dp"
             android:background="@color/colorPrimary"
             android:text="@string/register_button"
@@ -70,4 +70,12 @@
 
     </LinearLayout>
 
-</android.widget.RelativeLayout>
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:src="@drawable/ic_shopping_cart_blue_64dp"
+        android:transitionName="logo_shared"/>
+
+</android.widget.FrameLayout>

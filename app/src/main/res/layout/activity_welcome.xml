@@ -4,61 +4,72 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
-    tools:context="com.mobile.paolo.listaspesa.WelcomeActivity"
+    tools:context="com.mobile.paolo.listaspesa.view.init.WelcomeActivity"
     >
 
-
-    <!-- Welcome message. -->
     <LinearLayout
+        android:id="@+id/mainWelcomeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="48dp">
+        android:alpha="0">
 
-        <TextView
+        <!-- Welcome message. -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/welcome_message_top"
-            android:textSize="40sp" />
-        <TextView
+            android:orientation="vertical"
+            android:padding="48dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/welcome_message_top"
+                android:textSize="40sp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/welcome_message_detail"
+                android:padding="10dp"
+                android:textSize="18sp"/>
+
+        </LinearLayout>
+
+        <!-- Login/register buttons. -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/welcome_message_detail"
-            android:padding="10dp"
-            android:textSize="18sp"/>
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:padding="48dp">
+
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="@dimen/button_elevation"
+                android:text="@string/login_button"/>
+
+            <Button
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="@dimen/button_elevation"
+                android:text="@string/register_button"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Login/register buttons. -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center"
-        android:padding="48dp">
-
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/login_button"/>
-
-        <Button
-            android:id="@+id/btnRegister"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/register_button"/>
-
-    </LinearLayout>
 
     <!-- Logo inherited from transition. -->
     <ImageView
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
+        android:layout_gravity="center"
         android:src="@drawable/ic_shopping_cart_white_64dp"
         android:transitionName="logo_shared"/>
 

@@ -1,5 +1,8 @@
-package com.mobile.paolo.listaspesa;
+package com.mobile.paolo.listaspesa.view.auth;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -9,12 +12,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.android.volley.VolleyError;
+import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.view.home.HomeActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin;
     private EditText usernameField, passwordField;
     private TextInputLayout usernameInputLayout, passwordInputLayout;
+    private ImageView logo;
 
     // NetworkResponseHandler & UsersDatabaseHelper
     private NetworkResponseHandler networkResponseHandler;
@@ -57,6 +64,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        enteringAnimation();
+
         initializeWidgets();
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +79,64 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.back_slide_in, R.anim.back_slide_out);
+    }
+
+    private void enteringAnimation()
+    {
+        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+
+        logo = (ImageView) findViewById(R.id.logo);
+
+        float startPositionX = -750;
+        float endPositionX = 0;
+        int duration = 500;
+
+        ValueAnimator motionAnimator = ValueAnimator.ofFloat(startPositionX, endPositionX);
+        motionAnimator.setDuration(duration);
+
+        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                logo.setTranslationX((float) animation.getAnimatedValue());
+            }
+        });
+
+        motionAnimator.start();
+    }
+
+    private void transitionToNextActivity()
+    {
+        logo = (ImageView) findViewById(R.id.logo);
+
+        float startPositionX = 0;
+        float endPositionX = 750;
+        int duration = 500;
+
+        ValueAnimator motionAnimator = ValueAnimator.ofFloat(startPositionX, endPositionX);
+        motionAnimator.setDuration(duration);
+
+        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                logo.setTranslationX((float) animation.getAnimatedValue());
+            }
+        });
+
+        motionAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                goHome();
+            }
+        });
+
+        motionAnimator.start();
     }
 
     private void initializeWidgets()
@@ -119,7 +186,7 @@ public class LoginActivity extends AppCompatActivity {
             {
                 showFeedback(LOGIN_OK);
                 GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUser(user);
-                goHome();
+                transitionToNextActivity();
             }
             else
             {

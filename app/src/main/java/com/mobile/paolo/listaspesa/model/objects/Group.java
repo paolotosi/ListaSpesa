@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by paolo on 01/08/17.
+ * An object that represents a group.
+ * A group is defined by an ID, a name and a list of members.
  */
 
 public class Group

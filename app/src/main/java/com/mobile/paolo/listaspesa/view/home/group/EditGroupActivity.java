@@ -1,4 +1,4 @@
-package com.mobile.paolo.listaspesa;
+package com.mobile.paolo.listaspesa.view.home.group;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,10 +11,12 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.view.home.HomeActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,8 +26,11 @@ import java.util.Map;
 
 
 /**
-
+ * -- EditGroupActivity --
+ * This activity is loaded when the user selects the edit button in ManageGroupFragment.
+ * It allows the user to change the group name.
  */
+
 public class EditGroupActivity extends AppCompatActivity
 {
     // Network response status
@@ -66,6 +71,7 @@ public class EditGroupActivity extends AppCompatActivity
 
     private void initializeButtonListeners()
     {
+        // If the insertion is ok, send the update request to the database.
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,6 +95,7 @@ public class EditGroupActivity extends AppCompatActivity
             }
         });
 
+        // If "Annulla" is clicked, return home.
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,6 +104,7 @@ public class EditGroupActivity extends AppCompatActivity
         });
     }
 
+    // Define what to do after the update request has been handled by the server.
     private void setupModifyNameResponseHandler()
     {
         this.modifyNameResponseHandler = new NetworkResponseHandler() {
@@ -105,6 +113,7 @@ public class EditGroupActivity extends AppCompatActivity
                 try {
                     if(response.getInt("success") == TAG_SUCCESS)
                     {
+                        // Everything is ok, show a toast to inform the user
                         Toast.makeText(getApplicationContext(), getString(R.string.success_feedback), Toast.LENGTH_LONG).show();
                         updateSharedPreferences();
                         returnHome();
@@ -121,6 +130,7 @@ public class EditGroupActivity extends AppCompatActivity
         };
     }
 
+    // Verify that the insertion isn't empty / the same name
     private boolean isInsertionValid()
     {
         boolean isValid = true;
@@ -147,6 +157,7 @@ public class EditGroupActivity extends AppCompatActivity
         finish();
     }
 
+    // After the name is changed, the group info saved needs to be updated
     private void updateSharedPreferences()
     {
         Group group = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup();

@@ -1,4 +1,4 @@
-package com.mobile.paolo.listaspesa;
+package com.mobile.paolo.listaspesa.view.home;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,12 +11,17 @@ import android.view.MenuItem;
 
 import com.android.volley.VolleyError;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
+import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
+import com.mobile.paolo.listaspesa.view.home.template.EmptyTemplateFragment;
+import com.mobile.paolo.listaspesa.view.home.template.ManageTemplateFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,15 +30,30 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * -- HomeActivity --
+ * The central activity in the application.
+ * It's based on a bottom bar navigation layout: when the user selects a tab, the
+ * view is updated by loading the corresponding fragment.
+ * Each tab has different fragments, for example the "Gruppo" tab has a creation and management view.
+ * This calls for the necessity of contextualizing the application before setting up the tabs.
+ * We need to know:
+ * - which user is logged
+ * - if he's already part of a group
+ * - if his group has already defined some templates
+ * This info is gathered from the database as soon as the activity is loaded and saved in
+ * SharedPreferences for future uses.
+ */
+
 public class HomeActivity extends AppCompatActivity {
 
     // The fragments
     private CreateGroupFragment createGroupFragment;
     private ManageGroupFragment manageGroupFragment;
     private EmptyTemplateFragment emptyTemplateFragment;
-    private CreateTemplateFragment createTemplateFragment;
+    private ManageTemplateFragment manageTemplateFragment;
 
-    // The networkResponseHandler
+    // The networkResponseHandlers
     private NetworkResponseHandler groupResponseHandler;
     private NetworkResponseHandler templateResponseHandler;
 
@@ -43,14 +63,31 @@ public class HomeActivity extends AppCompatActivity {
     private static final int USER_DOESNT_HAVE_GROUP = 2;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_home);
 
+        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+
+        // Determine the context: logged user, group, templates...
+        contextualize();
+
+        // From here on out, everything is handled by the bottom navigation listener
+        setupBottomNavigationView();
+    }
+
+    private void contextualize()
+    {
         // Determine if logged user is already part of a group
         // NOTE: it also contains the request to verify if the group has already defined some templates
+        // The second request has to be sent only after the first is finished.
         sendGetGroupDetailsRequest();
+    }
 
+    private void setupBottomNavigationView()
+    {
         BottomNavigationViewEx bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.home_bottom_navigation);
         bottomNavigationView.enableShiftingMode(false);
         bottomNavigationView.enableItemShiftingMode(false);
@@ -91,17 +128,18 @@ public class HomeActivity extends AppCompatActivity {
                     {
                         case NETWORK_ERROR: break;
                         case USER_HAS_GROUP:
-                            // Create group from response
+                            // Create group from response and updated SharedPreferences
                             GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(true);
                             Group group = new Group(response.getInt("groupID"), response.getString("groupName"), response.getJSONArray("members"));
                             GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUserGroup(group);
+                            // Query for templates only if the user has a group.
+                            // The request needs to be sent now, otherwise we don't know the group ID!
+                            sendGetTemplatesRequest();
                             break;
                         case USER_DOESNT_HAVE_GROUP:
                             GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(false);
                             break;
                     }
-                    sendGetTemplatesRequest();
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -115,6 +153,7 @@ public class HomeActivity extends AppCompatActivity {
         };
     }
 
+    // Determine if a user is part of a group; in that case, fetch the group details, including the templates
     private void sendGetGroupDetailsRequest()
     {
         setupGroupResponseHandler();
@@ -148,6 +187,7 @@ public class HomeActivity extends AppCompatActivity {
                     Log.d("TEMPLATE_RESPONSE", response.toString());
                     if(response.getInt("success") == 1)
                     {
+                        // Determine if the group has templates and update the SharedPreferences accordingly
                         JSONArray templates = response.getJSONArray("templates");
                         if(templates.length() == 0)
                         {
@@ -177,6 +217,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void sendGetTemplatesRequest()
     {
+        // Define what to do on response
         setupTemplateResponseHandler();
 
         Integer groupID = -1;
@@ -186,13 +227,17 @@ public class HomeActivity extends AppCompatActivity {
             groupID = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID();
         }
 
+        // The POST parameters
         Map<String, String> params = new HashMap<>();
         params.put("groupID", groupID.toString());
 
+        // Encapsulate in JSON
         JSONObject jsonPostParameters = new JSONObject(params);
 
+        // Debug
         Log.d("JSON_TEMPLATES", jsonPostParameters.toString());
 
+        // Send request
         TemplatesDatabaseHelper.sendGetGroupTemplatesRequest(jsonPostParameters, getApplicationContext(), templateResponseHandler);
 
     }
@@ -202,6 +247,7 @@ public class HomeActivity extends AppCompatActivity {
         return GlobalValuesManager.getInstance(getApplicationContext()).hasUserTemplates();
     }
 
+    // Define which fragment to load based on context
     private Fragment selectCorrectFragment(MenuItem selectedTab)
     {
         Fragment selectedFragment = null;
@@ -227,11 +273,11 @@ public class HomeActivity extends AppCompatActivity {
         Fragment selectedFragment;
         if(hasUserTemplates())
         {
-            if(createTemplateFragment == null)
+            if(manageTemplateFragment == null)
             {
-                createTemplateFragment = new CreateTemplateFragment();
+                manageTemplateFragment = new ManageTemplateFragment();
             }
-            selectedFragment = createTemplateFragment;
+            selectedFragment = manageTemplateFragment;
         }
         else
         {

@@ -7,7 +7,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- * Created by paolo on 04/07/17.
+ * An object that represents a user.
+ * A user is defined by a numeric ID, a username, a password and an address.
+ * The object also as a field used to select it when the user is shown in lists.
  */
 
 public class User implements Serializable

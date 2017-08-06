@@ -1,4 +1,4 @@
-package com.mobile.paolo.listaspesa;
+package com.mobile.paolo.listaspesa.view.home.group;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
@@ -18,6 +19,11 @@ import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * -- ManageGroupActivity --
+ * This fragment is loaded when the user select the "Gruppo" tab and he's already part of a group.
+ * It shows the group info (name and members) and offers an Edit button.
+ */
 
 public class ManageGroupFragment extends Fragment {
 

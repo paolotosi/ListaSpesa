@@ -15,7 +15,7 @@
 
         <!-- The splash activity. -->
         <!-- It's the first activity loaded. -->
-        <activity android:name=".SplashActivity">
+        <activity android:name=".view.init.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,20 +24,20 @@
         </activity>
 
         <!-- The welcome activity. -->
-        <activity android:name=".WelcomeActivity" />
+        <activity android:name=".view.init.WelcomeActivity" />
 
         <!-- The login activity. -->
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".view.auth.LoginActivity" />
 
         <!-- The register activity. -->
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".view.auth.RegisterActivity" />
 
         <!-- The edit group activity. -->
-        <activity android:name=".EditGroupActivity" />
+        <activity android:name=".view.home.group.EditGroupActivity" />
 
         <!-- The home activity. -->
         <activity
-            android:name=".HomeActivity"
+            android:name=".view.home.HomeActivity"
             android:label="@string/title_activity_home"
             android:windowSoftInputMode="adjustPan"/>
         <fragment android:name=".CreateGroupFragment"></fragment>

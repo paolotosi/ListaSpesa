@@ -18,13 +18,15 @@
  *
  */
 
-package com.mobile.paolo.listaspesa;
+package com.mobile.paolo.listaspesa.view.home;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.mobile.paolo.listaspesa.R;
 
 public class ItemOneFragment extends Fragment {
     public static ItemOneFragment newInstance() {

@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by paolo on 04/08/17.
+ * An object that represents a template.
+ * A template is defined by its name, the ID of the group that created it and by a list of products.
  */
 
 public class Template

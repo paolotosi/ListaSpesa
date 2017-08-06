@@ -6,7 +6,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 /**
- * Created by paolo on 04/08/17.
+ * An object that represents a product.
+ * A product is defined by its name, its brand and (eventually) its description.
  */
 
 public class Product

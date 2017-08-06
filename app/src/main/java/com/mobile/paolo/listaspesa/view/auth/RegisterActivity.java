@@ -1,6 +1,10 @@
-package com.mobile.paolo.listaspesa;
+package com.mobile.paolo.listaspesa.view.auth;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -9,12 +13,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.android.volley.VolleyError;
+import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.view.home.HomeActivity;
 
 
 import org.json.JSONException;
@@ -36,6 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister;
     private EditText usernameField, passwordField, addressField;
     private TextInputLayout usernameInputLayout, passwordInputLayout, addressInputLayout;
+    private ImageView logo;
 
     // The NetworkResponseHandler
     NetworkResponseHandler networkResponseHandler;
@@ -51,6 +59,10 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        enteringAnimation();
+
+        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+
         initializeWidgets();
 
         setupNetworkResponseHandler();
@@ -64,6 +76,64 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.back_slide_in, R.anim.back_slide_out);
+    }
+
+    private void enteringAnimation()
+    {
+        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+
+        logo = (ImageView) findViewById(R.id.logo);
+
+        float startPositionX = -750;
+        float endPositionX = 0;
+        int duration = 500;
+
+        ValueAnimator motionAnimator = ValueAnimator.ofFloat(startPositionX, endPositionX);
+        motionAnimator.setDuration(duration);
+
+        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                logo.setTranslationX((float) animation.getAnimatedValue());
+            }
+        });
+
+        motionAnimator.start();
+    }
+
+    private void transitionToNextActivity()
+    {
+        logo = (ImageView) findViewById(R.id.logo);
+
+        float startPositionX = 0;
+        float endPositionX = 750;
+        int duration = 500;
+
+        ValueAnimator motionAnimator = ValueAnimator.ofFloat(startPositionX, endPositionX);
+        motionAnimator.setDuration(duration);
+
+        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                logo.setTranslationX((float) animation.getAnimatedValue());
+            }
+        });
+
+        motionAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                goHome();
+            }
+        });
+
+        motionAnimator.start();
     }
 
     private void goHome()
@@ -139,7 +209,7 @@ public class RegisterActivity extends AppCompatActivity {
                         User user = new User(response.getInt("userId"), response.getString("userName"), null, response.getString("userAddress"));
                         //saveLoggedUserInSharedPreferences(user);
                         GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUser(user);
-                        goHome();
+                        transitionToNextActivity();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
