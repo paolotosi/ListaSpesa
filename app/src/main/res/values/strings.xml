@@ -39,12 +39,16 @@
     <string name="tab_name_list">Lista</string>
     <string name="tab_name_group">Gruppo</string>
 
+    <!-- EmptyGroupFragment strings. -->
+    <string name="no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per condividere la lista della spesa.</string>
+    <string name="create_new_group_button">Crea nuovo gruppo</string>
+
     <!-- CreateGroupActivity strings. -->
     <string name="group_name_hint">Inserisci il nome del gruppo…</string>
     <string name="create_group_toolbar">Crea gruppo</string>
-    <string name="creation_OK">Gruppo creato con successo!</string>
-    <string name="creation_KO_no_name">Inserisci il nome del gruppo.</string>
-    <string name="creation_KO_no_users">Seleziona almeno un utente.</string>
+    <string name="group_creation_OK">Gruppo creato con successo!</string>
+    <string name="group_creation_KO_no_name">Inserisci il nome del gruppo.</string>
+    <string name="group_creation_KO_no_users">Seleziona almeno un utente.</string>
     <string name="remote_group_creation_error">Errore nella creazione del gruppo sul database.</string>
 
     <!-- EditGroupActivity strings. -->
@@ -58,13 +62,20 @@
     <string name="no_templates_message">Il tuo gruppo non ha ancora definito dei template.\nI template ti aiutano a creare più velocemente la lista della spesa.</string>
     <string name="create_new_template_button">Crea nuovo template</string>
 
+    <!-- CreateTemplateFragment strings. -->
+    <string name="template_name_hint">Inserisci il nome del template…</string>
+    <string name="create_template_toolbar">Crea template</string>
+    <string name="template_creation_OK">Template creato con successo!</string>
+    <string name="template_creation_KO_no_name">Il nome del template non può essere vuoto.</string>
+    <string name="template_creation_KO_no_products">Seleziona almeno un prodotto.</string>
+    <string name="no_description_message">Nessuna descrizione fornita.</string>
+
     <!-- ManageTemplateFragment strings. -->
     <string name="manage_fragment_toolbar">I tuoi template</string>
 
     <!-- Generic error strings. -->
     <string name="generic_error">Errore sconosciuto.</string>
     <string name="connection_error">Errore di connessione al database.</string>
-
 
 
 

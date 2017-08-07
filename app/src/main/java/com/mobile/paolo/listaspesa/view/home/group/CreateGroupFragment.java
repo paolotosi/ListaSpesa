@@ -269,9 +269,9 @@ public class CreateGroupFragment extends Fragment
         Snackbar snackShowStatus;
         switch (feedbackCode)
         {
-            case GROUP_CREATION_OK:            snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.creation_OK, Snackbar.LENGTH_LONG); break;
-            case GROUP_CREATION_KO_NO_NAME:    snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.creation_KO_no_name, Snackbar.LENGTH_LONG); break;
-            case GROUP_CREATION_KO_NO_USERS:   snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.creation_KO_no_users, Snackbar.LENGTH_LONG); break;
+            case GROUP_CREATION_OK:            snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.group_creation_OK, Snackbar.LENGTH_LONG); break;
+            case GROUP_CREATION_KO_NO_NAME:    snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.group_creation_KO_no_name, Snackbar.LENGTH_LONG); break;
+            case GROUP_CREATION_KO_NO_USERS:   snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.group_creation_KO_no_users, Snackbar.LENGTH_LONG); break;
             case CONNECTION_ERROR:             snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.connection_error, Snackbar.LENGTH_LONG); break;
             case REMOTE_ERROR:                 snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.remote_group_creation_error, Snackbar.LENGTH_LONG); break;
             default:                           snackShowStatus = Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.generic_error, Snackbar.LENGTH_LONG); break;

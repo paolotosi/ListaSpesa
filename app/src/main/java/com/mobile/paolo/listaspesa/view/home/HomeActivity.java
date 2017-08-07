@@ -19,6 +19,7 @@ import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
+import com.mobile.paolo.listaspesa.view.home.group.EmptyGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.template.EmptyTemplateFragment;
 import com.mobile.paolo.listaspesa.view.home.template.ManageTemplateFragment;
@@ -48,6 +49,7 @@ import java.util.Map;
 public class HomeActivity extends AppCompatActivity {
 
     // The fragments
+    private EmptyGroupFragment emptyGroupFragment;
     private CreateGroupFragment createGroupFragment;
     private ManageGroupFragment manageGroupFragment;
     private EmptyTemplateFragment emptyTemplateFragment;
@@ -303,11 +305,16 @@ public class HomeActivity extends AppCompatActivity {
         }
         else
         {
-            if(createGroupFragment == null)
+//            if(createGroupFragment == null)
+//            {
+//                createGroupFragment = new CreateGroupFragment();
+//            }
+//            selectedFragment = createGroupFragment;
+            if(emptyGroupFragment == null)
             {
-                createGroupFragment = new CreateGroupFragment();
+                emptyGroupFragment = new EmptyGroupFragment();
             }
-            selectedFragment = createGroupFragment;
+            selectedFragment = emptyGroupFragment;
         }
         return selectedFragment;
     }

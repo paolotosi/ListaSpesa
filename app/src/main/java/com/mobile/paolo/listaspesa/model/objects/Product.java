@@ -16,6 +16,9 @@ public class Product
     private String brand;
     private String description;
 
+    // This attribute will be used only in lists where is required to select products
+    private boolean isChecked;
+
     public Product(String name, String brand, String description)
     {
         this.name = name;
@@ -69,6 +72,16 @@ public class Product
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isChecked()
+    {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked)
+    {
+        this.isChecked = checked;
     }
 
 

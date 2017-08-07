@@ -10,7 +10,7 @@
     <ImageView
         android:layout_width="128dp"
         android:layout_height="128dp"
-        android:src="@drawable/ic_collections_bookmark_blue_24dp"/>
+        android:src="@drawable/ic_group_blue_24dp"/>
 
     <Space
         android:layout_width="0dp"
@@ -19,7 +19,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no_templates_message"
+        android:text="@string/no_group_message"
         android:textColor="@color/blackText"
         android:textAlignment="center"/>
 
@@ -28,10 +28,10 @@
         android:layout_height="24dp" />
 
     <Button
-        android:id="@+id/createNewTemplateButton"
+        android:id="@+id/createNewGroupButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:elevation="@dimen/button_elevation"
-        android:text="@string/create_new_template_button"/>
+        android:text="@string/create_new_group_button"/>
 
 </LinearLayout>

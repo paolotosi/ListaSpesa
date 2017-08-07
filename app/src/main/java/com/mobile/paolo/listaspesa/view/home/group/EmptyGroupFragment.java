@@ -1,4 +1,4 @@
-package com.mobile.paolo.listaspesa.view.home.template;
+package com.mobile.paolo.listaspesa.view.home.group;
 
 
 import android.os.Bundle;
@@ -11,40 +11,37 @@ import android.widget.Button;
 
 import com.mobile.paolo.listaspesa.R;
 
-
 /**
- * -- EmptyTemplateFragment --
- * An empty state shown when the user selects the "Template" tab but his group hasn't defined
- * any template yet.
- * It has a button that guides the user to the template creation section.
+ * -- EmptyGroupFragment --
+ * An empty state shown when the user selects the "Group" tab but he isn't part of a group yet.
+ * It has a button that guides the user to the group creation section.
  */
 
-public class EmptyTemplateFragment extends Fragment
-{
-    private Button createNewTemplateButton;
+public class EmptyGroupFragment extends Fragment {
+
+    private Button createNewGroupButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        View loadedFragment = inflater.inflate(R.layout.fragment_empty_template, container, false);
+        View loadedFragment = inflater.inflate(R.layout.fragment_empty_group, container, false);
 
         initializeWidgets(loadedFragment);
 
-        setupCreateTemplateButtonListener();
+        setupCreateGroupButtonListener();
 
         return loadedFragment;
-
     }
 
     private void initializeWidgets(View loadedFragment)
     {
-        createNewTemplateButton = (Button) loadedFragment.findViewById(R.id.createNewTemplateButton);
+        createNewGroupButton = (Button) loadedFragment.findViewById(R.id.createNewGroupButton);
     }
 
-    private void setupCreateTemplateButtonListener()
+    private void setupCreateGroupButtonListener()
     {
-        createNewTemplateButton.setOnClickListener(new View.OnClickListener() {
+        createNewGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeFragment();
@@ -55,7 +52,7 @@ public class EmptyTemplateFragment extends Fragment
     private void changeFragment()
     {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_main_content, new CreateTemplateFragment());
+        transaction.replace(R.id.home_main_content, new CreateGroupFragment());
         transaction.commit();
     }
 
