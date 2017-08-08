@@ -4,106 +4,141 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
+import com.mobile.paolo.listaspesa.model.objects.Product;
+import com.mobile.paolo.listaspesa.model.objects.User;
+import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.database.ProductsDatabaseHelper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ManageShoppingListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ManageShoppingListFragment#newInstance} factory method to
- * create an instance of this fragment.
+Shows the shopping list of the group and provides operations to manipulate the shopping list
+ or to change his state from "in preparazione" to "in acquisto"
  */
 public class ManageShoppingListFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    // RecyclerView, adapter and model list
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private ArrayList<Product> productModelList = new ArrayList<>();
+    private GlobalValuesManager valuesManager;
+    private final static String SHOPLIST = "shopListProduct";
 
-    private OnFragmentInteractionListener mListener;
-
-    public ManageShoppingListFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ManageShoppingListFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ManageShoppingListFragment newInstance(String param1, String param2) {
-        ManageShoppingListFragment fragment = new ManageShoppingListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    // Network response logic
+    private NetworkResponseHandler fetchProductsResponseHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_manage_shopping_list, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        // Load fragment.
+        View loadedFragment = inflater.inflate(R.layout.fragment_manage_shopping_list, container, false);
+
+        // Setup toolbar
+        setupToolbar(loadedFragment);
+
+        // Initialize the RecyclerView.
+        setupRecyclerView(loadedFragment);
+
+        // Define what to do when the server response to get products is received.
+        setupFetchProductsResponseHandler();
+
+        // Send the network request to get all users.
+        valuesManager = GlobalValuesManager.getInstance(getActivity().getApplicationContext());
+        Map<String, String> params = new HashMap<>();
+        int groupId = valuesManager.getLoggedUserGroup().getID();
+        params.put("id", String.valueOf(groupId));
+        JSONObject jsonPostParameters = new JSONObject();
+        ProductsDatabaseHelper.sendGetProductsShopListRequest(jsonPostParameters, getActivity().getApplicationContext(), fetchProductsResponseHandler);
+
+        return loadedFragment;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    private void setupToolbar(View loadedFragment)
+    {
+        Toolbar toolbar = (Toolbar) loadedFragment.findViewById(R.id.shoppingListToolbar);
+        toolbar.setTitle(getString(R.string.toolbar_title));
+        toolbar.setTitleTextColor(0xFFFFFFFF);
+    }
+
+    private void setupRecyclerView(View loadedFragment)
+    {
+        recyclerView = (RecyclerView) loadedFragment.findViewById(R.id.recyclerViewShopProducts);
+
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        recyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+
+        // create an Object for Adapter
+        adapter = new ProductCardViewDataAdapter();
+
+        // set the adapter object to the Recyclerview
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void setupFetchProductsResponseHandler()
+    {
+        this.fetchProductsResponseHandler = new NetworkResponseHandler() {
+
+            @Override
+            public void onSuccess(JSONObject jsonResponse) {
+                populateProductList(jsonResponse);
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+
+            }
+        };
+    }
+
+    // Populate userList with server response
+    private void populateProductList(JSONObject serverResponse)
+    {
+        try {
+            // Split the response in a list.
+            JSONArray jsonProductList = serverResponse.getJSONArray("products");
+
+            // For each user, create a User object and add it to the list.
+            for(int i = 0; i < jsonProductList.length(); i++)
+            {
+                JSONObject jsonProduct = (JSONObject) jsonProductList.get(i);
+                Product toBeAdded = Product.fromJSON(jsonProduct, SHOPLIST);
+
+                    productModelList.add(toBeAdded);
+
+            }
+
+            // Tell the RecyclerView to reload elements
+            adapter.notifyDataSetChanged();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
 }

@@ -83,6 +83,11 @@
     <string name="no_list_message">Il tuo gruppo non ha ancora nessuna lista della spesa in preparazione.</string>
     <string name="create_new_list_button">Crea nuova lista della spesa</string>
 
+    <!-- ManageShoppingList strings. -->
+    <string name="toolbar_title">Lista della spesa</string>
+
+
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

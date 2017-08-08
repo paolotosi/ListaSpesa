@@ -54,6 +54,8 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
     private ProductCardViewDataAdapter adapter;
     private List<Product> productList = new ArrayList<>();
 
+    private final static String BASE = "baseProduct";
+
 
 
     // Network response handlers
@@ -162,7 +164,7 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
         try {
             for(int i = 0; i < jsonProducts.length(); i++)
             {
-                Product product = Product.fromJSON((JSONObject) jsonProducts.get(i));
+                Product product = Product.fromJSON((JSONObject) jsonProducts.get(i), BASE);
                 productList.add(product);
             }
         }

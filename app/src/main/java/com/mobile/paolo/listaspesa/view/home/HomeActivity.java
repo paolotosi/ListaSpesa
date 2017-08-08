@@ -255,7 +255,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private boolean hasUserList()
     {
-        return false;
+        return true;
         //return GlobalValuesManager.getInstance(getApplicationContext()).hasUserList();
     }
 
@@ -269,6 +269,7 @@ public class HomeActivity extends AppCompatActivity {
                 break;
             case R.id.tab_templates:
                 selectedFragment = selectTemplateFragment();
+                Log.d("Allah", "Sono qui");
                 break;
             case R.id.tab_list:
                 selectedFragment = selectListFragment();

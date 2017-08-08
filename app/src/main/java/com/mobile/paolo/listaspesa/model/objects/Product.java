@@ -1,5 +1,7 @@
 package com.mobile.paolo.listaspesa.model.objects;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,9 +14,13 @@ import java.util.HashMap;
 
 public class Product
 {
+    private final static String BASE = "baseProduct";
+    private final static String SHOPLIST = "shopListProduct";
+
     private String name;
     private String brand;
     private String description;
+    private int quantity;
 
     // This attribute will be used only in lists where is required to select products
     private boolean isChecked;
@@ -26,7 +32,32 @@ public class Product
         this.description = description;
     }
 
-    public static Product fromJSON(JSONObject jsonProduct)
+    public Product(String name, String brand, int quantity)
+    {
+        this.name = name;
+        this.brand = brand;
+        this.quantity = quantity;
+    }
+
+    //Flag specifies which constructor has to be chosen
+    public static Product fromJSON(JSONObject jsonProduct, String flag)
+    {
+        Product product = null;
+
+        if(BASE.equalsIgnoreCase(flag))
+        {
+            product = baseProduct(jsonProduct);
+        }
+        if(SHOPLIST.equalsIgnoreCase(flag))
+        {
+            product = shoppingListProduct(jsonProduct);
+        }
+
+
+        return product;
+    }
+
+    private static Product baseProduct(JSONObject jsonProduct)
     {
         Product product = null;
         try {
@@ -37,6 +68,22 @@ public class Product
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        return product;
+    }
+
+    private static Product shoppingListProduct(JSONObject jsonProduct)
+    {
+        Product product = null;
+        try {
+            String name = jsonProduct.getString("name");
+            String brand = jsonProduct.getString("brand");
+            int quantity = jsonProduct.getInt("quantity");
+            product = new Product(name, brand, quantity);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         return product;
     }
 
