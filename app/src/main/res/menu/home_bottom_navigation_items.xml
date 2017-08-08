@@ -6,7 +6,7 @@
         android:title="@string/tab_name_supermarket"/>
     <item
         android:id="@+id/tab_templates"
-        android:icon="@drawable/ic_collections_bookmark_black_24dp"
+        android:icon="@drawable/ic_collections_bookmark_blue_24dp"
         android:title="@string/tab_name_templates"/>
     <item
         android:id="@+id/tab_list"

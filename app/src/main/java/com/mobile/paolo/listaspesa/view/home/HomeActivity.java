@@ -23,6 +23,8 @@ import com.mobile.paolo.listaspesa.view.home.group.EmptyGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.template.EmptyTemplateFragment;
 import com.mobile.paolo.listaspesa.view.home.template.ManageTemplateFragment;
+import com.mobile.paolo.listaspesa.view.home.shoppingList.EmptyShoppingListFragment;
+import com.mobile.paolo.listaspesa.view.home.shoppingList.ManageShoppingListFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,6 +56,8 @@ public class HomeActivity extends AppCompatActivity {
     private ManageGroupFragment manageGroupFragment;
     private EmptyTemplateFragment emptyTemplateFragment;
     private ManageTemplateFragment manageTemplateFragment;
+    private EmptyShoppingListFragment emptyListFragment;
+    private ManageShoppingListFragment manageListFragment;
 
     // The networkResponseHandlers
     private NetworkResponseHandler groupResponseHandler;
@@ -212,7 +216,7 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
         };
     }
@@ -249,6 +253,12 @@ public class HomeActivity extends AppCompatActivity {
         return GlobalValuesManager.getInstance(getApplicationContext()).hasUserTemplates();
     }
 
+    private boolean hasUserList()
+    {
+        return false;
+        //return GlobalValuesManager.getInstance(getApplicationContext()).hasUserList();
+    }
+
     // Define which fragment to load based on context
     private Fragment selectCorrectFragment(MenuItem selectedTab)
     {
@@ -261,7 +271,7 @@ public class HomeActivity extends AppCompatActivity {
                 selectedFragment = selectTemplateFragment();
                 break;
             case R.id.tab_list:
-                selectedFragment = new ItemTwoFragment();
+                selectedFragment = selectListFragment();
                 break;
             case R.id.tab_group:
                 selectedFragment = selectGroupFragment();
@@ -318,6 +328,30 @@ public class HomeActivity extends AppCompatActivity {
         }
         return selectedFragment;
     }
+
+    private Fragment selectListFragment()
+    {
+        Fragment selectedFragment;
+        if(hasUserList())
+        {
+            if(manageListFragment == null)
+            {
+                manageListFragment = new ManageShoppingListFragment();
+            }
+            selectedFragment = manageListFragment;
+        }
+        else
+        {
+            if(emptyListFragment == null)
+            {
+                emptyListFragment = new EmptyShoppingListFragment();
+            }
+            selectedFragment = emptyListFragment;
+        }
+        return selectedFragment;
+    }
+
+
 
 
 
