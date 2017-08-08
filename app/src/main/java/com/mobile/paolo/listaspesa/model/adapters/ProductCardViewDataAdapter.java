@@ -1,18 +1,17 @@
 package com.mobile.paolo.listaspesa.model.adapters;
 
-import android.graphics.Typeface;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.TextView;
 
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.databinding.CardProductLayoutBinding;
 import com.mobile.paolo.listaspesa.model.objects.Product;
-import com.mobile.paolo.listaspesa.model.objects.Template;
-import com.mobile.paolo.listaspesa.model.objects.User;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -22,45 +21,45 @@ import java.util.List;
 public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCardViewDataAdapter.ViewHolder>
 {
     // The data to show
-    private List<Product> productList;
+    private SortedList<Product> sortedList;
+    private static Comparator<Product> alphabeticalComparator;
 
-    public ProductCardViewDataAdapter(List<Product> productList)
+    public ProductCardViewDataAdapter()
     {
-        this.productList = productList;
+        setupProductComparator();
+        setupSortedList();
+        insertDummyProducts();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-
-        View itemLayoutView;
-        itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_product_layout, null);
-        ViewHolder viewHolder = new ViewHolder(itemLayoutView);
-
-        return viewHolder;
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        CardProductLayoutBinding productBinding = CardProductLayoutBinding.inflate(layoutInflater, parent, false);
+        return new ViewHolder(productBinding);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, final int position)
+    public void onBindViewHolder(final ViewHolder viewHolder, final int position)
     {
-        viewHolder.cardProductName.setText(productList.get(position).getName());
-        viewHolder.cardProductBrand.setText(productList.get(position).getBrand());
-        if(productList.get(position).getDescription().equals("null"))
+        // Automatic binding defined via XML
+        Product product = sortedList.get(position);
+        viewHolder.bind(product);
+
+        // Custom logic for product description
+        if(sortedList.get(position).getDescription().equals("null"))
         {
-            viewHolder.cardProductDescription.setText(viewHolder.cardProductDescription.getContext().getString(R.string.no_description_message));
-        }
-        else
-        {
-            viewHolder.cardProductDescription.setText(productList.get(position).getDescription());
+            viewHolder.binding.productDescription.setText(viewHolder.binding.productDescription.getContext().getString(R.string.no_description_message));
         }
 
-        viewHolder.cardCheckbox.setChecked(productList.get(position).isChecked());
+        // Since the RecyclerView reuses elements, we need a way to remember which products where checked
+        viewHolder.binding.productCheckbox.setChecked(sortedList.get(position).isChecked());
 
         // Save the product in the tag field of the checkbox, it'll be used later.
-        viewHolder.cardCheckbox.setTag(productList.get(position));
+        viewHolder.binding.productCheckbox.setTag(sortedList.get(position));
 
         // When a checkbox is clicked:
-        viewHolder.cardCheckbox.setOnClickListener(new View.OnClickListener() {
+        viewHolder.binding.productCheckbox.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
                 // Retrieve the corresponding product.
@@ -69,7 +68,7 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
 
                 // Set the 'checked' field of the product both in the checkbox tag field and in the list
                 product.setChecked(checkbox.isChecked());
-                productList.get(position).setChecked(checkbox.isChecked());
+                sortedList.get(viewHolder.getAdapterPosition()).setChecked(checkbox.isChecked());
 
             }
         });
@@ -77,25 +76,118 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
 
     @Override
     public int getItemCount() {
-        return productList.size();
+        return sortedList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder
+    private void setupSortedList()
     {
-        private TextView cardProductName;
-        private TextView cardProductBrand;
-        private TextView cardProductDescription;
-        private CheckBox cardCheckbox;
+        SortedList.Callback<Product> sortedListCallback = new SortedList.Callback<Product>() {
+            @Override
+            public void onInserted(int position, int count) {
+                notifyItemRangeInserted(position, count);
+            }
 
-        public ViewHolder(View itemLayoutView)
+            @Override
+            public void onRemoved(int position, int count) {
+                notifyItemRangeRemoved(position, count);
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+                notifyItemMoved(fromPosition, toPosition);
+            }
+
+            @Override
+            public int compare(Product p1, Product p2) {
+                return alphabeticalComparator.compare(p1, p2);
+            }
+
+            @Override
+            public void onChanged(int position, int count) {
+                notifyItemRangeChanged(position, count);
+            }
+
+            @Override
+            public boolean areContentsTheSame(Product oldItem, Product newItem) {
+                return oldItem.equals(newItem);
+            }
+
+            @Override
+            public boolean areItemsTheSame(Product item1, Product item2) {
+                return (item1.getName().equalsIgnoreCase(item2.getName()) && item1.getBrand().equalsIgnoreCase(item2.getBrand()));
+            }
+        };
+
+        this.sortedList = new SortedList<>(Product.class, sortedListCallback);
+    }
+
+    private void setupProductComparator()
+    {
+        alphabeticalComparator = new Comparator<Product>() {
+            @Override
+            public int compare(Product p1, Product p2) {
+                return p1.getName().compareTo(p2.getName());
+            }
+        };
+    }
+
+    public void add(Product product) {
+        sortedList.add(product);
+    }
+
+    public void remove(Product product) {
+        sortedList.remove(product);
+    }
+
+    public void add(List<Product> models) {
+        sortedList.addAll(models);
+    }
+
+    public void remove(List<Product> products) {
+        sortedList.beginBatchedUpdates();
+        for (Product model : products) {
+            sortedList.remove(model);
+        }
+        sortedList.endBatchedUpdates();
+    }
+
+    public void replaceAll(List<Product> models) {
+        sortedList.beginBatchedUpdates();
+        for (int i = sortedList.size() - 1; i >= 0; i--) {
+            final Product model = sortedList.get(i);
+            if (!models.contains(model)) {
+                sortedList.remove(model);
+            }
+        }
+        sortedList.addAll(models);
+        sortedList.endBatchedUpdates();
+    }
+
+    // Needed to make the list fill the height
+    private void insertDummyProducts()
+    {
+        sortedList.add(new Product("Dummy1", "a", "a"));
+        sortedList.add(new Product("Dummy2", "b", "b"));
+        sortedList.add(new Product("Dummy3", "c", "c"));
+        sortedList.add(new Product("Dummy4", "d", "d"));
+        sortedList.add(new Product("Dummy5", "e", "e"));
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder
+    {
+        // The following class is created automatically by the framework after XML binding
+        private final CardProductLayoutBinding binding;
+
+        ViewHolder(CardProductLayoutBinding binding)
         {
-            super(itemLayoutView);
-
-            cardProductName = (TextView) itemLayoutView.findViewById(R.id.productName);
-            cardProductBrand = (TextView) itemLayoutView.findViewById(R.id.productBrand);
-            cardProductDescription = (TextView) itemLayoutView.findViewById(R.id.productDescription);
-            cardCheckbox = (CheckBox) itemLayoutView.findViewById(R.id.productCheckbox);
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
+        void bind(Product product)
+        {
+            binding.setProduct(product);
+            binding.executePendingBindings();
+        }
     }
 }

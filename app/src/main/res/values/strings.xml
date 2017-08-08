@@ -69,6 +69,8 @@
     <string name="template_creation_KO_no_name">Il nome del template non può essere vuoto.</string>
     <string name="template_creation_KO_no_products">Seleziona almeno un prodotto.</string>
     <string name="no_description_message">Nessuna descrizione fornita.</string>
+    <string name="action_search">Cerca</string>
+    <string name="action_search_hint">Filtra prodotti…</string>
 
     <!-- ManageTemplateFragment strings. -->
     <string name="manage_fragment_toolbar">I tuoi template</string>
