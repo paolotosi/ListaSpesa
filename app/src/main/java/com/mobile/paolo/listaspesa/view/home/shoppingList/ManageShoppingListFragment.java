@@ -15,7 +15,6 @@ import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
-import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.database.ProductsDatabaseHelper;
@@ -26,6 +25,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,8 +36,8 @@ public class ManageShoppingListFragment extends Fragment {
 
     // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
-    private ArrayList<Product> productModelList = new ArrayList<>();
+    private ProductCardViewDataAdapter adapter;
+    private List<Product> productModelList = new ArrayList<>();
     private GlobalValuesManager valuesManager;
     private final static String SHOPLIST = "shopListProduct";
 
@@ -69,7 +69,7 @@ public class ManageShoppingListFragment extends Fragment {
         Map<String, String> params = new HashMap<>();
         int groupId = valuesManager.getLoggedUserGroup().getID();
         params.put("id", String.valueOf(groupId));
-        JSONObject jsonPostParameters = new JSONObject();
+        JSONObject jsonPostParameters = new JSONObject(params);
         ProductsDatabaseHelper.sendGetProductsShopListRequest(jsonPostParameters, getActivity().getApplicationContext(), fetchProductsResponseHandler);
 
         return loadedFragment;
@@ -133,12 +133,13 @@ public class ManageShoppingListFragment extends Fragment {
 
             }
 
-            // Tell the RecyclerView to reload elements
-            adapter.notifyDataSetChanged();
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        // Tell the RecyclerView to reload elements
+        adapter.replaceAll(productModelList);
     }
 
 }

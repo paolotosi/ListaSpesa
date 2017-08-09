@@ -269,7 +269,6 @@ public class HomeActivity extends AppCompatActivity {
                 break;
             case R.id.tab_templates:
                 selectedFragment = selectTemplateFragment();
-                Log.d("Allah", "Sono qui");
                 break;
             case R.id.tab_list:
                 selectedFragment = selectListFragment();

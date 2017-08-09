@@ -25,7 +25,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.ProductsDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
@@ -136,8 +139,9 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
+
         };
     }
 
@@ -166,6 +170,7 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
             {
                 Product product = Product.fromJSON((JSONObject) jsonProducts.get(i), BASE);
                 productList.add(product);
+                Log.d("Prodotto", product.getName());
             }
         }
         catch(JSONException e) {
@@ -202,5 +207,7 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
         }
         return filteredModelList;
     }
+
+
 
 }

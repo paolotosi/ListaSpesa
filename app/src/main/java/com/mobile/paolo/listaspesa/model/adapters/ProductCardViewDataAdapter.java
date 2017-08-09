@@ -47,9 +47,12 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
         viewHolder.bind(product);
 
         // Custom logic for product description
+        if(sortedList.get(position).getDescription() != null)
+        {
         if(sortedList.get(position).getDescription().equals("null"))
         {
             viewHolder.binding.productDescription.setText(viewHolder.binding.productDescription.getContext().getString(R.string.no_description_message));
+        }
         }
 
         // Since the RecyclerView reuses elements, we need a way to remember which products where checked

@@ -32,10 +32,9 @@ public class Product
         this.description = description;
     }
 
-    public Product(String name, String brand, int quantity)
+    public Product(String name, int quantity)
     {
         this.name = name;
-        this.brand = brand;
         this.quantity = quantity;
     }
 
@@ -77,9 +76,8 @@ public class Product
         Product product = null;
         try {
             String name = jsonProduct.getString("name");
-            String brand = jsonProduct.getString("brand");
             int quantity = jsonProduct.getInt("quantity");
-            product = new Product(name, brand, quantity);
+            product = new Product(name, quantity);
         } catch (JSONException e) {
             e.printStackTrace();
         }
