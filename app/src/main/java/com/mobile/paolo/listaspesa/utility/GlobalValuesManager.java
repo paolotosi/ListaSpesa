@@ -112,6 +112,13 @@ public class GlobalValuesManager
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_templates), jsonTemplateList.toString());
     }
 
+    public void addTemplate(Template template)
+    {
+        List<Template> userTemplates = getUserTemplates();
+        userTemplates.add(template);
+        saveUserTemplates(userTemplates);
+    }
+
     public List<Template> getUserTemplates()
     {
         List<Template> templateList = new ArrayList<>();

@@ -1,12 +1,13 @@
 package com.mobile.paolo.listaspesa.view.home.template;
 
 
-import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.support.annotation.IntegerRes;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.util.SortedList;
@@ -14,7 +15,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.util.SortedListAdapterCallback;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,25 +22,26 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.ProductsDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
+import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
+import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -49,8 +50,9 @@ import java.util.List;
 public class CreateTemplateFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     // Widgets
+    private TextInputLayout templateNameInputLayout;
     private TextInputEditText templateNameField;
-    private Button confirmTemplateCreationButton;
+    private FloatingActionButton confirmTemplateCreationButton;
 
     // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
@@ -59,11 +61,12 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
 
     private final static String BASE = "baseProduct";
 
-
-
     // Network response handlers
     private NetworkResponseHandler fetchProductsResponseHandler;
     private NetworkResponseHandler createTemplateResponseHandler;
+
+    // The template
+    private Template createdTemplate;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -71,15 +74,19 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
         // Inflate the layout for this fragment
         View loadedFragment = inflater.inflate(R.layout.fragment_create_template, container, false);
 
+        setHasOptionsMenu(true);
+
         setupToolbar(loadedFragment);
 
+        initializeWidgets(loadedFragment);
+
         setupRecyclerView(loadedFragment);
+
+        setupConfirmTemplateCreationButtonListener();
 
         setupFetchProductsResponseHandler();
 
         ProductsDatabaseHelper.sendGetAllProductsRequest(null, getContext(), fetchProductsResponseHandler);
-
-        setHasOptionsMenu(true);
 
         return loadedFragment;
     }
@@ -100,16 +107,6 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setOnQueryTextListener(this);
 
-        // Close the search when it loses focus (after pressing the back button)
-        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus)
-                {
-                    searchView.onActionViewCollapsed();
-                }
-            }
-        });
     }
 
     private void setupToolbar(View loadedFragment)
@@ -170,7 +167,6 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
             {
                 Product product = Product.fromJSON((JSONObject) jsonProducts.get(i), BASE);
                 productList.add(product);
-                Log.d("Prodotto", product.getName());
             }
         }
         catch(JSONException e) {
@@ -208,6 +204,147 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
         return filteredModelList;
     }
 
+    private void setupCreateTemplateResponseHandler()
+    {
+        this.createTemplateResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("CREATE_TEMPLATE_RESP", response.toString());
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+                        Toast.makeText(getContext(), "Template creato con successo", Toast.LENGTH_LONG).show();
+                        // Save the created template
+                        GlobalValuesManager.getInstance(getContext()).addTemplate(createdTemplate);
+                        changeFragment();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                error.printStackTrace();
+            }
+        };
+    }
+
+    private void setupConfirmTemplateCreationButtonListener()
+    {
+
+        confirmTemplateCreationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                boolean okToSend = true;
+
+                // Add all products in case the list is filtered
+                adapter.replaceAll(productList);
+
+                // Get the template name inserted
+                String templateName = "";
+                if(isInsertionValid())
+                {
+                    templateName = templateNameField.getText().toString();
+                }
+                else
+                {
+                    okToSend = false;
+                }
+
+                // Get the products
+                SortedList<Product> sortedList = adapter.getModel();
+                List<Product> checkedProducts = new ArrayList<>();
+
+                for(int i = 0; i < sortedList.size(); i++)
+                {
+                    if(sortedList.get(i).isChecked())
+                    {
+                        Log.d("Product checked", sortedList.get(i).getName());
+                        checkedProducts.add(sortedList.get(i));
+                    }
+                }
+
+                if(checkedProducts.size() < 1)
+                {
+                    okToSend = false;
+                    Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.template_creation_KO_no_products, Snackbar.LENGTH_LONG).show();
+                }
+
+                // Send the request
+                if(okToSend)
+                {
+                    sendCreateTemplateRequest(templateName, checkedProducts);
+                }
+            }
+        });
+    }
+
+    private void initializeWidgets(View loadedFragment)
+    {
+        templateNameInputLayout = (TextInputLayout) loadedFragment.findViewById(R.id.templateNameInputLayout);
+        templateNameField = (TextInputEditText) loadedFragment.findViewById(R.id.templateNameField);
+        confirmTemplateCreationButton = (FloatingActionButton) loadedFragment.findViewById(R.id.confirmTemplateCreationButton);
+    }
+
+    private boolean isInsertionValid()
+    {
+        boolean isValid = true;
+
+        if(templateNameField.getText().toString().isEmpty())
+        {
+            isValid = false;
+            templateNameInputLayout.setError(getString(R.string.template_creation_KO_no_name));
+        }
+        else
+        {
+            templateNameInputLayout.setErrorEnabled(false);
+        }
+        return isValid;
+    }
+
+    private void sendCreateTemplateRequest(String templateName, List<Product> checkedProducts)
+    {
+        // Get the group ID
+        int loggedUserGroupID = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID();
+
+        // Create JSON POST request
+        JSONObject params = new JSONObject();
+        try {
+            params.put("templateName", templateName);
+            params.put("groupID", ((Integer) loggedUserGroupID).toString());
+            JSONArray products = new JSONArray();
+
+            for(int i = 0; i < checkedProducts.size(); i++)
+            {
+                products.put(i, checkedProducts.get(i).toJSON());
+            }
+            params.put("products", products);
+
+            // Create a template object for later
+            createdTemplate = new Template(templateName, loggedUserGroupID, products);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Debug
+        Log.d("TEMPLATE_CREATE", params.toString());
+
+        // Define what to do on server response
+        setupCreateTemplateResponseHandler();
+
+        // Send request
+        TemplatesDatabaseHelper.sendCreateTemplateRequest(params, getContext(), createTemplateResponseHandler);
+
+    }
+
+    private void changeFragment()
+    {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, new ManageTemplateFragment());
+        transaction.commit();
+    }
 
 
 }

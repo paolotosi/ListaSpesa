@@ -17,6 +17,7 @@ public class Template
     private String name;
     private Integer groupID;
     private List<Product> productList;
+
     private final static String BASE = "baseProduct";
 
     public Template(String name, Integer groupID, List<Product> productList)

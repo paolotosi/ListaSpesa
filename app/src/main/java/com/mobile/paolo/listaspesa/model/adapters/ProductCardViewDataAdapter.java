@@ -176,6 +176,11 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
         sortedList.add(new Product("Dummy5", "e", "e"));
     }
 
+    public SortedList<Product> getModel()
+    {
+        return sortedList;
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder
     {
         // The following class is created automatically by the framework after XML binding

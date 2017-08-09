@@ -15,9 +15,15 @@ public class TemplatesDatabaseHelper
 {
     // The URLs.
     private static final String URL_GET_TEMPLATES = "http://10.0.2.2/listaspesa/android_connect/templates/get_group_templates.php";
+    private static final String URL_CREATE_TEMPLATE = "http://10.0.2.2/listaspesa/android_connect/templates/create_template.php";
 
     public static void sendGetGroupTemplatesRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
         NetworkMessageSender.sendHTTPRequest(URL_GET_TEMPLATES, jsonPostData, context, networkResponseHandler);
+    }
+
+    public static void sendCreateTemplateRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
+    {
+        NetworkMessageSender.sendHTTPRequest(URL_CREATE_TEMPLATE, jsonPostData, context, networkResponseHandler);
     }
 }

@@ -39,11 +39,15 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position)
     {
+        // Set name
         viewHolder.cardTemplateName.setText(templateList.get(position).getName());
-        String productsSnippet = "";
-        for(int i = 0; i < Math.min(3, templateList.get(position).getProductList().size()); i++)
+
+        // Snippet = first 3 products. The first one:
+        String productsSnippet =  templateList.get(position).getProductList().get(0).getName();
+
+        for(int i = 1; i < Math.min(3, templateList.get(position).getProductList().size()); i++)
         {
-            productsSnippet += templateList.get(position).getProductList().get(i).getName();
+            productsSnippet += ", " + templateList.get(position).getProductList().get(i).getName();
         }
         productsSnippet += "...";
         viewHolder.cardProductsSnippet.setText(productsSnippet);
