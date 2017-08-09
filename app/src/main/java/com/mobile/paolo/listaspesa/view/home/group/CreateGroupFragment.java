@@ -1,9 +1,9 @@
 package com.mobile.paolo.listaspesa.view.home.group;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +17,7 @@ import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
+import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
@@ -27,7 +28,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * -- CreateGroupFragment --
@@ -60,6 +63,7 @@ public class CreateGroupFragment extends Fragment
     // Network response logic
     private NetworkResponseHandler fetchUsersResponseHandler;
     private NetworkResponseHandler createGroupResponseHandler;
+    private NetworkResponseHandler groupDetailsResponseHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -222,6 +226,7 @@ public class CreateGroupFragment extends Fragment
                     if(response.getInt(TAG_SUCCESS) == SUCCESS)
                     {
                         showFeedback(GROUP_CREATION_OK);
+                        sendGetGroupDetailsRequest();
                     }
                     else
                         showFeedback(REMOTE_ERROR);
@@ -278,5 +283,62 @@ public class CreateGroupFragment extends Fragment
         }
         snackShowStatus.show();
     }
+
+    private void changeFragment()
+    {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, new ManageGroupFragment());
+        transaction.commit();
+    }
+
+    private void setupGroupResponseHandler()
+    {
+        this.groupDetailsResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                // Debug
+                Log.d("GROUP_DETAILS", response.toString());
+
+                try {
+                    int responseCode = response.getInt("success");
+                    if(responseCode == 1)
+                    {
+                        GlobalValuesManager.getInstance(getContext()).saveIsUserPartOfAGroup(true);
+                        Group group = new Group(response.getInt("groupID"), response.getString("groupName"), response.getJSONArray("members"));
+                        GlobalValuesManager.getInstance(getContext()).saveLoggedUserGroup(group);
+                        changeFragment();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+
+            }
+        };
+    }
+
+    // Determine if a user is part of a group; in that case, fetch the group details, including the templates
+    private void sendGetGroupDetailsRequest()
+    {
+        setupGroupResponseHandler();
+
+        User loggedUser = GlobalValuesManager.getInstance(getContext()).getLoggedUser();
+
+        // The POST parameters.
+        Map<String, String> params = new HashMap<>();
+        params.put("id", ((Integer) (loggedUser.getId())).toString());
+
+        // Encapsulate in JSON.
+        JSONObject jsonPostParameters = new JSONObject(params);
+
+        // Print parameters to console for debug purposes.
+        Log.d("JSON_GET_GROUP_DETAILS", jsonPostParameters.toString());
+
+        GroupsDatabaseHelper.sendGetGroupDetailsRequest(jsonPostParameters, getContext(), groupDetailsResponseHandler);
+    }
+
 
 }
