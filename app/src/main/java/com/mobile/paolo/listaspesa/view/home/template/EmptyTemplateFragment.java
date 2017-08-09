@@ -8,8 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.utility.Contextualizer;
+import com.mobile.paolo.listaspesa.view.home.ItemOneFragment;
+import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
 
 
 /**
@@ -22,6 +27,8 @@ import com.mobile.paolo.listaspesa.R;
 public class EmptyTemplateFragment extends Fragment
 {
     private Button createNewTemplateButton;
+    private Button goToGroupCreationButton;
+    private TextView emptyTemplateMessage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -37,9 +44,33 @@ public class EmptyTemplateFragment extends Fragment
 
     }
 
-    private void initializeWidgets(View loadedFragment)
+    private void initializeWidgets(final View loadedFragment)
     {
         createNewTemplateButton = (Button) loadedFragment.findViewById(R.id.createNewTemplateButton);
+        goToGroupCreationButton = (Button) loadedFragment.findViewById(R.id.goToGroupCreationButton);
+        emptyTemplateMessage = (TextView) loadedFragment.findViewById(R.id.emptyTemplateMessage);
+
+        if(!Contextualizer.getInstance().isUserPartOfAGroup())
+        {
+            // Change message
+            emptyTemplateMessage.setText(getString(R.string.no_template_no_group_message));
+
+            // Disable template creation, show group creation
+            createNewTemplateButton.setEnabled(false);
+            goToGroupCreationButton.setVisibility(View.VISIBLE);
+
+            // If the group creation button is clicked, go to to the group creation section of the app
+            goToGroupCreationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BottomNavigationViewEx homeBottomNavigationView = (BottomNavigationViewEx) getActivity().findViewById(R.id.home_bottom_navigation);
+                    homeBottomNavigationView.getMenu().getItem(3).setChecked(true);
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.home_main_content, new CreateGroupFragment());
+                    transaction.commit();
+                }
+            });
+        }
     }
 
     private void setupCreateTemplateButtonListener()

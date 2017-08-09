@@ -60,6 +60,8 @@
 
     <!-- EmptyTemplateFragment strings. -->
     <string name="no_templates_message">Il tuo gruppo non ha ancora definito dei template.\nI template ti aiutano a creare più velocemente la lista della spesa.</string>
+    <string name="no_template_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter definire dei template.</string>
+    <string name="go_to_group_creation">Crea gruppo</string>
     <string name="create_new_template_button">Crea nuovo template</string>
 
     <!-- CreateTemplateFragment strings. -->

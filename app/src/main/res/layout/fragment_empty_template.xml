@@ -1,8 +1,8 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center"
     android:padding="24dp">
@@ -17,6 +17,7 @@
         android:layout_height="24dp" />
 
     <TextView
+        android:id="@+id/emptyTemplateMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_templates_message"
@@ -32,6 +33,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:elevation="@dimen/button_elevation"
-        android:text="@string/create_new_template_button"/>
+        android:text="@string/create_new_template_button"
+        android:backgroundTint="@color/button_background_tint"/>
+
+    <Button
+        android:id="@+id/goToGroupCreationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/button_elevation"
+        android:text="@string/go_to_group_creation"
+        android:visibility="gone"/>
 
 </LinearLayout>

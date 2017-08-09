@@ -21,6 +21,7 @@ import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
+import com.mobile.paolo.listaspesa.utility.Contextualizer;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 
 import org.json.JSONArray;
@@ -304,6 +305,7 @@ public class CreateGroupFragment extends Fragment
                     if(responseCode == 1)
                     {
                         GlobalValuesManager.getInstance(getContext()).saveIsUserPartOfAGroup(true);
+                        Contextualizer.getInstance().setUserPartOfAGroup(true);
                         Group group = new Group(response.getInt("groupID"), response.getString("groupName"), response.getJSONArray("members"));
                         GlobalValuesManager.getInstance(getContext()).saveLoggedUserGroup(group);
                         changeFragment();
