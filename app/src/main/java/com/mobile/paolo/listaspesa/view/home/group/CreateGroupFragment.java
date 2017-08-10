@@ -23,6 +23,7 @@ import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.Contextualizer;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -288,7 +289,12 @@ public class CreateGroupFragment extends Fragment
     private void changeFragment()
     {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_main_content, new ManageGroupFragment());
+        if(HomeFragmentContainer.getInstance().getManageGroupFragment() == null)
+        {
+            ManageGroupFragment manageGroupFragment = new ManageGroupFragment();
+            HomeFragmentContainer.getInstance().setManageGroupFragment(manageGroupFragment);
+        }
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageGroupFragment());
         transaction.commit();
     }
 

@@ -20,6 +20,7 @@ import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.Contextualizer;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.EmptyGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
@@ -356,19 +357,23 @@ public class HomeActivity extends AppCompatActivity {
         Fragment selectedFragment;
         if(hasUserTemplates())
         {
-            if(manageTemplateFragment == null)
+            // ManageTemplate
+            if(HomeFragmentContainer.getInstance().getManageTemplateFragment() == null)
             {
-                manageTemplateFragment = new ManageTemplateFragment();
+                ManageTemplateFragment manageTemplateFragment = new ManageTemplateFragment();
+                HomeFragmentContainer.getInstance().setManageTemplateFragment(manageTemplateFragment);
             }
-            selectedFragment = manageTemplateFragment;
+            selectedFragment = HomeFragmentContainer.getInstance().getManageTemplateFragment();
         }
         else
         {
-            if(emptyTemplateFragment == null)
+            // EmptyTemplate
+            if(HomeFragmentContainer.getInstance().getEmptyTemplateFragment() == null)
             {
-                emptyTemplateFragment = new EmptyTemplateFragment();
+                EmptyTemplateFragment emptyTemplateFragment = new EmptyTemplateFragment();
+                HomeFragmentContainer.getInstance().setEmptyTemplateFragment(emptyTemplateFragment);
             }
-            selectedFragment = emptyTemplateFragment;
+            selectedFragment = HomeFragmentContainer.getInstance().getEmptyTemplateFragment();
         }
         return selectedFragment;
     }
@@ -378,19 +383,23 @@ public class HomeActivity extends AppCompatActivity {
         Fragment selectedFragment;
         if(isUserPartOfAGroup())
         {
-            if(manageGroupFragment == null)
+            // ManageGroup
+            if(HomeFragmentContainer.getInstance().getManageGroupFragment() == null)
             {
-                manageGroupFragment = new ManageGroupFragment();
+                ManageGroupFragment manageGroupFragment = new ManageGroupFragment();
+                HomeFragmentContainer.getInstance().setManageGroupFragment(manageGroupFragment);
             }
-            selectedFragment = manageGroupFragment;
+            selectedFragment = HomeFragmentContainer.getInstance().getManageGroupFragment();
         }
         else
         {
-            if(emptyGroupFragment == null)
+            // EmptyGroup
+            if(HomeFragmentContainer.getInstance().getEmptyGroupFragment() == null)
             {
-                emptyGroupFragment = new EmptyGroupFragment();
+                EmptyGroupFragment emptyGroupFragment = new EmptyGroupFragment();
+                HomeFragmentContainer.getInstance().setEmptyGroupFragment(emptyGroupFragment);
             }
-            selectedFragment = emptyGroupFragment;
+            selectedFragment = HomeFragmentContainer.getInstance().getEmptyGroupFragment();
         }
         return selectedFragment;
     }
@@ -415,6 +424,11 @@ public class HomeActivity extends AppCompatActivity {
             selectedFragment = emptyListFragment;
         }
         return selectedFragment;
+    }
+
+    public void setManageGroupFragment(ManageGroupFragment manageGroupFragment)
+    {
+        this.manageGroupFragment = manageGroupFragment;
     }
 
 

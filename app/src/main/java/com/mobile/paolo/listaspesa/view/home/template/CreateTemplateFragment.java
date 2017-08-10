@@ -33,6 +33,7 @@ import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
 
@@ -215,6 +216,7 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
                     {
                         Toast.makeText(getContext(), "Template creato con successo", Toast.LENGTH_LONG).show();
                         // Save the created template
+                        GlobalValuesManager.getInstance(getContext()).saveHasUserTemplates(true);
                         GlobalValuesManager.getInstance(getContext()).addTemplate(createdTemplate);
                         changeFragment();
                     }
@@ -342,7 +344,12 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
     private void changeFragment()
     {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_main_content, new ManageTemplateFragment());
+        if(HomeFragmentContainer.getInstance().getManageTemplateFragment() == null)
+        {
+            ManageTemplateFragment manageTemplateFragment = new ManageTemplateFragment();
+            HomeFragmentContainer.getInstance().setManageTemplateFragment(manageTemplateFragment);
+        }
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageTemplateFragment());
         transaction.commit();
     }
 
