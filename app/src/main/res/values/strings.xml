@@ -5,8 +5,10 @@
     <string name="logged_user">LOGGED_USER</string>
     <string name="logged_user_group">LOGGED_USER_GROUP</string>
     <string name="logged_user_templates">LOGGED_USER_TEMPLATES</string>
+    <string name="logged_user_list">LOGGED_USER_LIST</string>
     <string name="is_user_part_of_a_group">IS_USER_PART_OF_A_GROUP</string>
     <string name="has_user_templates">HAS_USER_TEMPLATES</string>
+    <string name="has_user_list">HAS_USER_TEMPLATES</string>
 
     <!-- WelcomeActivity strings. -->
     <string name="login_button">Accedi</string>
@@ -61,6 +63,7 @@
     <!-- EmptyTemplateFragment strings. -->
     <string name="no_templates_message">Il tuo gruppo non ha ancora definito dei template.\nI template ti aiutano a creare più velocemente la lista della spesa.</string>
     <string name="no_template_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter definire dei template.</string>
+    <string name="no_list_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter definire dei template e la tua lista della spesa.</string>
     <string name="go_to_group_creation">Crea gruppo</string>
     <string name="create_new_template_button">Crea nuovo template</string>
 

@@ -13,6 +13,7 @@ import com.android.volley.VolleyError;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.ListDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
@@ -63,6 +64,7 @@ public class HomeActivity extends AppCompatActivity {
     // The networkResponseHandlers
     private NetworkResponseHandler groupResponseHandler;
     private NetworkResponseHandler templateResponseHandler;
+    private NetworkResponseHandler listResponseHandler;
 
     // Response codes
     private static final int NETWORK_ERROR = 0;
@@ -143,6 +145,7 @@ public class HomeActivity extends AppCompatActivity {
                             // Query for templates only if the user has a group.
                             // The request needs to be sent now, otherwise we don't know the group ID!
                             sendGetTemplatesRequest();
+                            sendGetListRequest();
                             break;
                         case USER_DOESNT_HAVE_GROUP:
                             GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(false);
@@ -257,10 +260,74 @@ public class HomeActivity extends AppCompatActivity {
         return GlobalValuesManager.getInstance(getApplicationContext()).hasUserTemplates();
     }
 
+    private void setupListResponseHandler()
+    {
+        this.listResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    Log.d("LIST_RESPONSE", response.toString());
+                    if(response.getInt("success") == 1)
+                    {
+                        // Determine if the group has templates and update the SharedPreferences accordingly
+                        JSONArray list = response.getJSONArray("list");
+                        if(list.length() == 0)
+                        {
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserList(false);
+                        }
+                        else
+                        {
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserList(true);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveUserList(list);
+                            Contextualizer.getInstance().setHasUserList(true);
+                        }
+                    }
+                    else
+                    {
+                        GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserList(false);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                error.printStackTrace();
+            }
+        };
+    }
+
+    private void sendGetListRequest()
+    {
+        // Define what to do on response
+        setupListResponseHandler();
+
+        Integer groupID = -1;
+
+        if(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup() != null)
+        {
+            groupID = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID();
+        }
+
+        // The POST parameters
+        Map<String, String> params = new HashMap<>();
+        params.put("groupID", groupID.toString());
+
+        // Encapsulate in JSON
+        JSONObject jsonPostParameters = new JSONObject(params);
+
+        // Debug
+        Log.d("JSON_LIST", jsonPostParameters.toString());
+
+        // Send request
+        ListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getApplicationContext(), listResponseHandler);
+
+    }
+
     private boolean hasUserList()
     {
-        return true;
-        //return GlobalValuesManager.getInstance(getApplicationContext()).hasUserList();
+        return GlobalValuesManager.getInstance(getApplicationContext()).hasUserList();
     }
 
     // Define which fragment to load based on context

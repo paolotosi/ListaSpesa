@@ -15,6 +15,7 @@ import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
+import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.database.ProductsDatabaseHelper;
@@ -37,6 +38,7 @@ public class ManageShoppingListFragment extends Fragment {
     // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
     private ProductCardViewDataAdapter adapter;
+    private ShoppingList shoppingList;
     private List<Product> productModelList = new ArrayList<>();
     private GlobalValuesManager valuesManager;
     private final static String SHOPLIST = "shopListProduct";
@@ -58,19 +60,23 @@ public class ManageShoppingListFragment extends Fragment {
         // Setup toolbar
         setupToolbar(loadedFragment);
 
+        shoppingList = GlobalValuesManager.getInstance(getContext()).getUserList();
+
         // Initialize the RecyclerView.
         setupRecyclerView(loadedFragment);
 
+        populateProductList();
+
         // Define what to do when the server response to get products is received.
-        setupFetchProductsResponseHandler();
+        //setupFetchProductsResponseHandler();
 
         // Send the network request to get all users.
-        valuesManager = GlobalValuesManager.getInstance(getActivity().getApplicationContext());
+/*        valuesManager = GlobalValuesManager.getInstance(getActivity().getApplicationContext());
         Map<String, String> params = new HashMap<>();
         int groupId = valuesManager.getLoggedUserGroup().getID();
         params.put("id", String.valueOf(groupId));
         JSONObject jsonPostParameters = new JSONObject(params);
-        ProductsDatabaseHelper.sendGetProductsShopListRequest(jsonPostParameters, getActivity().getApplicationContext(), fetchProductsResponseHandler);
+        ProductsDatabaseHelper.sendGetProductsShopListRequest(jsonPostParameters, getActivity().getApplicationContext(), fetchProductsResponseHandler);*/
 
         return loadedFragment;
     }
@@ -139,6 +145,14 @@ public class ManageShoppingListFragment extends Fragment {
         }
 
         // Tell the RecyclerView to reload elements
+        adapter.replaceAll(productModelList);
+    }
+
+    // Populate product list with the products of the shopping list
+    private void populateProductList()
+    {
+
+        productModelList = shoppingList.getProductList();
         adapter.replaceAll(productModelList);
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.objects.Group;
+import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.model.objects.User;
 
@@ -71,9 +72,19 @@ public class GlobalValuesManager
         sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_templates), hasUserTemplates);
     }
 
+    public void saveHasUserList(boolean hasUserTemplates)
+    {
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_templates), hasUserTemplates);
+    }
+
     public boolean hasUserTemplates()
     {
         return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_templates));
+    }
+
+    public boolean hasUserList()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_list));
     }
 
     public void saveLoggedUserGroup(Group group)
@@ -107,9 +118,28 @@ public class GlobalValuesManager
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_templates), jsonTemplateList.toString());
     }
 
+    public void saveUserList(List<ShoppingList> shoppingList)
+    {
+        JSONArray jsonShoppingList = new JSONArray();
+        for(int i = 0; i < shoppingList.size(); i++)
+        {
+            try {
+                jsonShoppingList.put(i, shoppingList.get(i).toJSON());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
+    }
+
     public void saveUserTemplates(JSONArray jsonTemplateList)
     {
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_templates), jsonTemplateList.toString());
+    }
+
+    public void saveUserList(JSONArray jsonShoppingList)
+    {
+        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
     }
 
     public void addTemplate(Template template)
@@ -132,6 +162,23 @@ public class GlobalValuesManager
             e.printStackTrace();
         }
         return templateList;
+    }
+
+    public ShoppingList getUserList()
+    {
+        ShoppingList shoppingList = null;
+        int groupID = getLoggedUserGroup().getID();
+        try {
+            JSONArray shoppingListArray = new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.logged_user_list)));
+            JSONObject jsonShoppingList = new JSONObject();
+            jsonShoppingList.put("groupID", String.valueOf(groupID));
+            jsonShoppingList.put("list", shoppingListArray);
+            shoppingList = ShoppingList.fromJSON(jsonShoppingList);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return shoppingList;
     }
 
 }

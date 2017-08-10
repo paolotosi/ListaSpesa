@@ -9,8 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.utility.Contextualizer;
+import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
 
 /**
  * -- EmptyListFragment --
@@ -21,6 +25,8 @@ import com.mobile.paolo.listaspesa.R;
 public class EmptyShoppingListFragment extends Fragment {
 
     private Button createNewListButton;
+    private TextView emptyListMessage;
+    private Button goToGroupCreationButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -39,6 +45,30 @@ public class EmptyShoppingListFragment extends Fragment {
     private void initializeWidgets(View loadedFragment)
     {
         createNewListButton = (Button) loadedFragment.findViewById(R.id.createNewListButton);
+        goToGroupCreationButton = (Button) loadedFragment.findViewById(R.id.goToGroupCreationButtonSL);
+        emptyListMessage = (TextView) loadedFragment.findViewById(R.id.emptyTemplateMessageSL);
+
+        if(!Contextualizer.getInstance().isUserPartOfAGroup())
+        {
+            // Change message
+            emptyListMessage.setText(getString(R.string.no_list_no_group_message));
+
+            // Disable list creation, show group creation
+            createNewListButton.setEnabled(false);
+            goToGroupCreationButton.setVisibility(View.VISIBLE);
+
+            // If the group creation button is clicked, go to to the group creation section of the app
+            goToGroupCreationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BottomNavigationViewEx homeBottomNavigationView = (BottomNavigationViewEx) getActivity().findViewById(R.id.home_bottom_navigation);
+                    homeBottomNavigationView.getMenu().getItem(3).setChecked(true);
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.home_main_content, new CreateGroupFragment());
+                    transaction.commit();
+                }
+            });
+        }
     }
 
     private void setupCreateListButtonListener()

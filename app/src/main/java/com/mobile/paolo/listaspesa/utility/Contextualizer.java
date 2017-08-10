@@ -14,6 +14,7 @@ public class Contextualizer
     private Boolean isUserLogged;
     private Boolean isUserPartOfAGroup;
     private Boolean hasUserTemplates;
+    private Boolean hasUserList;
 
     // Network response handler (used the first time)
     private NetworkResponseHandler isLoggedResponseHandler;
@@ -49,7 +50,15 @@ public class Contextualizer
         return hasUserTemplates;
     }
 
+    public Boolean hasUserList() {
+        return hasUserList;
+    }
+
     public void setHasUserTemplates(Boolean hasUserTemplates) {
         this.hasUserTemplates = hasUserTemplates;
+    }
+
+    public void setHasUserList(Boolean hasUserList) {
+        this.hasUserList = hasUserList;
     }
 }

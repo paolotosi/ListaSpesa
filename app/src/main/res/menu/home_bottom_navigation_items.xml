@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/tab_supermarket"
-        android:icon="@drawable/ic_store_mall_directory_black_24dp"
+        android:icon="@drawable/ic_store_mall_directory_blue_24dp"
         android:title="@string/tab_name_supermarket"/>
     <item
         android:id="@+id/tab_templates"
