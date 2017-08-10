@@ -154,7 +154,7 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
 
         // create an Object for Adapter
-        adapter = new ProductCardViewDataAdapter();
+        adapter = new ProductCardViewDataAdapter(ProductCardViewDataAdapter.ADD_MODE);
 
         // set the adapter object to the Recyclerview
         recyclerView.setAdapter(adapter);

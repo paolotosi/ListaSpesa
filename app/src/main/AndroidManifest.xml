@@ -39,8 +39,11 @@
         <activity
             android:name=".view.home.HomeActivity"
             android:label="@string/title_activity_home"
-            android:windowSoftInputMode="adjustPan"/>
-        <fragment android:name=".CreateGroupFragment"></fragment>
+            android:windowSoftInputMode="adjustPan" />
+
+        <fragment android:name=".CreateGroupFragment" />
+
+        <activity android:name=".view.home.template.EditTemplateActivity"></activity>
     </application>
 
 </manifest>

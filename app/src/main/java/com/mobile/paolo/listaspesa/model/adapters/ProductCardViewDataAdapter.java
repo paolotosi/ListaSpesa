@@ -1,5 +1,6 @@
 package com.mobile.paolo.listaspesa.model.adapters;
 
+import android.databinding.ViewDataBinding;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +10,8 @@ import android.widget.CheckBox;
 
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutBinding;
+import com.mobile.paolo.listaspesa.databinding.CardProductLayoutEditBinding;
+import com.mobile.paolo.listaspesa.databinding.CardProductLayoutShoppingListBinding;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 
 import java.util.Comparator;
@@ -24,8 +27,15 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
     private SortedList<Product> sortedList;
     private static Comparator<Product> alphabeticalComparator;
 
-    public ProductCardViewDataAdapter()
+    // Mode: add or edit
+    private int mode;
+    public static final int ADD_MODE = 1;
+    public static final int EDIT_MODE = 2;
+    public static final int LIST_MODE = 3;
+
+    public ProductCardViewDataAdapter(int mode)
     {
+        this.mode = mode;
         setupProductComparator();
         setupSortedList();
         insertDummyProducts();
@@ -35,7 +45,13 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        CardProductLayoutBinding productBinding = CardProductLayoutBinding.inflate(layoutInflater, parent, false);
+        ViewDataBinding productBinding = null;
+        switch (mode)
+        {
+            case ADD_MODE:  productBinding = CardProductLayoutBinding.inflate(layoutInflater, parent, false); break;
+            case EDIT_MODE: productBinding = CardProductLayoutEditBinding.inflate(layoutInflater, parent, false); break;
+            case LIST_MODE: productBinding = CardProductLayoutShoppingListBinding.inflate(layoutInflater, parent, false); break;
+        }
         return new ViewHolder(productBinding);
     }
 
@@ -44,25 +60,44 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
     {
         // Automatic binding defined via XML
         Product product = sortedList.get(position);
-        viewHolder.bind(product);
+        int bindingType = viewHolder.bind(product);
+
+        switch (bindingType)
+        {
+            case ADD_MODE:  setupAddMode(viewHolder, position); break;
+            case EDIT_MODE: setupEditMode(viewHolder, position); break;
+            case LIST_MODE: setupListMode(viewHolder, position); break;
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return sortedList.size();
+    }
+
+    private void setupAddMode(final ViewHolder viewHolder, final int position)
+    {
+        // Cast superclass binding to add mode binding
+        CardProductLayoutBinding binding = (CardProductLayoutBinding) viewHolder.binding;
 
         // Custom logic for product description
         if(sortedList.get(position).getDescription() != null)
         {
-        if(sortedList.get(position).getDescription().equals("null"))
-        {
-            viewHolder.binding.productDescription.setText(viewHolder.binding.productDescription.getContext().getString(R.string.no_description_message));
-        }
+            if(sortedList.get(position).getDescription().equals("null"))
+            {
+                String noDescriptionText = binding.productDescription.getContext().getString(R.string.no_description_message);
+                binding.productDescription.setText(noDescriptionText);
+            }
         }
 
         // Since the RecyclerView reuses elements, we need a way to remember which products where checked
-        viewHolder.binding.productCheckbox.setChecked(sortedList.get(position).isChecked());
+        binding.productCheckbox.setChecked(sortedList.get(position).isChecked());
 
         // Save the product in the tag field of the checkbox, it'll be used later.
-        viewHolder.binding.productCheckbox.setTag(sortedList.get(position));
+        binding.productCheckbox.setTag(sortedList.get(position));
 
         // When a checkbox is clicked:
-        viewHolder.binding.productCheckbox.setOnClickListener(new View.OnClickListener() {
+        binding.productCheckbox.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
                 // Retrieve the corresponding product.
@@ -72,14 +107,30 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
                 // Set the 'checked' field of the product both in the checkbox tag field and in the list
                 product.setChecked(checkbox.isChecked());
                 sortedList.get(viewHolder.getAdapterPosition()).setChecked(checkbox.isChecked());
-
             }
         });
     }
 
-    @Override
-    public int getItemCount() {
-        return sortedList.size();
+    private void setupEditMode(final ViewHolder viewHolder, final int position)
+    {
+        // Cast superclass binding to edit mode binding
+        CardProductLayoutEditBinding binding = (CardProductLayoutEditBinding) viewHolder.binding;
+
+        // Custom logic for product description
+        if(sortedList.get(position).getDescription() != null)
+        {
+            if(sortedList.get(position).getDescription().equals("null"))
+            {
+                String noDescriptionText = binding.productDescription.getContext().getString(R.string.no_description_message);
+                binding.productDescription.setText(noDescriptionText);
+            }
+        }
+    }
+
+    private void setupListMode(final ViewHolder viewHolder, final int position)
+    {
+        // Cast superclass binding to list mode binding
+        CardProductLayoutShoppingListBinding binding = (CardProductLayoutShoppingListBinding) viewHolder.binding;
     }
 
     private void setupSortedList()
@@ -183,19 +234,38 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
 
     static class ViewHolder extends RecyclerView.ViewHolder
     {
-        // The following class is created automatically by the framework after XML binding
-        private final CardProductLayoutBinding binding;
+        // The binding class is created automatically by the framework after XML binding
+        // Since we don't know beforehand which binding was used (add, edit, or list),
+        // we need to use the superclass
+        private ViewDataBinding binding;
 
-        ViewHolder(CardProductLayoutBinding binding)
+        ViewHolder(ViewDataBinding binding)
         {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        void bind(Product product)
+        // Set the product (casting needed) and return the binding type
+        int bind(Product product)
         {
-            binding.setProduct(product);
+            int bindingType;
+            if(binding instanceof CardProductLayoutBinding)
+            {
+                ((CardProductLayoutBinding) binding).setProduct(product);
+                bindingType = ADD_MODE;
+            }
+            else if(binding instanceof CardProductLayoutEditBinding)
+            {
+                ((CardProductLayoutEditBinding) binding).setProduct(product);
+                bindingType = EDIT_MODE;
+            }
+            else
+            {
+                ((CardProductLayoutShoppingListBinding) binding).setProduct(product);
+                bindingType = LIST_MODE;
+            }
             binding.executePendingBindings();
+            return bindingType;
         }
     }
 }

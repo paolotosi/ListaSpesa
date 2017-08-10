@@ -17,11 +17,6 @@
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize" />
 
-        <SearchView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewTemplates"
             android:layout_width="match_parent"

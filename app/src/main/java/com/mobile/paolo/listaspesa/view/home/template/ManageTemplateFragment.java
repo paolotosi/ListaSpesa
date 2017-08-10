@@ -1,5 +1,6 @@
 package com.mobile.paolo.listaspesa.view.home.template;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,6 +9,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.adapters.TemplateCardViewDataAdapter;
@@ -25,15 +29,10 @@ import java.util.List;
  */
 public class ManageTemplateFragment extends Fragment
 {
+    // RecyclerView, adapter and model
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private List<Template> templateModelList;
-
-    public static ManageTemplateFragment newInstance()
-    {
-        ManageTemplateFragment fragment = new ManageTemplateFragment();
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -79,6 +78,10 @@ public class ManageTemplateFragment extends Fragment
         toolbar.setTitle(getString(R.string.manage_fragment_toolbar));
         toolbar.setTitleTextColor(0xFFFFFFFF);
     }
+
+
+
+
 
 
 

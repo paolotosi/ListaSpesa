@@ -24,6 +24,7 @@ import com.mobile.paolo.listaspesa.utility.SharedPreferencesManager;
 public class SplashActivity extends Activity {
 
     private ImageView logoBlue, logoWhite;
+    private boolean animationStarted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,11 @@ public class SplashActivity extends Activity {
         logoBlue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                rotateLogoAndColorBackground();
+                if(!animationStarted)
+                {
+                    animationStarted = true;
+                    rotateLogoAndColorBackground();
+                }
             }
         });
     }

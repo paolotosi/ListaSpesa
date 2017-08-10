@@ -1,13 +1,19 @@
 package com.mobile.paolo.listaspesa.model.adapters;
 
+import android.content.Intent;
+import android.support.transition.TransitionManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.objects.Template;
+import com.mobile.paolo.listaspesa.view.home.template.EditTemplateActivity;
 
 import java.util.List;
 
@@ -51,6 +57,16 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
         }
         productsSnippet += "...";
         viewHolder.cardProductsSnippet.setText(productsSnippet);
+
+        // Set full list
+        viewHolder.cardTemplateDetails.setText(templateList.get(position).getProductList().get(0).getName());
+        for(int i = 1; i < templateList.get(position).getProductList().size(); i++)
+        {
+            viewHolder.cardTemplateDetails.append("\n" + templateList.get(position).getProductList().get(i).getName());
+        }
+
+        // Set the template
+        viewHolder.selectedTemplate = templateList.get(position);
     }
 
     @Override
@@ -58,16 +74,65 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
         return templateList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder
+    static class ViewHolder extends RecyclerView.ViewHolder
     {
-        public TextView cardTemplateName;
-        public TextView cardProductsSnippet;
-        public ViewHolder(View itemLayoutView)
+        // Card widgets
+        private TextView cardTemplateName;
+        private TextView cardProductsSnippet;
+        private Button cardUseTemplateButton;
+        private Button cardEditTemplateButton;
+        private ImageView cardExpandTemplateDetails;
+        private TextView cardTemplateDetails;
+
+        // Template (it will be used in the EditTemplateActivity)
+        private Template selectedTemplate;
+
+        ViewHolder(View itemLayoutView)
         {
             super(itemLayoutView);
+            initializeWidgets(itemLayoutView);
+            setupWidgetsListeners();
 
+
+        }
+
+        private void initializeWidgets(View itemLayoutView)
+        {
             cardTemplateName = (TextView) itemLayoutView.findViewById(R.id.templateName);
             cardProductsSnippet = (TextView) itemLayoutView.findViewById(R.id.productsSnippet);
+            cardUseTemplateButton = (Button) itemLayoutView.findViewById(R.id.useTemplateButton);
+            cardEditTemplateButton = (Button) itemLayoutView.findViewById(R.id.editTemplateButton);
+            cardExpandTemplateDetails = (ImageView) itemLayoutView.findViewById(R.id.expandTemplateDetails);
+            cardTemplateDetails = (TextView) itemLayoutView.findViewById(R.id.templateDetails);
+        }
+
+        private void setupWidgetsListeners()
+        {
+            // Show/hide details
+            cardExpandTemplateDetails.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(cardTemplateDetails.getVisibility() == View.GONE)
+                    {
+                        cardTemplateDetails.setVisibility(View.VISIBLE);
+                    }
+                    else
+                    {
+                        cardTemplateDetails.setVisibility(View.GONE);
+                    }
+                }
+            });
+
+            // Edit button
+
+            cardEditTemplateButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View clickedView) {
+                    Intent intent = new Intent(clickedView.getContext(), EditTemplateActivity.class);
+                    intent.putExtra("TEMPLATE", selectedTemplate.toJSON().toString());
+                    clickedView.getContext().startActivity(intent);
+                }
+            });
         }
 
     }
