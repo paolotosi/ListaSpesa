@@ -216,6 +216,8 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
                     {
                         Toast.makeText(getContext(), "Template creato con successo", Toast.LENGTH_LONG).show();
                         // Save the created template
+                        int templateID = response.getInt("templateID");
+                        createdTemplate.setID(templateID);
                         GlobalValuesManager.getInstance(getContext()).saveHasUserTemplates(true);
                         GlobalValuesManager.getInstance(getContext()).addTemplate(createdTemplate);
                         changeFragment();

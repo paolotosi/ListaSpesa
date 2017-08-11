@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.objects.Group;
+import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.model.objects.User;
@@ -146,6 +147,45 @@ public class GlobalValuesManager
     {
         List<Template> userTemplates = getUserTemplates();
         userTemplates.add(template);
+        saveUserTemplates(userTemplates);
+    }
+
+    public void changeTemplateName(int templateID, String newName)
+    {
+        List<Template> userTemplates = getUserTemplates();
+        for(int i = 0; i < userTemplates.size(); i++)
+        {
+            if(userTemplates.get(i).getID() == templateID)
+            {
+                userTemplates.get(i).setName(newName);
+            }
+        }
+        saveUserTemplates(userTemplates);
+    }
+
+    public void addTemplateProducts(int templateID, List<Product> addList)
+    {
+        List<Template> userTemplates = getUserTemplates();
+        for(int i = 0; i < userTemplates.size(); i++)
+        {
+            if(userTemplates.get(i).getID() == templateID)
+            {
+                userTemplates.get(i).getProductList().addAll(addList);
+            }
+        }
+        saveUserTemplates(userTemplates);
+    }
+
+    public void removeTemplateProducts(int templateID, List<Product> deleteList)
+    {
+        List<Template> userTemplates = getUserTemplates();
+        for(int i = 0; i < userTemplates.size(); i++)
+        {
+            if(userTemplates.get(i).getID() == templateID)
+            {
+                userTemplates.get(i).getProductList().removeAll(deleteList);
+            }
+        }
         saveUserTemplates(userTemplates);
     }
 

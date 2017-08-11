@@ -14,6 +14,7 @@ import java.util.List;
 
 public class Template
 {
+    private int id;
     private String name;
     private Integer groupID;
     private List<Product> productList;
@@ -22,6 +23,14 @@ public class Template
 
     public Template(String name, Integer groupID, List<Product> productList)
     {
+        this.name = name;
+        this.groupID = groupID;
+        this.productList = productList;
+    }
+
+    public Template(int id, String name, Integer groupID, List<Product> productList)
+    {
+        this.id = id;
         this.name = name;
         this.groupID = groupID;
         this.productList = productList;
@@ -43,14 +52,32 @@ public class Template
         }
     }
 
+    public Template(int id, String name, Integer groupID, JSONArray jsonProductList)
+    {
+        this.id = id;
+        this.name = name;
+        this.groupID = groupID;
+        this.productList = new ArrayList<>();
+        for(int i = 0; i < jsonProductList.length(); i++)
+        {
+            try {
+                JSONObject jsonProduct = jsonProductList.getJSONObject(i);
+                this.productList.add(i, Product.fromJSON(jsonProduct, BASE));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static Template fromJSON(JSONObject jsonTemplate)
     {
         Template template = null;
         try {
+            int id = jsonTemplate.getInt("id");
             String name = jsonTemplate.getString("name");
             Integer groupID = jsonTemplate.getInt("groupID");
             JSONArray productList = jsonTemplate.getJSONArray("productList");
-            template = new Template(name, groupID, productList);
+            template = new Template(id, name, groupID, productList);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -62,6 +89,7 @@ public class Template
     {
         JSONObject jsonTemplate = new JSONObject();
         try {
+            jsonTemplate.put("id", this.id);
             jsonTemplate.put("name", this.name);
             jsonTemplate.put("groupID", this.groupID.toString());
             JSONArray productList = new JSONArray();
@@ -74,6 +102,16 @@ public class Template
             e.printStackTrace();
         }
         return jsonTemplate;
+    }
+
+    public int getID()
+    {
+        return this.id;
+    }
+
+    public void setID(int id)
+    {
+        this.id = id;
     }
 
     public String getName()

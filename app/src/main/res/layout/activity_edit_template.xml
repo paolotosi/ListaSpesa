@@ -13,6 +13,17 @@
         android:layout_width="0px"
         android:layout_height="0px"/>
 
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/addProductsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:elevation="@dimen/button_elevation"
+        android:src="@drawable/ic_add_white_24dp"
+        app:fabSize="normal" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,8 +35,8 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
-            android:titleTextColor="@color/white"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:titleTextColor="@color/white" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,8 +51,8 @@
                 android:id="@+id/templateNameInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nextFocusUp="@id/templateNameInputLayout"
-                android:nextFocusLeft="@id/templateNameInputLayout">
+                android:nextFocusLeft="@id/templateNameInputLayout"
+                android:nextFocusUp="@id/templateNameInputLayout">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/templateNameField"
@@ -61,16 +72,5 @@
 
         </LinearLayout>
     </LinearLayout>
-
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/confirmTemplateEditButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:elevation="@dimen/button_elevation"
-        android:src="@drawable/ic_check_white_24dp"
-        app:fabSize="normal" />
 
 </android.support.design.widget.CoordinatorLayout>

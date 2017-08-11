@@ -55,7 +55,10 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
         {
             productsSnippet += ", " + templateList.get(position).getProductList().get(i).getName();
         }
-        productsSnippet += "...";
+        if(templateList.get(position).getProductList().size() > 3)
+        {
+            productsSnippet += "...";
+        }
         viewHolder.cardProductsSnippet.setText(productsSnippet);
 
         // Set full list
@@ -123,8 +126,8 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
                 }
             });
 
-            // Edit button
 
+            // Edit button
             cardEditTemplateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View clickedView) {

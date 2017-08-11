@@ -80,6 +80,12 @@
     <!-- ManageTemplateFragment strings. -->
     <string name="manage_fragment_toolbar">I tuoi template</string>
 
+    <!-- EditTemplateActivity strings. -->
+    <string name="edit_ok">Modifica avvenuta con successo!</string>
+    <string name="exit_dialog_message">Le modifiche non saranno salvate. Continuare?</string>
+    <string name="exit_action">Continua</string>
+    <string name="cancel_action">Annulla</string>
+
     <!-- Generic error strings. -->
     <string name="generic_error">Errore sconosciuto.</string>
     <string name="connection_error">Errore di connessione al database.</string>

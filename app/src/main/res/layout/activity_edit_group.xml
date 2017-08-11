@@ -70,7 +70,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:elevation="@dimen/button_elevation"
-            android:backgroundTint="@color/grey_800"
+            android:backgroundTint="@color/materialGrey400"
             android:text="@string/cancel"/>
 
     </LinearLayout>

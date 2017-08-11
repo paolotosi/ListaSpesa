@@ -14,6 +14,7 @@ import com.mobile.paolo.listaspesa.databinding.CardProductLayoutEditBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutShoppingListBinding;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -26,6 +27,9 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
     // The data to show
     private SortedList<Product> sortedList;
     private static Comparator<Product> alphabeticalComparator;
+
+    // Used in edit mode to store the products to delete
+    private List<Product> deleteList = new ArrayList<>();
 
     // Mode: add or edit
     private int mode;
@@ -125,6 +129,14 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
                 binding.productDescription.setText(noDescriptionText);
             }
         }
+
+        binding.deleteProductButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteList.add(sortedList.get(viewHolder.getAdapterPosition()));
+                sortedList.remove(sortedList.get(viewHolder.getAdapterPosition()));
+            }
+        });
     }
 
     private void setupListMode(final ViewHolder viewHolder, final int position)
@@ -230,6 +242,11 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
     public SortedList<Product> getModel()
     {
         return sortedList;
+    }
+
+    public List<Product> getDeleteList()
+    {
+        return this.deleteList;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder

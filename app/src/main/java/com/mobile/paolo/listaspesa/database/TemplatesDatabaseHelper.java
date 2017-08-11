@@ -16,6 +16,7 @@ public class TemplatesDatabaseHelper
     // The URLs.
     private static final String URL_GET_TEMPLATES = "http://10.0.2.2/listaspesa/android_connect/templates/get_group_templates.php";
     private static final String URL_CREATE_TEMPLATE = "http://10.0.2.2/listaspesa/android_connect/templates/create_template.php";
+    private static final String URL_UPDATE_TEMPLATE_DETAILS = "http://10.0.2.2/listaspesa/android_connect/templates/update_template_details.php";
 
     public static void sendGetGroupTemplatesRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
@@ -25,5 +26,10 @@ public class TemplatesDatabaseHelper
     public static void sendCreateTemplateRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
         NetworkMessageSender.sendHTTPRequest(URL_CREATE_TEMPLATE, jsonPostData, context, networkResponseHandler);
+    }
+
+    public static void sendDeleteTemplateProductsRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
+    {
+        NetworkMessageSender.sendHTTPRequest(URL_UPDATE_TEMPLATE_DETAILS, jsonPostData, context, networkResponseHandler);
     }
 }
