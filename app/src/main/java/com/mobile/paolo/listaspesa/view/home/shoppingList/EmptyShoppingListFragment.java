@@ -84,7 +84,7 @@ public class EmptyShoppingListFragment extends Fragment {
     private void changeFragment()
     {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        //transaction.replace(R.id.home_main_content, new CreateListFragment());
+        transaction.replace(R.id.home_main_content, new CreateListFragment());
         transaction.commit();
     }
 

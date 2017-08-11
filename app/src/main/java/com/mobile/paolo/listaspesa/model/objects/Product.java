@@ -30,54 +30,29 @@ public class Product
         this.name = name;
         this.brand = brand;
         this.description = description;
+        this.quantity = 0;
     }
 
-    public Product(String name, int quantity)
+    public void setQuantity(int toSet)
     {
-        this.name = name;
-        this.quantity = quantity;
+        this.quantity = toSet;
     }
 
     //Flag specifies which constructor has to be chosen
-    public static Product fromJSON(JSONObject jsonProduct, String flag)
+    public static Product fromJSON(JSONObject jsonProduct)
     {
         Product product = null;
 
-        if(BASE.equalsIgnoreCase(flag))
-        {
-            product = baseProduct(jsonProduct);
-        }
-        if(SHOPLIST.equalsIgnoreCase(flag))
-        {
-            product = shoppingListProduct(jsonProduct);
-        }
-
-
-        return product;
-    }
-
-    private static Product baseProduct(JSONObject jsonProduct)
-    {
-        Product product = null;
         try {
             String name = jsonProduct.getString("name");
             String brand = jsonProduct.getString("brand");
             String description = jsonProduct.getString("description");
             product = new Product(name, brand, description);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return product;
-    }
-
-    private static Product shoppingListProduct(JSONObject jsonProduct)
-    {
-        Product product = null;
-        try {
-            String name = jsonProduct.getString("name");
-            int quantity = jsonProduct.getInt("quantity");
-            product = new Product(name, quantity);
+            if(jsonProduct.has("quantity"))
+            {
+                int quantity = Integer.parseInt(jsonProduct.getString("quantity"));
+                product.setQuantity(quantity);
+            };
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -97,6 +72,11 @@ public class Product
     public String getName() {
 
         return name;
+    }
+
+    public int getQuantity()
+    {
+        return quantity;
     }
 
     public void setName(String name) {

@@ -4,9 +4,11 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +42,6 @@ public class ManageShoppingListFragment extends Fragment {
     private ProductCardViewDataAdapter adapter;
     private ShoppingList shoppingList;
     private List<Product> productModelList = new ArrayList<>();
-    private GlobalValuesManager valuesManager;
-    private final static String SHOPLIST = "shopListProduct";
 
     // Network response logic
     private NetworkResponseHandler fetchProductsResponseHandler;
@@ -53,6 +53,10 @@ public class ManageShoppingListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        if(!(getArguments() == null)){
+        String strtext=getArguments().getString("LIST");
+        Log.d("JSON", strtext);}
 
         // Load fragment.
         View loadedFragment = inflater.inflate(R.layout.fragment_manage_shopping_list, container, false);
@@ -106,47 +110,6 @@ public class ManageShoppingListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
-    private void setupFetchProductsResponseHandler()
-    {
-        this.fetchProductsResponseHandler = new NetworkResponseHandler() {
-
-            @Override
-            public void onSuccess(JSONObject jsonResponse) {
-                populateProductList(jsonResponse);
-            }
-
-            @Override
-            public void onError(VolleyError error) {
-
-            }
-        };
-    }
-
-    // Populate userList with server response
-    private void populateProductList(JSONObject serverResponse)
-    {
-        try {
-            // Split the response in a list.
-            JSONArray jsonProductList = serverResponse.getJSONArray("products");
-
-            // For each user, create a User object and add it to the list.
-            for(int i = 0; i < jsonProductList.length(); i++)
-            {
-                JSONObject jsonProduct = (JSONObject) jsonProductList.get(i);
-                Product toBeAdded = Product.fromJSON(jsonProduct, SHOPLIST);
-
-                    productModelList.add(toBeAdded);
-
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        // Tell the RecyclerView to reload elements
-        adapter.replaceAll(productModelList);
-    }
 
     // Populate product list with the products of the shopping list
     private void populateProductList()
@@ -155,5 +118,4 @@ public class ManageShoppingListFragment extends Fragment {
         productModelList = shoppingList.getProductList();
         adapter.replaceAll(productModelList);
     }
-
 }

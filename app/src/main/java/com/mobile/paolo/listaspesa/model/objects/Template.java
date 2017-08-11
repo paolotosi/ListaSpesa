@@ -19,7 +19,6 @@ public class Template
     private Integer groupID;
     private List<Product> productList;
 
-    private final static String BASE = "baseProduct";
 
     public Template(String name, Integer groupID, List<Product> productList)
     {
@@ -45,7 +44,7 @@ public class Template
         {
             try {
                 JSONObject jsonProduct = jsonProductList.getJSONObject(i);
-                this.productList.add(i, Product.fromJSON(jsonProduct, BASE));
+                this.productList.add(i, Product.fromJSON(jsonProduct));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -62,7 +61,7 @@ public class Template
         {
             try {
                 JSONObject jsonProduct = jsonProductList.getJSONObject(i);
-                this.productList.add(i, Product.fromJSON(jsonProduct, BASE));
+                this.productList.add(i, Product.fromJSON(jsonProduct));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

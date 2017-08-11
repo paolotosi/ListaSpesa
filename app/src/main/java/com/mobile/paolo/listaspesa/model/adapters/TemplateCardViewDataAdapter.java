@@ -1,9 +1,8 @@
 package com.mobile.paolo.listaspesa.model.adapters;
 
 import android.content.Intent;
-import android.support.transition.TransitionManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.view.home.template.EditTemplateActivity;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -25,10 +29,19 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
 {
     // The data to show
     private List<Template> templateList;
+    private boolean editVisibility;
+
 
     public TemplateCardViewDataAdapter(List<Template> templateList)
     {
         this.templateList = templateList;
+        this.editVisibility = true;
+    }
+
+    public TemplateCardViewDataAdapter(List<Template> templateList, boolean editVisibility)
+    {
+        this.templateList = templateList;
+        this.editVisibility = editVisibility;
     }
 
     @Override
@@ -37,7 +50,7 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
 
         View itemLayoutView = null;
         itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_template_layout, null);
-        ViewHolder viewHolder = new ViewHolder(itemLayoutView);
+        ViewHolder viewHolder = new ViewHolder(itemLayoutView, editVisibility);
 
         return viewHolder;
     }
@@ -86,18 +99,21 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
         private Button cardEditTemplateButton;
         private ImageView cardExpandTemplateDetails;
         private TextView cardTemplateDetails;
+        private boolean editVisibility;
 
         // Template (it will be used in the EditTemplateActivity)
         private Template selectedTemplate;
 
-        ViewHolder(View itemLayoutView)
+        ViewHolder(View itemLayoutView, boolean visibility)
         {
             super(itemLayoutView);
             initializeWidgets(itemLayoutView);
             setupWidgetsListeners();
+            this.editVisibility = visibility;
 
 
         }
+
 
         private void initializeWidgets(View itemLayoutView)
         {
@@ -105,6 +121,10 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
             cardProductsSnippet = (TextView) itemLayoutView.findViewById(R.id.productsSnippet);
             cardUseTemplateButton = (Button) itemLayoutView.findViewById(R.id.useTemplateButton);
             cardEditTemplateButton = (Button) itemLayoutView.findViewById(R.id.editTemplateButton);
+            if(!editVisibility)
+            {
+                cardEditTemplateButton.setVisibility(View.GONE);
+            }
             cardExpandTemplateDetails = (ImageView) itemLayoutView.findViewById(R.id.expandTemplateDetails);
             cardTemplateDetails = (TextView) itemLayoutView.findViewById(R.id.templateDetails);
         }
@@ -136,7 +156,23 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
                     clickedView.getContext().startActivity(intent);
                 }
             });
-        }
 
+            cardUseTemplateButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View clickedView) {
+                    List<Product> products = selectedTemplate.getProductList();
+                    JSONObject jsonHelper = new JSONObject();
+                    try {
+                        for(int i = 0; i < products.size(); i++) {
+                            Product product = products.get(i);
+                            jsonHelper.put(String.valueOf(i), product);
+                        }
+                        Log.d("LISTJSON", jsonHelper.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 }

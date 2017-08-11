@@ -19,7 +19,6 @@ public class ShoppingList extends Template
      */
     private boolean state;
     private HashMap<String, String> details;
-    private final static String SHOPLIST = "shopListProduct";
 
     public ShoppingList(String name, Integer groupID, List<Product> productList)
     {
@@ -52,7 +51,7 @@ public class ShoppingList extends Template
             for(int i = 0; i < productList.length(); i++)
             {
                 JSONObject jsonProduct = productList.getJSONObject(i);
-                Product product = Product.fromJSON(jsonProduct, SHOPLIST);
+                Product product = Product.fromJSON(jsonProduct);
                 shoppingList.add(product);
             }
 

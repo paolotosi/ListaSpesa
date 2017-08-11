@@ -42,8 +42,9 @@
             android:windowSoftInputMode="adjustPan" />
 
         <fragment android:name=".CreateGroupFragment" />
+        <fragment android:name=".view.shoppingList.ManageShoppingListFragment" />
 
-        <activity android:name=".view.home.template.EditTemplateActivity"></activity>
+        <activity android:name=".view.home.template.EditTemplateActivity" />
     </application>
 
 </manifest>

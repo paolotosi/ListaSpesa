@@ -73,9 +73,9 @@ public class GlobalValuesManager
         sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_templates), hasUserTemplates);
     }
 
-    public void saveHasUserList(boolean hasUserTemplates)
+    public void saveHasUserList(boolean hasUserList)
     {
-        sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_templates), hasUserTemplates);
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_list), hasUserList);
     }
 
     public boolean hasUserTemplates()
