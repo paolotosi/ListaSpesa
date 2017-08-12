@@ -13,8 +13,10 @@ import com.mobile.paolo.listaspesa.databinding.CardProductLayoutBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutEditBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutShoppingListBinding;
 import com.mobile.paolo.listaspesa.model.objects.Product;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -205,7 +207,7 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
         sortedList.remove(product);
     }
 
-    public void add(List<Product> models) {
+    public void add(Collection<Product> models) {
         sortedList.addAll(models);
     }
 
@@ -242,6 +244,16 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
     public SortedList<Product> getModel()
     {
         return sortedList;
+    }
+
+    public List<Product> getModelAsCollection()
+    {
+        List<Product> productList = new ArrayList<>();
+        for(int i = 0; i < sortedList.size(); i++)
+        {
+            productList.add(sortedList.get(i));
+        }
+        return productList;
     }
 
     public List<Product> getDeleteList()

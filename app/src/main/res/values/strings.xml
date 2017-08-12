@@ -82,9 +82,12 @@
 
     <!-- EditTemplateActivity strings. -->
     <string name="edit_ok">Modifica avvenuta con successo!</string>
-    <string name="exit_dialog_message">Le modifiche non saranno salvate. Continuare?</string>
-    <string name="exit_action">Continua</string>
+    <string name="exit_dialog_message">Eventuali modifiche non saranno salvate. Uscire comunque?</string>
+    <string name="exit_action">Esci</string>
     <string name="cancel_action">Annulla</string>
+
+    <!-- AddTemplateProductsActivity strings. -->
+    <string name="add_template_products_toolbar">Aggiungi prodotti</string>
 
     <!-- Generic error strings. -->
     <string name="generic_error">Errore sconosciuto.</string>

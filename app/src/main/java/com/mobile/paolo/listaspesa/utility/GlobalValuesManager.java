@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -163,20 +164,25 @@ public class GlobalValuesManager
         saveUserTemplates(userTemplates);
     }
 
-    public void addTemplateProducts(int templateID, List<Product> addList)
+    public void addTemplateProducts(int templateID, Collection<Product> addList)
     {
         List<Template> userTemplates = getUserTemplates();
         for(int i = 0; i < userTemplates.size(); i++)
         {
             if(userTemplates.get(i).getID() == templateID)
             {
+                // Add only products that aren't already present
+
+                // addList \ currentProductsList
+                addList.removeAll(userTemplates.get(i).getProductList());
+
                 userTemplates.get(i).getProductList().addAll(addList);
             }
         }
         saveUserTemplates(userTemplates);
     }
 
-    public void removeTemplateProducts(int templateID, List<Product> deleteList)
+    public void removeTemplateProducts(int templateID, Collection<Product> deleteList)
     {
         List<Template> userTemplates = getUserTemplates();
         for(int i = 0; i < userTemplates.size(); i++)
@@ -202,6 +208,19 @@ public class GlobalValuesManager
             e.printStackTrace();
         }
         return templateList;
+    }
+
+    public Template getTemplateByID(int templateID)
+    {
+        List<Template> templateList = getUserTemplates();
+        for(int i = 0; i < templateList.size(); i++)
+        {
+            if(templateList.get(i).getID() == templateID)
+            {
+                return templateList.get(i);
+            }
+        }
+        return null;
     }
 
     public ShoppingList getUserList()

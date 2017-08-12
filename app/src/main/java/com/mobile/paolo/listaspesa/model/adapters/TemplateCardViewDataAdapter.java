@@ -107,11 +107,9 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
         ViewHolder(View itemLayoutView, boolean visibility)
         {
             super(itemLayoutView);
+            this.editVisibility = visibility;
             initializeWidgets(itemLayoutView);
             setupWidgetsListeners();
-            this.editVisibility = visibility;
-
-
         }
 
 

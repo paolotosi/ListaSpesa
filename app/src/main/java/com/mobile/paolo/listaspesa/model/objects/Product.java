@@ -2,10 +2,13 @@ package com.mobile.paolo.listaspesa.model.objects;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * An object that represents a product.
@@ -128,5 +131,35 @@ public class Product
         result = 31 * result + brand.hashCode();
         result = 31 * result + (description != null ? description.hashCode() : 0);
         return result;
+    }
+
+    public static JSONArray asJSONProductList(List<Product> productList)
+    {
+        JSONArray jsonProductList = new JSONArray();
+        for(int i = 0; i < productList.size(); i++)
+        {
+            try {
+                jsonProductList.put(i, productList.get(i).toJSON());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return jsonProductList;
+    }
+
+    public static List<Product> parseJSONProductList(JSONArray jsonProductList)
+    {
+        List<Product> productList = new ArrayList<>();
+        for(int i = 0; i < jsonProductList.length(); i++)
+        {
+            try {
+                JSONObject jsonProduct = jsonProductList.getJSONObject(i);
+                productList.add(Product.fromJSON(jsonProduct));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return productList;
     }
 }
