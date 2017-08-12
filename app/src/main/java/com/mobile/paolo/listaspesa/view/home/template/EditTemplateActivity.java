@@ -86,6 +86,8 @@ public class EditTemplateActivity extends AppCompatActivity {
 
         setupToolbar();
 
+        setupRecyclerView();
+
         setupConfirmTemplateEditButton();
 
     }
@@ -95,7 +97,7 @@ public class EditTemplateActivity extends AppCompatActivity {
         super.onResume();
 
         // Putting this here so that we can say the new products added after onActivityResult
-        setupRecyclerView();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -186,7 +188,7 @@ public class EditTemplateActivity extends AppCompatActivity {
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(false);
 
         // use a linear layout manager
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -252,6 +254,7 @@ public class EditTemplateActivity extends AppCompatActivity {
                     // Get added products from result and add them to the list
                     addSet.addAll(Product.parseJSONProductList(new JSONArray(data.getStringExtra("RESULT"))));
                     adapter.add(addSet);
+                    adapter.notifyDataSetChanged();
 
                     // Update cached template
                     GlobalValuesManager.getInstance(getApplicationContext()).addTemplateProducts(template.getID(), addSet);
