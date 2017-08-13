@@ -44,7 +44,7 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
         this.mode = mode;
         setupProductComparator();
         setupSortedList();
-        insertDummyProducts();
+        //insertDummyProducts();
     }
 
     @Override

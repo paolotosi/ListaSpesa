@@ -73,7 +73,7 @@ public class ManageTemplateFragment extends Fragment
 
     private void setupRecyclerView()
     {
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(false);
 
         // use a linear layout manager
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));

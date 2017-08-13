@@ -97,6 +97,8 @@ public class EditTemplateActivity extends AppCompatActivity {
         super.onResume();
 
         // Putting this here so that we can say the new products added after onActivityResult
+        Template updatedTemplate = GlobalValuesManager.getInstance(getApplicationContext()).getTemplateByID(template.getID());
+        adapter.replaceAll(updatedTemplate.getProductList());
         adapter.notifyDataSetChanged();
     }
 
@@ -259,6 +261,10 @@ public class EditTemplateActivity extends AppCompatActivity {
                     // Update cached template
                     GlobalValuesManager.getInstance(getApplicationContext()).addTemplateProducts(template.getID(), addSet);
 
+                    // Remove from the delete set the products just inserted
+                    adapter.getDeleteList().removeAll(addSet);
+                    deleteSet.removeAll(addSet);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -280,6 +286,11 @@ public class EditTemplateActivity extends AppCompatActivity {
                         GlobalValuesManager.getInstance(getApplicationContext()).removeTemplateProducts(template.getID(), adapter.getDeleteList());
                         Toast.makeText(getApplicationContext(), getString(R.string.edit_ok), Toast.LENGTH_LONG).show();
                         finish();
+                    }
+                    else
+                    {
+                        // Get error message
+                        Log.d("UPDATE_ERROR", response.getString("message"));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -310,6 +321,9 @@ public class EditTemplateActivity extends AppCompatActivity {
             jsonParams.put("deleteProducts", jsonDeleteProducts);
 
             // Products to add
+            // If a product is in the remove set, it needs to be removed from the add set
+            // This handles the case when a user deletes a product and inserts it again in the same update
+            addSet.removeAll(deleteSet);
             JSONArray jsonAddProducts = Product.asJSONProductList(new ArrayList<>(addSet));
             jsonParams.put("addProducts", jsonAddProducts);
 
