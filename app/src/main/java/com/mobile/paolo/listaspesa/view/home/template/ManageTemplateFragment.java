@@ -1,26 +1,36 @@
 package com.mobile.paolo.listaspesa.view.home.template;
 
-import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.database.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.TemplateCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Template;
+import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,7 +40,7 @@ import java.util.List;
  * one template.
  * It shows a list of all templates with a preview of the products.
  */
-public class ManageTemplateFragment extends Fragment
+public class ManageTemplateFragment extends Fragment implements TemplateCardViewDataAdapter.ViewHolder.ClickListener
 {
     // Widgets
     private Toolbar toolbar;
@@ -38,9 +48,17 @@ public class ManageTemplateFragment extends Fragment
 
     // RecyclerView, adapter and model
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
+    private TemplateCardViewDataAdapter adapter;
     private List<Template> templateModelList;
 
+    // Action mode
+    private ActionMode actionMode;
+    private ActionMode.Callback actionModeCallback;
+
+    // Delete templates response handler
+    NetworkResponseHandler deleteTemplateResponseHandler;
+    List<Integer> selectedListItems = new ArrayList<>();
+    List<Integer> selectedIDs = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -60,6 +78,10 @@ public class ManageTemplateFragment extends Fragment
 
         setupNewTemplateButtonListener();
 
+        setupActionModeCallback();
+
+        setupRecyclerView();
+
         return loadedFragment;
     }
 
@@ -67,9 +89,13 @@ public class ManageTemplateFragment extends Fragment
     public void onResume() {
         super.onResume();
 
-        setupRecyclerView();
+        // Update adapter list
+        List<Template> updatedTemplateList = GlobalValuesManager.getInstance(getContext()).getUserTemplates();
+        adapter.replaceAll(updatedTemplateList);
+        adapter.notifyDataSetChanged();
 
     }
+
 
     private void setupRecyclerView()
     {
@@ -80,7 +106,8 @@ public class ManageTemplateFragment extends Fragment
 
         templateModelList = GlobalValuesManager.getInstance(getContext()).getUserTemplates();
 
-        adapter = new TemplateCardViewDataAdapter(templateModelList);
+        // This class listens to click events, we pass it to the adapter
+        adapter = new TemplateCardViewDataAdapter(templateModelList, this);
 
         recyclerView.setAdapter(adapter);
 
@@ -123,11 +150,129 @@ public class ManageTemplateFragment extends Fragment
         transaction.commit();
     }
 
+    private void setupDeleteTemplatesResponseHandler()
+    {
+        this.deleteTemplateResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("DELETE_RESPONSE", response.toString());
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+                        Toast.makeText(getContext(), "Sembra funzionare", Toast.LENGTH_LONG).show();
 
+                        // Update cached template
+                        GlobalValuesManager.getInstance(getContext()).removeTemplates(selectedIDs);
 
+                        adapter.removeItems(selectedListItems);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
 
+            @Override
+            public void onError(VolleyError error) {
 
+            }
+        };
+    }
 
+    private void sendDeleteTemplatesRequest()
+    {
+        // Get the selected templates IDs
+        List<Template> templateList = adapter.getTemplateList();
+        for(int i = 0; i < adapter.getSelectedItemCount(); i++)
+        {
+            selectedIDs.add(templateList.get(adapter.getSelectedItems().get(i)).getID());
+        }
 
+        // JSON POST request
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("templateIDs", new JSONArray(selectedIDs));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
+        // Debug
+        Log.d("DELETE_REQUEST", jsonParams.toString());
+
+        // Setup response handler
+        setupDeleteTemplatesResponseHandler();
+
+        // Send request
+        TemplatesDatabaseHelper.sendDeleteTemplatesRequest(jsonParams, getContext(), deleteTemplateResponseHandler);
+    }
+
+    @Override
+    public void onItemClicked(int position)
+    {
+        if (actionMode != null) {
+            toggleSelection(position);
+        }
+    }
+
+    @Override
+    public boolean onItemLongClicked(int position)
+    {
+        if (actionMode == null)
+        {
+            actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(actionModeCallback);
+        }
+
+        toggleSelection(position);
+
+        return true;
+    }
+
+    private void toggleSelection(int position) {
+        adapter.toggleSelection(position);
+        int count = adapter.getSelectedItemCount();
+
+        if (count == 0)
+        {
+            actionMode.finish();
+        }
+        else
+        {
+            actionMode.setTitle(String.valueOf(count));
+            actionMode.invalidate();
+        }
+    }
+
+    private void setupActionModeCallback()
+    {
+        this.actionModeCallback = new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate (R.menu.template_action_mode, menu);
+                selectedListItems.clear();
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                if(item.getItemId() == R.id.deleteTemplate)
+                {
+                    sendDeleteTemplatesRequest();
+                    selectedListItems.addAll(adapter.getSelectedItems());
+                    mode.finish();
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                adapter.clearSelection();
+                actionMode = null;
+            }
+        };
+    }
 }

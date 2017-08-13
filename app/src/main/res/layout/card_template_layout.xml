@@ -3,8 +3,11 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <android.support.v7.widget.CardView
+        android:id="@+id/cardTemplate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
         android:layout_margin="16dp"
         android:elevation="2dp">
         <LinearLayout
@@ -73,5 +76,14 @@
                 android:hint="Lista prodotti completa"
                 android:visibility="gone"/>
         </LinearLayout>
+
+        <View
+            android:id="@+id/selectedOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparentColorAccent"
+            android:visibility="invisible" />
+
     </android.support.v7.widget.CardView>
+
 </RelativeLayout>

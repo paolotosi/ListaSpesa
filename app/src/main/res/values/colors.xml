@@ -5,6 +5,7 @@
     <color name="colorPrimaryLight">#C5CAE9</color>
 
     <color name="colorAccent">#FF6E40</color>
+    <color name="transparentColorAccent">#33FF6E40</color>
 
     <color name="materialRed500">#F44336</color>
     

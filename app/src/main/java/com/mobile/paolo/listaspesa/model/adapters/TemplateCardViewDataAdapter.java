@@ -1,6 +1,7 @@
 package com.mobile.paolo.listaspesa.model.adapters;
 
 import android.content.Intent;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,23 +20,28 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * Created by paolo on 04/08/17.
  */
 
-public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCardViewDataAdapter.ViewHolder>
+public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardViewDataAdapter.ViewHolder>
 {
     // The data to show
     private List<Template> templateList;
     private boolean editVisibility;
 
+    private ViewHolder.ClickListener clickListener;
 
-    public TemplateCardViewDataAdapter(List<Template> templateList)
+
+    public TemplateCardViewDataAdapter(List<Template> templateList, ViewHolder.ClickListener clickListener)
     {
         this.templateList = templateList;
         this.editVisibility = true;
+        this.clickListener = clickListener;
     }
 
     public TemplateCardViewDataAdapter(List<Template> templateList, boolean editVisibility)
@@ -50,7 +56,7 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
 
         View itemLayoutView = null;
         itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_template_layout, null);
-        ViewHolder viewHolder = new ViewHolder(itemLayoutView, editVisibility);
+        ViewHolder viewHolder = new ViewHolder(itemLayoutView, this.editVisibility, this.clickListener);
 
         return viewHolder;
     }
@@ -83,6 +89,8 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
 
         // Set the template
         viewHolder.selectedTemplate = templateList.get(position);
+
+        viewHolder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -90,16 +98,81 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
         return templateList.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder
+    public List<Template> getTemplateList()
+    {
+        return this.templateList;
+    }
+
+    public void removeItem(int position) {
+        templateList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void removeItems(List<Integer> positions) {
+        // Reverse-sort the list
+        Collections.sort(positions, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer lhs, Integer rhs) {
+                return rhs - lhs;
+            }
+        });
+
+        // Split the list in ranges
+        while (!positions.isEmpty()) {
+            if (positions.size() == 1) {
+                removeItem(positions.get(0));
+                positions.remove(0);
+            } else {
+                int count = 1;
+                while (positions.size() > count && positions.get(count).equals(positions.get(count - 1) - 1)) {
+                    ++count;
+                }
+
+                if (count == 1) {
+                    removeItem(positions.get(0));
+                } else {
+                    removeRange(positions.get(count - 1), count);
+                }
+
+                for (int i = 0; i < count; ++i) {
+                    positions.remove(0);
+                }
+            }
+        }
+    }
+
+    private void removeRange(int positionStart, int itemCount) {
+        for (int i = 0; i < itemCount; ++i) {
+            templateList.remove(positionStart);
+        }
+        notifyItemRangeRemoved(positionStart, itemCount);
+    }
+
+    public void replaceAll(List<Template> models) {
+        for (int i = templateList.size() - 1; i >= 0; i--) {
+            final Template model = templateList.get(i);
+            if (!models.contains(model)) {
+                templateList.remove(model);
+            }
+        }
+        templateList.addAll(models);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener
     {
         // Card widgets
+        private CardView cardTemplate;
         private TextView cardTemplateName;
         private TextView cardProductsSnippet;
         private Button cardUseTemplateButton;
         private Button cardEditTemplateButton;
         private ImageView cardExpandTemplateDetails;
         private TextView cardTemplateDetails;
+        private View selectedOverlay;
+
         private boolean editVisibility;
+
+        private ClickListener clickListener;
 
         // Template (it will be used in the EditTemplateActivity)
         private Template selectedTemplate;
@@ -112,13 +185,56 @@ public class TemplateCardViewDataAdapter extends RecyclerView.Adapter<TemplateCa
             setupWidgetsListeners();
         }
 
+        ViewHolder(View itemLayoutView, boolean visibility, ClickListener clickListener)
+        {
+            super(itemLayoutView);
+
+            this.editVisibility = visibility;
+            this.clickListener = clickListener;
+
+            initializeWidgets(itemLayoutView);
+
+            // Make the card listen to (long) click events, that will be handled by the listener
+            // Note: the listener is ManageTemplateFragment
+            cardTemplate.setOnClickListener(this);
+            cardTemplate.setOnLongClickListener(this);
+
+            setupWidgetsListeners();
+        }
+
+        public interface ClickListener
+        {
+            void onItemClicked(int position);
+            boolean onItemLongClicked(int position);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (clickListener != null)
+            {
+                clickListener.onItemClicked(getAdapterPosition());
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (clickListener != null)
+            {
+                return clickListener.onItemLongClicked(getAdapterPosition());
+            }
+            return false;
+        }
+
 
         private void initializeWidgets(View itemLayoutView)
         {
+            cardTemplate = (CardView) itemLayoutView.findViewById(R.id.cardTemplate);
             cardTemplateName = (TextView) itemLayoutView.findViewById(R.id.templateName);
             cardProductsSnippet = (TextView) itemLayoutView.findViewById(R.id.productsSnippet);
             cardUseTemplateButton = (Button) itemLayoutView.findViewById(R.id.useTemplateButton);
             cardEditTemplateButton = (Button) itemLayoutView.findViewById(R.id.editTemplateButton);
+            selectedOverlay = itemLayoutView.findViewById(R.id.selectedOverlay);
+
             if(!editVisibility)
             {
                 cardEditTemplateButton.setVisibility(View.GONE);

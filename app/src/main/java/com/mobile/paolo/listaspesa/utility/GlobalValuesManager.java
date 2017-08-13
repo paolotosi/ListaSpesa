@@ -1,6 +1,7 @@
 package com.mobile.paolo.listaspesa.utility;
 
 import android.content.Context;
+import android.content.Intent;
 
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.objects.Group;
@@ -149,6 +150,27 @@ public class GlobalValuesManager
         List<Template> userTemplates = getUserTemplates();
         userTemplates.add(template);
         saveUserTemplates(userTemplates);
+    }
+
+    public void removeTemplate(Integer templateID)
+    {
+        List<Template> templateList = getUserTemplates();
+        for(int i = templateList.size()-1; i >= 0; i--)
+        {
+            if(templateList.get(i).getID() == templateID)
+            {
+                templateList.remove(templateList.get(i));
+            }
+        }
+        saveUserTemplates(templateList);
+    }
+
+    public void removeTemplates(List<Integer> templateIDs)
+    {
+        for(int i = 0; i < templateIDs.size(); i++)
+        {
+            removeTemplate(templateIDs.get(i));
+        }
     }
 
     public void changeTemplateName(int templateID, String newName)

@@ -21,15 +21,16 @@
         <item name="windowActionModeOverlay">true</item>
 
         <item name="actionModeStyle">@style/MyActionMode</item>
+        <item name="android:actionModeCloseDrawable">@drawable/ic_arrow_back_white_24dp</item>
 
     </style>
 
-    <style name="MyActionMode" parent = "@style/Widget.AppCompat.ActionMode">
+    <style name="MyActionMode" parent="@style/Widget.AppCompat.ActionMode">
 
         <!-- background of the Contextual Action Bar -->
-        <item name="background">@color/contextual_background</item>
-
+        <item name="background">@color/colorAccent</item>
         <item name="titleTextStyle">@style/MyTextStyle</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_add_white_24dp</item>
 
         <!-- Change Default icon of the Action Mode
         <item name="actionModeCloseDrawable">@drawable/refresh</item>
@@ -38,8 +39,13 @@
 
     <!-- Contextual ActionBar title text -->
     <style name="MyTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/contextualText</item>
+        <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="ContextualButtonStyle" parent="Base.Widget.AppCompat.ActionButton.CloseMode">
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
+
 
     <style name="MyToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
 
