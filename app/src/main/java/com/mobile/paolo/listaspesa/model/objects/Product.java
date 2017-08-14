@@ -36,11 +36,6 @@ public class Product
         this.quantity = 0;
     }
 
-    public void setQuantity(int toSet)
-    {
-        this.quantity = toSet;
-    }
-
     //Flag specifies which constructor has to be chosen
     public static Product fromJSON(JSONObject jsonProduct)
     {
@@ -75,6 +70,11 @@ public class Product
     public String getName() {
 
         return name;
+    }
+
+    public void setQuantity(int quantity)
+    {
+        this.quantity = quantity;
     }
 
     public int getQuantity()

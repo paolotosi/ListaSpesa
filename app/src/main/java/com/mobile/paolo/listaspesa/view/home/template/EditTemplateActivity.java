@@ -96,7 +96,7 @@ public class EditTemplateActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // Putting this here so that we can say the new products added after onActivityResult
+        // Putting this here so that we can see the new products added after onActivityResult
         Template updatedTemplate = GlobalValuesManager.getInstance(getApplicationContext()).getTemplateByID(template.getID());
         adapter.replaceAll(updatedTemplate.getProductList());
         adapter.notifyDataSetChanged();
@@ -129,8 +129,12 @@ public class EditTemplateActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        showAlertDialog();
+    public void onBackPressed()
+    {   if(templateModified())
+        {
+            showAlertDialog();
+        }
+        else finish();
     }
 
     private void initializeWidgets()
@@ -343,6 +347,18 @@ public class EditTemplateActivity extends AppCompatActivity {
             TemplatesDatabaseHelper.sendDeleteTemplateProductsRequest(jsonParams, getApplicationContext(), updateTemplateDetailsResponseHandler);
         }
 
+    }
+
+    private boolean templateModified()
+    {
+        String oldName = template.getName();
+        String newName = templateNameField.getText().toString();
+
+        boolean nameChanged = !newName.equals(oldName); // true when name is different from before
+        boolean somethingRemoved = (adapter.getDeleteList().size() > 0);
+        boolean somethingAdded = (addSet.size() > 0);
+
+        return nameChanged || somethingRemoved || somethingAdded;
     }
 
     private void showAlertDialog()

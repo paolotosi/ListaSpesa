@@ -43,6 +43,12 @@ public class GlobalValuesManager
         return instance;
     }
 
+    /*
+        ------------------
+        USER METHODS
+        ------------------
+     */
+
     public void saveLoggedUser(User loggedUser)
     {
         sharedPreferencesManager.writeString(context.getResources().getString(R.string.logged_user), loggedUser.toJSON().toString());
@@ -60,6 +66,12 @@ public class GlobalValuesManager
         return loggedUser;
     }
 
+    /*
+        ------------------
+        GROUP METHODS
+        ------------------
+     */
+
     public void saveIsUserPartOfAGroup(boolean isUserPartOfAGroup)
     {
         sharedPreferencesManager.writeBoolean(context.getResources().getString(R.string.is_user_part_of_a_group), isUserPartOfAGroup);
@@ -68,26 +80,6 @@ public class GlobalValuesManager
     public boolean isUserPartOfAGroup()
     {
         return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_part_of_a_group));
-    }
-
-    public void saveHasUserTemplates(boolean hasUserTemplates)
-    {
-        sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_templates), hasUserTemplates);
-    }
-
-    public void saveHasUserList(boolean hasUserList)
-    {
-        sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_list), hasUserList);
-    }
-
-    public boolean hasUserTemplates()
-    {
-        return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_templates));
-    }
-
-    public boolean hasUserList()
-    {
-        return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_list));
     }
 
     public void saveLoggedUserGroup(Group group)
@@ -107,6 +99,23 @@ public class GlobalValuesManager
         return loggedUserGroup;
     }
 
+    /*
+        ------------------
+        TEMPLATE METHODS
+        ------------------
+     */
+
+    public void saveHasUserTemplates(boolean hasUserTemplates)
+    {
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_templates), hasUserTemplates);
+    }
+
+    public boolean hasUserTemplates()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_templates));
+    }
+
+
     public void saveUserTemplates(List<Template> templateList)
     {
         JSONArray jsonTemplateList = new JSONArray();
@@ -121,28 +130,9 @@ public class GlobalValuesManager
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_templates), jsonTemplateList.toString());
     }
 
-    public void saveUserList(List<ShoppingList> shoppingList)
-    {
-        JSONArray jsonShoppingList = new JSONArray();
-        for(int i = 0; i < shoppingList.size(); i++)
-        {
-            try {
-                jsonShoppingList.put(i, shoppingList.get(i).toJSON());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
-    }
-
     public void saveUserTemplates(JSONArray jsonTemplateList)
     {
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_templates), jsonTemplateList.toString());
-    }
-
-    public void saveUserList(JSONArray jsonShoppingList)
-    {
-        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
     }
 
     public void addTemplate(Template template)
@@ -245,21 +235,72 @@ public class GlobalValuesManager
         return null;
     }
 
+    /*
+        ------------------
+        LIST METHODS
+        ------------------
+     */
+
+    public void saveHasUserList(boolean hasUserList)
+    {
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_list), hasUserList);
+    }
+
+    public boolean hasUserList()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_list));
+    }
+
+    public void saveUserList(JSONObject jsonShoppingList)
+    {
+        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
+    }
+
+    public void saveUserList(JSONArray jsonShoppingList)
+    {
+        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
+    }
+
     public ShoppingList getUserList()
     {
         ShoppingList shoppingList = null;
-        int groupID = getLoggedUserGroup().getID();
         try {
-            JSONArray shoppingListArray = new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.logged_user_list)));
-            JSONObject jsonShoppingList = new JSONObject();
-            jsonShoppingList.put("groupID", String.valueOf(groupID));
-            jsonShoppingList.put("list", shoppingListArray);
-            shoppingList = ShoppingList.fromJSON(jsonShoppingList);
-
+            shoppingList = ShoppingList.fromJSON(new JSONObject(sharedPreferencesManager.readString(context.getString(R.string.logged_user_list))));
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return shoppingList;
     }
+
+    public void saveUserList(List<ShoppingList> shoppingList)
+    {
+        JSONArray jsonShoppingList = new JSONArray();
+        for(int i = 0; i < shoppingList.size(); i++)
+        {
+            try {
+                jsonShoppingList.put(i, shoppingList.get(i).toJSON());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
+    }
+
+//    public ShoppingList getUserList()
+//    {
+//        ShoppingList shoppingList = null;
+//        int groupID = getLoggedUserGroup().getID();
+//        try {
+//            JSONArray shoppingListArray = new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.logged_user_list)));
+//            JSONObject jsonShoppingList = new JSONObject();
+//            jsonShoppingList.put("groupID", String.valueOf(groupID));
+//            jsonShoppingList.put("list", shoppingListArray);
+//            shoppingList = ShoppingList.fromJSON(jsonShoppingList);
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        return shoppingList;
+//    }
 
 }

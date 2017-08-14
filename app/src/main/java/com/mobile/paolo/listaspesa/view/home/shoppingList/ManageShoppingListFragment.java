@@ -3,6 +3,7 @@ package com.mobile.paolo.listaspesa.view.home.shoppingList;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +38,10 @@ Shows the shopping list of the group and provides operations to manipulate the s
  */
 public class ManageShoppingListFragment extends Fragment {
 
+    // Widgets
+    private FloatingActionButton confirmShoppingListCreationButton;
+    private Toolbar createListToolbar;
+
     // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
     private ProductCardViewDataAdapter adapter;
@@ -61,13 +66,13 @@ public class ManageShoppingListFragment extends Fragment {
         // Load fragment.
         View loadedFragment = inflater.inflate(R.layout.fragment_manage_shopping_list, container, false);
 
-        // Setup toolbar
+        initializeWidgets(loadedFragment);
+
         setupToolbar(loadedFragment);
 
-        shoppingList = GlobalValuesManager.getInstance(getContext()).getUserList();
-
-        // Initialize the RecyclerView.
         setupRecyclerView(loadedFragment);
+
+        setupConfirmButtonListener();
 
         populateProductList();
 
@@ -87,24 +92,28 @@ public class ManageShoppingListFragment extends Fragment {
 
     private void setupToolbar(View loadedFragment)
     {
-        Toolbar toolbar = (Toolbar) loadedFragment.findViewById(R.id.shoppingListToolbar);
-        toolbar.setTitle(getString(R.string.toolbar_title));
-        toolbar.setTitleTextColor(0xFFFFFFFF);
+        createListToolbar.setTitle(getString(R.string.toolbar_title));
+        createListToolbar.setTitleTextColor(0xFFFFFFFF);
+    }
+
+    private void initializeWidgets(View loadedFragment)
+    {
+        createListToolbar = (Toolbar) loadedFragment.findViewById(R.id.shoppingListToolbar);
+        recyclerView = (RecyclerView) loadedFragment.findViewById(R.id.recyclerViewShopProducts);
+        confirmShoppingListCreationButton = (FloatingActionButton) loadedFragment.findViewById(R.id.confirmShoppingListCreationButton);
     }
 
     private void setupRecyclerView(View loadedFragment)
     {
-        recyclerView = (RecyclerView) loadedFragment.findViewById(R.id.recyclerViewShopProducts);
-
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(false);
 
         // use a linear layout manager
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
 
         // create an Object for Adapter
-        adapter = new ProductCardViewDataAdapter(ProductCardViewDataAdapter.ADD_MODE);
+        adapter = new ProductCardViewDataAdapter(ProductCardViewDataAdapter.LIST_MODE);
 
         // set the adapter object to the Recyclerview
         recyclerView.setAdapter(adapter);
@@ -114,8 +123,27 @@ public class ManageShoppingListFragment extends Fragment {
     // Populate product list with the products of the shopping list
     private void populateProductList()
     {
+        // Get the shopping list from cache
+        shoppingList = GlobalValuesManager.getInstance(getContext()).getUserList();
 
+        // Get the product list
         productModelList = shoppingList.getProductList();
+
+        // Set the adapter model
         adapter.replaceAll(productModelList);
+    }
+
+    private void setupConfirmButtonListener()
+    {
+        confirmShoppingListCreationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Product> productList = adapter.getModelAsCollection();
+                for(int i = 0; i < productList.size(); i++)
+                {
+                    Log.d("Product quantity: ", ((Integer) productList.get(i).getQuantity()).toString());
+                }
+            }
+        });
     }
 }

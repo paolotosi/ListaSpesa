@@ -82,7 +82,7 @@
 
     <!-- EditTemplateActivity strings. -->
     <string name="edit_ok">Modifica avvenuta con successo!</string>
-    <string name="exit_dialog_message">Eventuali modifiche non saranno salvate. Uscire comunque?</string>
+    <string name="exit_dialog_message">Sono presenti modifiche non salvate. Uscire comunque?</string>
     <string name="exit_action">Esci</string>
     <string name="cancel_action">Annulla</string>
 

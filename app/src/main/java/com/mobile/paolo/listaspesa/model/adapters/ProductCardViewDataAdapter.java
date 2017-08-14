@@ -14,6 +14,7 @@ import com.mobile.paolo.listaspesa.databinding.CardProductLayoutEditBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutShoppingListBinding;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.shawnlin.numberpicker.NumberPicker;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -145,6 +146,28 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
     {
         // Cast superclass binding to list mode binding
         CardProductLayoutShoppingListBinding binding = (CardProductLayoutShoppingListBinding) viewHolder.binding;
+
+        // Custom logic for product description
+        if(sortedList.get(position).getDescription() != null)
+        {
+            if(sortedList.get(position).getDescription().equals("null"))
+            {
+                String noDescriptionText = binding.productDescription.getContext().getString(R.string.no_description_message);
+                binding.productDescription.setText(noDescriptionText);
+            }
+        }
+
+        // Set quantity
+        binding.quantityPicker.setValue(sortedList.get(position).getQuantity());
+
+        // Listen to NumberPicker changes
+        binding.quantityPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                sortedList.get(position).setQuantity(newVal);
+            }
+        });
+
     }
 
     private void setupSortedList()
@@ -229,16 +252,6 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
         }
         sortedList.addAll(models);
         sortedList.endBatchedUpdates();
-    }
-
-    // Needed to make the list fill the height
-    private void insertDummyProducts()
-    {
-        sortedList.add(new Product("Dummy1", "a", "a"));
-        sortedList.add(new Product("Dummy2", "b", "b"));
-        sortedList.add(new Product("Dummy3", "c", "c"));
-        sortedList.add(new Product("Dummy4", "d", "d"));
-        sortedList.add(new Product("Dummy5", "e", "e"));
     }
 
     public SortedList<Product> getModel()

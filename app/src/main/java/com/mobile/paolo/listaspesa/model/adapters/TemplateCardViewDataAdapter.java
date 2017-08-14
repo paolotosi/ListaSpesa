@@ -1,6 +1,8 @@
 package com.mobile.paolo.listaspesa.model.adapters;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,8 +15,13 @@ import android.widget.TextView;
 
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.objects.Product;
+import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.Template;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
+import com.mobile.paolo.listaspesa.view.home.shoppingList.ManageShoppingListFragment;
 import com.mobile.paolo.listaspesa.view.home.template.EditTemplateActivity;
+import com.mobile.paolo.listaspesa.view.home.template.EmptyTemplateFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -90,7 +97,10 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
         // Set the template
         viewHolder.selectedTemplate = templateList.get(position);
 
+        // If the card is selected show a colored transparent overlay
         viewHolder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
+        viewHolder.cardEditTemplateButton.setEnabled(!isSelected(position));
+        viewHolder.cardUseTemplateButton.setEnabled(!isSelected(position));
     }
 
     @Override
@@ -194,11 +204,6 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
 
             initializeWidgets(itemLayoutView);
 
-            // Make the card listen to (long) click events, that will be handled by the listener
-            // Note: the listener is ManageTemplateFragment
-            cardTemplate.setOnClickListener(this);
-            cardTemplate.setOnLongClickListener(this);
-
             setupWidgetsListeners();
         }
 
@@ -209,7 +214,7 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(View clickedView) {
             if (clickListener != null)
             {
                 clickListener.onItemClicked(getAdapterPosition());
@@ -217,7 +222,7 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
         }
 
         @Override
-        public boolean onLongClick(View v) {
+        public boolean onLongClick(View clickedView) {
             if (clickListener != null)
             {
                 return clickListener.onItemLongClicked(getAdapterPosition());
@@ -245,6 +250,11 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
 
         private void setupWidgetsListeners()
         {
+            // Make the card listen to (long) click events, that will be handled by the listener
+            // Note: the listener is ManageTemplateFragment, that is received from outside
+            cardTemplate.setOnClickListener(this);
+            cardTemplate.setOnLongClickListener(this);
+
             // Show/hide details
             cardExpandTemplateDetails.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -274,17 +284,28 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
             cardUseTemplateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View clickedView) {
-                    List<Product> products = selectedTemplate.getProductList();
-                    JSONObject jsonHelper = new JSONObject();
-                    try {
-                        for(int i = 0; i < products.size(); i++) {
-                            Product product = products.get(i);
-                            jsonHelper.put(String.valueOf(i), product);
-                        }
-                        Log.d("LISTJSON", jsonHelper.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+//                    List<Product> products = selectedTemplate.getProductList();
+//                    JSONObject jsonHelper = new JSONObject();
+//                    try {
+//                        for(int i = 0; i < products.size(); i++) {
+//                            Product product = products.get(i);
+//                            jsonHelper.put(String.valueOf(i), product);
+//                        }
+//                        Log.d("LISTJSON", jsonHelper.toString());
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+
+                    // Create list from the selected template and save it in the cache
+                    ShoppingList list = ShoppingList.fromJSON(selectedTemplate.toJSON());
+                    GlobalValuesManager.getInstance(clickedView.getContext()).saveHasUserList(true);
+                    GlobalValuesManager.getInstance(clickedView.getContext()).saveUserList(list.toJSON());
+
+                    // Change fragment
+                    FragmentTransaction transaction = ((FragmentActivity)clickedView.getContext()).getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.home_main_content, new ManageShoppingListFragment());
+                    transaction.commit();
+
                 }
             });
         }
