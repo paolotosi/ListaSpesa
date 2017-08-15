@@ -21,7 +21,7 @@ import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 
 import java.util.List;
 
-public class CreateListFragment extends Fragment {
+public class CreateShoppingListFragment extends Fragment {
 
     // RecyclerView, adapter and model
     private RecyclerView recyclerView;

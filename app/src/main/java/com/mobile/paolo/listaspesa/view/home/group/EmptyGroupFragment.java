@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 
 /**
  * -- EmptyGroupFragment --
@@ -44,6 +46,7 @@ public class EmptyGroupFragment extends Fragment {
         createNewGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingGroup(true);
                 changeFragment();
             }
         });
@@ -52,7 +55,7 @@ public class EmptyGroupFragment extends Fragment {
     private void changeFragment()
     {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_main_content, new CreateGroupFragment());
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateGroupFragment());
         transaction.commit();
     }
 

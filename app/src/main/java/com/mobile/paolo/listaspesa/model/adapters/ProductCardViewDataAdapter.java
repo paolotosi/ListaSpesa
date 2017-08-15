@@ -18,6 +18,7 @@ import com.shawnlin.numberpicker.NumberPicker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import java.util.List;
  * Created by paolo on 04/08/17.
  */
 
-public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCardViewDataAdapter.ViewHolder>
+public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardViewDataAdapter.ViewHolder>
 {
     // The data to show
     private SortedList<Product> sortedList;
@@ -40,12 +41,22 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
     public static final int EDIT_MODE = 2;
     public static final int LIST_MODE = 3;
 
+    // ClickListener (received from the outside)
+    ViewHolder.ClickListener clickListener;
+
     public ProductCardViewDataAdapter(int mode)
     {
         this.mode = mode;
         setupProductComparator();
         setupSortedList();
-        //insertDummyProducts();
+    }
+
+    public ProductCardViewDataAdapter(int mode, ViewHolder.ClickListener clickListener)
+    {
+        this.mode = mode;
+        this.clickListener = clickListener;
+        setupProductComparator();
+        setupSortedList();
     }
 
     @Override
@@ -57,7 +68,8 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
         {
             case ADD_MODE:  productBinding = CardProductLayoutBinding.inflate(layoutInflater, parent, false); break;
             case EDIT_MODE: productBinding = CardProductLayoutEditBinding.inflate(layoutInflater, parent, false); break;
-            case LIST_MODE: productBinding = CardProductLayoutShoppingListBinding.inflate(layoutInflater, parent, false); break;
+            case LIST_MODE: productBinding = CardProductLayoutShoppingListBinding.inflate(layoutInflater, parent, false);
+                            return new ViewHolder(productBinding, clickListener);
         }
         return new ViewHolder(productBinding);
     }
@@ -168,6 +180,8 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
             }
         });
 
+        // Show transparent overlay if product is selected in action mode
+        binding.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void setupSortedList()
@@ -254,6 +268,51 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
         sortedList.endBatchedUpdates();
     }
 
+    public void removeItem(int position) {
+        sortedList.removeItemAt(position);
+        notifyItemRemoved(position);
+    }
+
+    public void removeItems(List<Integer> positions) {
+        // Reverse-sort the list
+        Collections.sort(positions, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer lhs, Integer rhs) {
+                return rhs - lhs;
+            }
+        });
+
+        // Split the list in ranges
+        while (!positions.isEmpty()) {
+            if (positions.size() == 1) {
+                removeItem(positions.get(0));
+                positions.remove(0);
+            } else {
+                int count = 1;
+                while (positions.size() > count && positions.get(count).equals(positions.get(count - 1) - 1)) {
+                    ++count;
+                }
+
+                if (count == 1) {
+                    removeItem(positions.get(0));
+                } else {
+                    removeRange(positions.get(count - 1), count);
+                }
+
+                for (int i = 0; i < count; ++i) {
+                    positions.remove(0);
+                }
+            }
+        }
+    }
+
+    private void removeRange(int positionStart, int itemCount) {
+        for (int i = 0; i < itemCount; ++i) {
+            sortedList.removeItemAt(positionStart);
+        }
+        notifyItemRangeRemoved(positionStart, itemCount);
+    }
+
     public SortedList<Product> getModel()
     {
         return sortedList;
@@ -274,17 +333,52 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
         return this.deleteList;
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder
+    // ------------------------------------------------------------------------------------------//
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener
     {
         // The binding class is created automatically by the framework after XML binding
         // Since we don't know beforehand which binding was used (add, edit, or list),
         // we need to use the superclass
         private ViewDataBinding binding;
 
+        // Received from the outside
+        private ClickListener clickListener;
+
         ViewHolder(ViewDataBinding binding)
         {
             super(binding.getRoot());
             this.binding = binding;
+        }
+
+        ViewHolder(ViewDataBinding binding, ClickListener clickListener)
+        {
+            super(binding.getRoot());
+            this.binding = binding;
+            this.clickListener = clickListener;
+        }
+
+        public interface ClickListener
+        {
+            void onItemClicked(int position);
+            boolean onItemLongClicked(int position);
+        }
+
+        @Override
+        public void onClick(View clickedView) {
+            if (clickListener != null)
+            {
+                clickListener.onItemClicked(getAdapterPosition());
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View clickedView) {
+            if (clickListener != null)
+            {
+                return clickListener.onItemLongClicked(getAdapterPosition());
+            }
+            return false;
         }
 
         // Set the product (casting needed) and return the binding type
@@ -304,6 +398,9 @@ public class ProductCardViewDataAdapter extends RecyclerView.Adapter<ProductCard
             else
             {
                 ((CardProductLayoutShoppingListBinding) binding).setProduct(product);
+                // Set listeners
+                ((CardProductLayoutShoppingListBinding) binding).cardProduct.setOnClickListener(this);
+                ((CardProductLayoutShoppingListBinding) binding).cardProduct.setOnLongClickListener(this);
                 bindingType = LIST_MODE;
             }
             binding.executePendingBindings();

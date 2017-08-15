@@ -3,12 +3,16 @@ package com.mobile.paolo.listaspesa.view.home.template;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.android.volley.VolleyError;
@@ -32,7 +36,7 @@ import java.util.List;
  * The result returned is the list of the products checked in this view.
  */
 
-public class AddTemplateProductsActivity extends AppCompatActivity {
+public class AddProductsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     // Widgets
     private Toolbar toolbar;
@@ -73,6 +77,51 @@ public class AddTemplateProductsActivity extends AppCompatActivity {
 
         ProductsDatabaseHelper.sendGetAllProductsRequest(null, getApplicationContext(), fetchProductsResponseHandler);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        // Inflate menu
+        getMenuInflater().inflate(R.menu.search_action_menu, menu);
+
+        // Get the search bar
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        // Setup hint, width and listener
+        searchView.setQueryHint(getString(R.string.action_search_hint));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setOnQueryTextListener(this);
+
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        final List<Product> filteredModelList = filter(allProductsList, query);
+        adapter.replaceAll(filteredModelList);
+        recyclerView.scrollToPosition(0);
+        return true;
+    }
+
+    private static List<Product> filter(List<Product> models, String query) {
+        final String lowerCaseQuery = query.toLowerCase();
+
+        final List<Product> filteredModelList = new ArrayList<>();
+        for (Product model : models) {
+            final String text = model.getName().toLowerCase();
+            if (text.contains(lowerCaseQuery)) {
+                filteredModelList.add(model);
+            }
+        }
+        return filteredModelList;
     }
 
     @Override

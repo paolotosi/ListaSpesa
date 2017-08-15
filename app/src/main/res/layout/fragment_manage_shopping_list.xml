@@ -37,13 +37,13 @@
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/confirmShoppingListCreationButton"
+        android:id="@+id/addProductToListButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:elevation="@dimen/button_elevation"
-        android:src="@drawable/ic_check_white_24dp"
+        android:src="@drawable/ic_add_white_24dp"
         app:fabSize="normal" />
 
 

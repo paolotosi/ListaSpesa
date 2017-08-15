@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -247,7 +246,7 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
         this.actionModeCallback = new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate (R.menu.template_action_mode, menu);
+                mode.getMenuInflater().inflate (R.menu.delete_action_mode, menu);
                 selectedListItems.clear();
                 return true;
             }

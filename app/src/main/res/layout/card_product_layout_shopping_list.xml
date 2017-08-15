@@ -11,6 +11,7 @@
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.CardView
+            android:id="@+id/cardProduct"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
@@ -70,6 +71,14 @@
                     app:np_wrapSelectorWheel="false"/>
 
             </RelativeLayout>
+
+            <View
+                android:id="@+id/selectedOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/transparentColorAccent"
+                android:visibility="invisible" />
+
         </android.support.v7.widget.CardView>
     </RelativeLayout>
 </layout>

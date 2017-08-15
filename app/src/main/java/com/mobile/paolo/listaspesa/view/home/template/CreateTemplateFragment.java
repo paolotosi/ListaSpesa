@@ -34,15 +34,12 @@ import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
-import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
-import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -95,7 +92,7 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
         super.onCreateOptionsMenu(menu, inflater);
 
         // Inflate menu
-        getActivity().getMenuInflater().inflate(R.menu.template_creation_menu, menu);
+        getActivity().getMenuInflater().inflate(R.menu.search_action_menu, menu);
 
         // Get the search bar
         final MenuItem searchItem = menu.findItem(R.id.action_search);
@@ -216,6 +213,7 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
                         // Save the created template
                         int templateID = response.getInt("templateID");
                         createdTemplate.setID(templateID);
+                        GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(false);
                         GlobalValuesManager.getInstance(getContext()).saveHasUserTemplates(true);
                         GlobalValuesManager.getInstance(getContext()).addTemplate(createdTemplate);
                         changeFragment();

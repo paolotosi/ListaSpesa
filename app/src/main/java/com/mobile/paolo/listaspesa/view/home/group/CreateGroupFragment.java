@@ -228,6 +228,7 @@ public class CreateGroupFragment extends Fragment
                     if(response.getInt(TAG_SUCCESS) == SUCCESS)
                     {
                         showFeedback(GROUP_CREATION_OK);
+                        GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingGroup(false);
                         sendGetGroupDetailsRequest();
                     }
                     else

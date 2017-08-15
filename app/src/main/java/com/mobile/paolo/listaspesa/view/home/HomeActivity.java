@@ -13,9 +13,10 @@ import com.android.volley.VolleyError;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
-import com.mobile.paolo.listaspesa.database.ListDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.ShoppingListDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
+import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.Contextualizer;
@@ -72,6 +73,9 @@ public class HomeActivity extends AppCompatActivity {
     private static final int USER_HAS_GROUP = 1;
     private static final int USER_DOESNT_HAVE_GROUP = 2;
 
+    // GlobalValuesManager
+    GlobalValuesManager contextualizer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -83,6 +87,8 @@ public class HomeActivity extends AppCompatActivity {
 
         // Determine the context: logged user, group, templates...
         contextualize();
+
+        contextualizer = GlobalValuesManager.getInstance(getApplicationContext());
 
         // From here on out, everything is handled by the bottom navigation listener
         setupBottomNavigationView();
@@ -186,10 +192,6 @@ public class HomeActivity extends AppCompatActivity {
         GroupsDatabaseHelper.sendGetGroupDetailsRequest(jsonPostParameters, getApplicationContext(), groupResponseHandler);
     }
 
-    private boolean isUserPartOfAGroup()
-    {
-        return GlobalValuesManager.getInstance(getApplicationContext()).isUserPartOfAGroup();
-    }
 
     private void setupTemplateResponseHandler()
     {
@@ -256,11 +258,6 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    private boolean hasUserTemplates()
-    {
-        return GlobalValuesManager.getInstance(getApplicationContext()).hasUserTemplates();
-    }
-
     private void setupListResponseHandler()
     {
         this.listResponseHandler = new NetworkResponseHandler() {
@@ -271,21 +268,23 @@ public class HomeActivity extends AppCompatActivity {
                     if(response.getInt("success") == 1)
                     {
                         // Determine if the group has templates and update the SharedPreferences accordingly
-                        JSONArray list = response.getJSONArray("list");
-                        if(list.length() == 0)
+                        // JSONArray list = response.getJSONArray("list");
+                        JSONObject jsonShoppingList = response.getJSONObject("list");
+                        ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
+                        if(shoppingList.getProductList().size() == 0)
                         {
-                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserList(false);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(false);
                         }
                         else
                         {
-                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserList(true);
-                            GlobalValuesManager.getInstance(getApplicationContext()).saveUserList(list);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveUserShoppingList(shoppingList.toJSON());
                             Contextualizer.getInstance().setHasUserList(true);
                         }
                     }
                     else
                     {
-                        GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserList(false);
+                        GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(false);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -322,13 +321,8 @@ public class HomeActivity extends AppCompatActivity {
         Log.d("JSON_LIST", jsonPostParameters.toString());
 
         // Send request
-        ListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getApplicationContext(), listResponseHandler);
+        ShoppingListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getApplicationContext(), listResponseHandler);
 
-    }
-
-    private boolean hasUserList()
-    {
-        return GlobalValuesManager.getInstance(getApplicationContext()).hasUserList();
     }
 
     // Define which fragment to load based on context
@@ -355,24 +349,19 @@ public class HomeActivity extends AppCompatActivity {
     private Fragment selectTemplateFragment()
     {
         Fragment selectedFragment;
-        if(hasUserTemplates())
+        if(contextualizer.hasUserTemplates())
         {
             // ManageTemplate
-            if(HomeFragmentContainer.getInstance().getManageTemplateFragment() == null)
-            {
-                ManageTemplateFragment manageTemplateFragment = new ManageTemplateFragment();
-                HomeFragmentContainer.getInstance().setManageTemplateFragment(manageTemplateFragment);
-            }
             selectedFragment = HomeFragmentContainer.getInstance().getManageTemplateFragment();
+        }
+        else if(contextualizer.isUserCreatingTemplate())
+        {
+            // CreateTemplate
+            selectedFragment = HomeFragmentContainer.getInstance().getCreateTemplateFragment();
         }
         else
         {
             // EmptyTemplate
-            if(HomeFragmentContainer.getInstance().getEmptyTemplateFragment() == null)
-            {
-                EmptyTemplateFragment emptyTemplateFragment = new EmptyTemplateFragment();
-                HomeFragmentContainer.getInstance().setEmptyTemplateFragment(emptyTemplateFragment);
-            }
             selectedFragment = HomeFragmentContainer.getInstance().getEmptyTemplateFragment();
         }
         return selectedFragment;
@@ -381,24 +370,19 @@ public class HomeActivity extends AppCompatActivity {
     private Fragment selectGroupFragment()
     {
         Fragment selectedFragment;
-        if(isUserPartOfAGroup())
+        if(contextualizer.isUserPartOfAGroup())
         {
             // ManageGroup
-            if(HomeFragmentContainer.getInstance().getManageGroupFragment() == null)
-            {
-                ManageGroupFragment manageGroupFragment = new ManageGroupFragment();
-                HomeFragmentContainer.getInstance().setManageGroupFragment(manageGroupFragment);
-            }
             selectedFragment = HomeFragmentContainer.getInstance().getManageGroupFragment();
+        }
+        else if(contextualizer.isUserCreatingGroup())
+        {
+            // CreateGroup
+            selectedFragment = HomeFragmentContainer.getInstance().getCreateGroupFragment();
         }
         else
         {
             // EmptyGroup
-            if(HomeFragmentContainer.getInstance().getEmptyGroupFragment() == null)
-            {
-                EmptyGroupFragment emptyGroupFragment = new EmptyGroupFragment();
-                HomeFragmentContainer.getInstance().setEmptyGroupFragment(emptyGroupFragment);
-            }
             selectedFragment = HomeFragmentContainer.getInstance().getEmptyGroupFragment();
         }
         return selectedFragment;
@@ -407,29 +391,24 @@ public class HomeActivity extends AppCompatActivity {
     private Fragment selectListFragment()
     {
         Fragment selectedFragment;
-        if(hasUserList())
+        if(contextualizer.hasUserShoppingList())
         {
-            if(manageListFragment == null)
-            {
-                manageListFragment = new ManageShoppingListFragment();
-            }
-            selectedFragment = manageListFragment;
+            // ManageShoppingList
+            selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
+        }
+        else if(contextualizer.isUserCreatingShoppingList())
+        {
+            // CreateShoppingList
+            selectedFragment = HomeFragmentContainer.getInstance().getCreateShoppingListFragment();
         }
         else
         {
-            if(emptyListFragment == null)
-            {
-                emptyListFragment = new EmptyShoppingListFragment();
-            }
-            selectedFragment = emptyListFragment;
+            // EmptyShoppingList
+            selectedFragment = HomeFragmentContainer.getInstance().getEmptyShoppingListFragment();
         }
         return selectedFragment;
     }
 
-    public void setManageGroupFragment(ManageGroupFragment manageGroupFragment)
-    {
-        this.manageGroupFragment = manageGroupFragment;
-    }
 
 
 

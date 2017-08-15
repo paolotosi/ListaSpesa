@@ -3,6 +3,9 @@ package com.mobile.paolo.listaspesa.utility;
 import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.EmptyGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
+import com.mobile.paolo.listaspesa.view.home.shoppingList.CreateShoppingListFragment;
+import com.mobile.paolo.listaspesa.view.home.shoppingList.EmptyShoppingListFragment;
+import com.mobile.paolo.listaspesa.view.home.shoppingList.ManageShoppingListFragment;
 import com.mobile.paolo.listaspesa.view.home.template.CreateTemplateFragment;
 import com.mobile.paolo.listaspesa.view.home.template.EmptyTemplateFragment;
 import com.mobile.paolo.listaspesa.view.home.template.ManageTemplateFragment;
@@ -24,6 +27,10 @@ public class HomeFragmentContainer
     private ManageTemplateFragment manageTemplateFragment;
     private CreateTemplateFragment createTemplateFragment;
 
+    private EmptyShoppingListFragment emptyShoppingListFragment;
+    private CreateShoppingListFragment createShoppingListFragment;
+    private ManageShoppingListFragment manageShoppingListFragment;
+
     public static synchronized HomeFragmentContainer getInstance()
     {
         if(instance == null)
@@ -34,6 +41,10 @@ public class HomeFragmentContainer
     }
 
     public EmptyGroupFragment getEmptyGroupFragment() {
+        if(this.emptyGroupFragment == null)
+        {
+            this.emptyGroupFragment = new EmptyGroupFragment();
+        }
         return emptyGroupFragment;
     }
 
@@ -42,6 +53,10 @@ public class HomeFragmentContainer
     }
 
     public ManageGroupFragment getManageGroupFragment() {
+        if(this.manageGroupFragment == null)
+        {
+            this.manageGroupFragment = new ManageGroupFragment();
+        }
         return manageGroupFragment;
     }
 
@@ -50,22 +65,28 @@ public class HomeFragmentContainer
     }
 
     public CreateGroupFragment getCreateGroupFragment() {
+        if(this.createGroupFragment == null)
+        {
+            this.createGroupFragment = new CreateGroupFragment();
+        }
         return createGroupFragment;
     }
 
-    public void setCreateGroupFragment(CreateGroupFragment createGroupFragment) {
-        this.createGroupFragment = createGroupFragment;
-    }
 
     public EmptyTemplateFragment getEmptyTemplateFragment() {
+        if(this.emptyTemplateFragment == null)
+        {
+            this.emptyTemplateFragment = new EmptyTemplateFragment();
+        }
         return emptyTemplateFragment;
     }
 
-    public void setEmptyTemplateFragment(EmptyTemplateFragment emptyTemplateFragment) {
-        this.emptyTemplateFragment = emptyTemplateFragment;
-    }
 
     public ManageTemplateFragment getManageTemplateFragment() {
+        if(this.manageTemplateFragment == null)
+        {
+            this.manageTemplateFragment = new ManageTemplateFragment();
+        }
         return manageTemplateFragment;
     }
 
@@ -74,10 +95,38 @@ public class HomeFragmentContainer
     }
 
     public CreateTemplateFragment getCreateTemplateFragment() {
+        if(this.createTemplateFragment == null)
+        {
+            this.createTemplateFragment = new CreateTemplateFragment();
+        }
         return createTemplateFragment;
     }
 
     public void setCreateTemplateFragment(CreateTemplateFragment createTemplateFragment) {
         this.createTemplateFragment = createTemplateFragment;
+    }
+
+    public EmptyShoppingListFragment getEmptyShoppingListFragment() {
+        if(this.emptyShoppingListFragment == null)
+        {
+            this.emptyShoppingListFragment = new EmptyShoppingListFragment();
+        }
+        return emptyShoppingListFragment;
+    }
+
+    public CreateShoppingListFragment getCreateShoppingListFragment() {
+        if(this.createShoppingListFragment == null)
+        {
+            this.createShoppingListFragment = new CreateShoppingListFragment();
+        }
+        return createShoppingListFragment;
+    }
+
+    public ManageShoppingListFragment getManageShoppingListFragment() {
+        if(this.manageShoppingListFragment == null)
+        {
+            this.manageShoppingListFragment = new ManageShoppingListFragment();
+        }
+        return manageShoppingListFragment;
     }
 }

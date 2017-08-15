@@ -5,7 +5,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,18 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mobile.paolo.listaspesa.R;
-import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.view.home.shoppingList.ManageShoppingListFragment;
 import com.mobile.paolo.listaspesa.view.home.template.EditTemplateActivity;
-import com.mobile.paolo.listaspesa.view.home.template.EmptyTemplateFragment;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -168,6 +161,8 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
         templateList.addAll(models);
     }
 
+    // ------------------------------------------------------------------------------------------//
+
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener
     {
         // Card widgets
@@ -298,12 +293,12 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
 
                     // Create list from the selected template and save it in the cache
                     ShoppingList list = ShoppingList.fromJSON(selectedTemplate.toJSON());
-                    GlobalValuesManager.getInstance(clickedView.getContext()).saveHasUserList(true);
-                    GlobalValuesManager.getInstance(clickedView.getContext()).saveUserList(list.toJSON());
+                    GlobalValuesManager.getInstance(clickedView.getContext()).saveHasUserShoppingList(true);
+                    GlobalValuesManager.getInstance(clickedView.getContext()).saveUserShoppingList(list.toJSON());
 
                     // Change fragment
                     FragmentTransaction transaction = ((FragmentActivity)clickedView.getContext()).getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.home_main_content, new ManageShoppingListFragment());
+                    transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageShoppingListFragment());
                     transaction.commit();
 
                 }

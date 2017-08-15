@@ -1,7 +1,5 @@
 package com.mobile.paolo.listaspesa.view.home.shoppingList;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -14,6 +12,8 @@ import android.widget.TextView;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.utility.Contextualizer;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
 
 /**
@@ -76,6 +76,7 @@ public class EmptyShoppingListFragment extends Fragment {
         createNewListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingShoppingList(true);
                 changeFragment();
             }
         });
@@ -84,7 +85,7 @@ public class EmptyShoppingListFragment extends Fragment {
     private void changeFragment()
     {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_main_content, new CreateListFragment());
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateShoppingListFragment());
         transaction.commit();
     }
 

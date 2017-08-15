@@ -13,6 +13,8 @@ import android.widget.TextView;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.utility.Contextualizer;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.view.home.ItemOneFragment;
 import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
 
@@ -78,6 +80,7 @@ public class EmptyTemplateFragment extends Fragment
         createNewTemplateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(true);
                 changeFragment();
             }
         });
@@ -86,7 +89,7 @@ public class EmptyTemplateFragment extends Fragment
     private void changeFragment()
     {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_main_content, new CreateTemplateFragment());
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateTemplateFragment());
         transaction.commit();
     }
 

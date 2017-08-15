@@ -7,6 +7,9 @@
     <string name="logged_user_templates">LOGGED_USER_TEMPLATES</string>
     <string name="logged_user_list">LOGGED_USER_LIST</string>
     <string name="is_user_part_of_a_group">IS_USER_PART_OF_A_GROUP</string>
+    <string name="is_user_creating_group">IS_USER_CREATING_GROUP</string>
+    <string name="is_user_creating_template">IS_USER_CREATING_TEMPLATE</string>
+    <string name="is_user_creating_list">IS_USER_CREATING_LIST</string>
     <string name="has_user_templates">HAS_USER_TEMPLATES</string>
     <string name="has_user_list">HAS_USER_LIST</string>
 
@@ -86,7 +89,7 @@
     <string name="exit_action">Esci</string>
     <string name="cancel_action">Annulla</string>
 
-    <!-- AddTemplateProductsActivity strings. -->
+    <!-- AddProductsActivity strings. -->
     <string name="add_template_products_toolbar">Aggiungi prodotti</string>
 
     <!-- Generic error strings. -->
@@ -100,7 +103,7 @@
     <!-- ManageShoppingList strings. -->
     <string name="toolbar_title">Lista della spesa</string>
 
-    <!-- CreateListFragment strings. -->
+    <!-- CreateShoppingListFragment strings. -->
     <string name="create_list_fragment_toolbar">Selezione template</string>
 
 

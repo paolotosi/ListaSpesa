@@ -36,7 +36,14 @@ public class Product
         this.quantity = 0;
     }
 
-    //Flag specifies which constructor has to be chosen
+    public Product(String name, String brand, String description, int quantity)
+    {
+        this.name = name;
+        this.brand = brand;
+        this.description = description;
+        this.quantity = quantity;
+    }
+
     public static Product fromJSON(JSONObject jsonProduct)
     {
         Product product = null;
@@ -48,7 +55,7 @@ public class Product
             product = new Product(name, brand, description);
             if(jsonProduct.has("quantity"))
             {
-                int quantity = Integer.parseInt(jsonProduct.getString("quantity"));
+                int quantity = jsonProduct.getInt("quantity");
                 product.setQuantity(quantity);
             };
         } catch (JSONException e) {
@@ -64,6 +71,7 @@ public class Product
         values.put("name", this.name);
         values.put("brand", this.brand);
         values.put("description", this.description);
+        values.put("quantity", ((Integer) this.quantity).toString());
         return new JSONObject(values);
     }
 

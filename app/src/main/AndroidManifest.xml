@@ -45,7 +45,7 @@
         <fragment android:name=".view.shoppingList.ManageShoppingListFragment" />
 
         <activity android:name=".view.home.template.EditTemplateActivity" />
-        <activity android:name=".view.home.template.AddTemplateProductsActivity"></activity>
+        <activity android:name=".view.home.template.AddProductsActivity"></activity>
     </application>
 
 </manifest>

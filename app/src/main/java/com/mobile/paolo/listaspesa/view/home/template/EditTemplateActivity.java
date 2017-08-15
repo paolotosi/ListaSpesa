@@ -40,10 +40,10 @@ import java.util.Set;
  * -- EditTemplateActivity --
  * This Activity lets the user modify a template.
  * The modifiable parameters are the template name and the list of products.
- * The changes in the product list are handled in conjunction with another activity, AddTemplateProductsActivity.
+ * The changes in the product list are handled in conjunction with another activity, AddProductsActivity.
  * Specifically, this Activity shows the list of the products contained in the template; each of
  * them shows a delete button, and pressing this button adds the product in a delete set.
- * If the user decides to add other products, AddTemplateProductsActivity is called
+ * If the user decides to add other products, AddProductsActivity is called
  * using startActivityForResult. The result is a list of products to add, that will be added
  * in the add set. Sets are used to avoid duplicates.
  * When the confirm button is pressed, a query is sent to the database, changing the template name,
@@ -114,7 +114,7 @@ public class EditTemplateActivity extends AppCompatActivity {
         addProductsItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                startAddTemplateProductsActivityForResult();
+                startAddProductsActivityForResult();
                 return false;
             }
         });
@@ -220,7 +220,7 @@ public class EditTemplateActivity extends AppCompatActivity {
         });
     }
 
-    private void startAddTemplateProductsActivityForResult()
+    private void startAddProductsActivityForResult()
     {
         /*
             Start the add product activity for result, passing the current products in the template
@@ -240,7 +240,7 @@ public class EditTemplateActivity extends AppCompatActivity {
         JSONArray jsonCurrentList = Product.asJSONProductList(currentList);
 
         // Create intent
-        Intent intent = new Intent(EditTemplateActivity.this, AddTemplateProductsActivity.class);
+        Intent intent = new Intent(EditTemplateActivity.this, AddProductsActivity.class);
         intent.putExtra("CURRENT_PRODUCTS", jsonCurrentList.toString());
 
         // Start activity for result

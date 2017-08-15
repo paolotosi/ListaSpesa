@@ -26,7 +26,10 @@ public class ShoppingList extends Template
         // When the list is created, every product from the template is added with quantity = 1
         for(int i = 0; i < getProductList().size(); i++)
         {
-            getProductList().get(i).setQuantity(1);
+            if(getProductList().get(i).getQuantity() == 0)
+            {
+                getProductList().get(i).setQuantity(1);
+            }
         }
         this.state = false;
         this.details = new HashMap<>();

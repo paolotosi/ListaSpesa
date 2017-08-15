@@ -1,7 +1,6 @@
 package com.mobile.paolo.listaspesa.utility;
 
 import android.content.Context;
-import android.content.Intent;
 
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.objects.Group;
@@ -72,6 +71,16 @@ public class GlobalValuesManager
         ------------------
      */
 
+    public void saveIsUserCreatingGroup(boolean isUserCreatingGroup)
+    {
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.is_user_creating_group), isUserCreatingGroup);
+    }
+
+    public boolean isUserCreatingGroup()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_creating_group));
+    }
+
     public void saveIsUserPartOfAGroup(boolean isUserPartOfAGroup)
     {
         sharedPreferencesManager.writeBoolean(context.getResources().getString(R.string.is_user_part_of_a_group), isUserPartOfAGroup);
@@ -104,6 +113,16 @@ public class GlobalValuesManager
         TEMPLATE METHODS
         ------------------
      */
+
+    public void saveIsUserCreatingTemplate(boolean isUserCreatingTemplate)
+    {
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.is_user_creating_template), isUserCreatingTemplate);
+    }
+
+    public boolean isUserCreatingTemplate()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_creating_template));
+    }
 
     public void saveHasUserTemplates(boolean hasUserTemplates)
     {
@@ -237,31 +256,41 @@ public class GlobalValuesManager
 
     /*
         ------------------
-        LIST METHODS
+        SHOPPING LIST METHODS
         ------------------
      */
 
-    public void saveHasUserList(boolean hasUserList)
+    public void saveIsUserCreatingShoppingList(boolean isUserCreatingList)
+    {
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.is_user_creating_list), isUserCreatingList);
+    }
+
+    public boolean isUserCreatingShoppingList()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_creating_list));
+    }
+
+    public void saveHasUserShoppingList(boolean hasUserList)
     {
         sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_list), hasUserList);
     }
 
-    public boolean hasUserList()
+    public boolean hasUserShoppingList()
     {
         return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_list));
     }
 
-    public void saveUserList(JSONObject jsonShoppingList)
+    public void saveUserShoppingList(JSONObject jsonShoppingList)
     {
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
     }
 
-    public void saveUserList(JSONArray jsonShoppingList)
+    public void saveUserShoppingList(JSONArray jsonShoppingList)
     {
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
     }
 
-    public ShoppingList getUserList()
+    public ShoppingList getUserShoppingList()
     {
         ShoppingList shoppingList = null;
         try {
@@ -272,7 +301,7 @@ public class GlobalValuesManager
         return shoppingList;
     }
 
-    public void saveUserList(List<ShoppingList> shoppingList)
+    public void saveUserShoppingList(List<ShoppingList> shoppingList)
     {
         JSONArray jsonShoppingList = new JSONArray();
         for(int i = 0; i < shoppingList.size(); i++)
@@ -286,7 +315,36 @@ public class GlobalValuesManager
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
     }
 
-//    public ShoppingList getUserList()
+    public void updateShoppingList(Collection<Product> newProductList)
+    {
+        ShoppingList shoppingList = getUserShoppingList();
+        shoppingList.setProductList(new ArrayList<Product>(newProductList));
+        saveUserShoppingList(shoppingList.toJSON());
+    }
+
+    public void addProductsToShoppingList(Collection<Product> addList)
+    {
+        ShoppingList shoppingList = getUserShoppingList();
+
+        // Remove products already present from addList
+        addList.removeAll(shoppingList.getProductList());
+
+        // Add the addList to the product list
+        shoppingList.getProductList().addAll(addList);
+
+        saveUserShoppingList(shoppingList.toJSON());
+    }
+
+    public void removeProductsFromShoppingList(Collection<Product> deleteList)
+    {
+        ShoppingList shoppingList = getUserShoppingList();
+
+        shoppingList.getProductList().removeAll(deleteList);
+
+        saveUserShoppingList(shoppingList.toJSON());
+    }
+
+//    public ShoppingList getUserShoppingList()
 //    {
 //        ShoppingList shoppingList = null;
 //        int groupID = getLoggedUserGroup().getID();
