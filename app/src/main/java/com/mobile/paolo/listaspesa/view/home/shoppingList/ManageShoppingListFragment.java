@@ -72,6 +72,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     // Network response logic
     private NetworkResponseHandler createShoppingListResponseHandler;
     private NetworkResponseHandler stateShoppingListResponseHandler;
+    private NetworkResponseHandler deleteShoppingListResponseHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -144,6 +145,16 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 return false;
             }
         });
+
+        // Add listener to take in charge menu action
+        MenuItem deleteList = menu.findItem(R.id.deleteList);
+        deleteList.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                sendDeleteListRequest();
+                return false;
+            }
+        });
     }
 
     private void setupToolbar()
@@ -160,6 +171,50 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         createListToolbar = (Toolbar) loadedFragment.findViewById(R.id.shoppingListToolbar);
         recyclerView = (RecyclerView) loadedFragment.findViewById(R.id.recyclerViewShopProducts);
         addProductToListButton = (FloatingActionButton) loadedFragment.findViewById(R.id.addProductToListButton);
+    }
+
+    private void sendDeleteListRequest()
+    {
+        deleteShoppingList();
+
+        // Change fragment
+        FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getEmptyShoppingListFragment());
+        transaction.commit();
+    }
+
+    private void deleteShoppingList()
+    {
+        GlobalValuesManager gvm = GlobalValuesManager.getInstance(getContext());
+        GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
+        int groupID = gvm.getLoggedUserGroup().getID();
+
+        // JSON POST parameters
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("groupID", groupID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        setupShoppingListDeletion();
+
+        ShoppingListDatabaseHelper.deleteShoppingList(jsonParams, getContext(), deleteShoppingListResponseHandler);
+    }
+
+    private void setupShoppingListDeletion()
+    {
+        this.deleteShoppingListResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+
+            }
+        };
     }
 
     private void setupRecyclerView()

@@ -285,13 +285,14 @@ public class HomeActivity extends AppCompatActivity {
                             Contextualizer.getInstance().setHasUserList(true);
                         }
                     }
-                    if(response.getInt("success") == 2)
+                    else if(response.getInt("success") == 2)
                     //In questo caso la lista della spesa del gruppo è stata presa in carico, devo discriminare il caso in cui l'utente loggato l'ha presa in carico
                     //e quello in cui l'utente loggato non l'ha presa in carico
                     {
                         if(response.getInt("userID")== GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser().getId())
                         {
                             //TODO recuperare la lista della spesa dal DB locale e salvare la lista della spesa nelle shared preferences
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER);
                         }
                         else
@@ -412,6 +413,7 @@ public class HomeActivity extends AppCompatActivity {
         Fragment selectedFragment;
         if(contextualizer.hasUserShoppingList())
         {
+            Log.d("PORCODDIO", contextualizer.hasUserShoppingListInCharge());
             if(contextualizer.hasUserShoppingListInCharge().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE)) {
                 // ManageShoppingList
                 selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="product" type="com.mobile.paolo.listaspesa.model.objects.Product"></variable>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:layout_margin="8dp"
+            android:elevation="2dp">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/productName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="@{product.name}"
+                        android:hint="Prodotto"
+                        android:textColor="#000"
+                        android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/productBrand"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="@{product.brand}"
+                        android:hint="Marca"
+                        android:textColor="#000"
+                        android:textSize="16sp"
+                        android:textStyle="italic"/>
+                    <TextView
+                        android:id="@+id/productQuantity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{String.valueOf(product.quantity)}"
+                        android:hint="Quantità"
+                        android:textColor="#555" />
+
+                </LinearLayout>
+
+                <CheckBox
+                    android:id="@+id/productCheckbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+    </RelativeLayout>
+</layout>
+
+
+
+
+
+
+
+
