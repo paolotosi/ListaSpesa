@@ -69,6 +69,11 @@ public class EmptyShoppingListFragment extends Fragment {
                 }
             });
         }
+
+        if(GlobalValuesManager.getInstance(getContext()).hasUserShoppingList())
+        {
+            emptyListMessage.setText(getString(R.string.create_new_list_button_alt));
+        }
     }
 
     private void setupCreateListButtonListener()

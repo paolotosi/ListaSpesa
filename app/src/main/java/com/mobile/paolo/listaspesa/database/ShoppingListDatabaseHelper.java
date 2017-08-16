@@ -16,6 +16,7 @@ public class ShoppingListDatabaseHelper
     // The URLs.
     private static final String URL_GET_LIST = "http://10.0.2.2/listaspesa/android_connect/shoppingList/get_group_list.php";
     private static final String URL_CREATE_LIST = "http://10.0.2.2/listaspesa/android_connect/shoppingList/create_shopping_list.php";
+    private static final String URL_UPDATE_STATE = "http://10.0.2.2/listaspesa/android_connect/shoppingList/update_shopping_list_state.php";
 
     public static void sendGetGroupListRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
@@ -26,4 +27,11 @@ public class ShoppingListDatabaseHelper
     {
         NetworkMessageSender.sendHTTPRequest(URL_CREATE_LIST, jsonPostData, context, networkResponseHandler);
     }
+
+    public static void shoppingListStateUpdate(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
+    {
+        NetworkMessageSender.sendHTTPRequest(URL_UPDATE_STATE, jsonPostData, context, networkResponseHandler);
+    }
+
+
 }

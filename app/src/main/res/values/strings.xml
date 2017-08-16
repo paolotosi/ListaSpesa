@@ -12,6 +12,7 @@
     <string name="is_user_creating_list">IS_USER_CREATING_LIST</string>
     <string name="has_user_templates">HAS_USER_TEMPLATES</string>
     <string name="has_user_list">HAS_USER_LIST</string>
+    <string name="has_user_list_charge">HAS_USER_LIST_CHARGE</string>
 
     <!-- WelcomeActivity strings. -->
     <string name="login_button">Accedi</string>
@@ -99,6 +100,7 @@
     <!-- EmptyListFragment strings. -->
     <string name="no_list_message">Il tuo gruppo non ha ancora nessuna lista della spesa in preparazione.</string>
     <string name="create_new_list_button">Crea nuova lista della spesa</string>
+    <string name="create_new_list_button_alt">Sembra che uno dei tuoi compagni di gruppo abbia già preso in carico la vostra lista della spesa! Crea una nuova lista della spesa. Attenzione: i prodotti non trovati dal tuo compagno verranno inseriti automaticamente.</string>
 
     <!-- ManageShoppingList strings. -->
     <string name="toolbar_title">Lista della spesa</string>

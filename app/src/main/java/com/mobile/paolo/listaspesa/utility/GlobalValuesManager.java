@@ -27,6 +27,11 @@ public class GlobalValuesManager
     private SharedPreferencesManager sharedPreferencesManager;
     private Context context;
 
+    public static final String NO_LIST = "NO_LIST";
+    public static final String LIST_NO_CHARGE = "LIST_NO_CHARGE";
+    public static final String LIST_IN_CHARGE_LOGGED_USER = "LIST_IN_CHARGE_LOGGED_USER";
+    public static final String LIST_IN_CHARGE_ANOTHER_USER = "LIST_IN_CHARGE_ANOTHER_USER";
+
     private GlobalValuesManager(Context context)
     {
         this.sharedPreferencesManager = SharedPreferencesManager.getInstance(context);
@@ -280,6 +285,16 @@ public class GlobalValuesManager
         return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_list));
     }
 
+    public void saveHasUserShoppingListInCharge(String hasUserListInCharge)
+    {
+        sharedPreferencesManager.writeString(context.getString(R.string.has_user_list_charge), hasUserListInCharge);
+    }
+
+    public String hasUserShoppingListInCharge()
+    {
+        return sharedPreferencesManager.readString(context.getString(R.string.has_user_list_charge));
+    }
+
     public void saveUserShoppingList(JSONObject jsonShoppingList)
     {
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
@@ -342,6 +357,18 @@ public class GlobalValuesManager
         shoppingList.getProductList().removeAll(deleteList);
 
         saveUserShoppingList(shoppingList.toJSON());
+    }
+
+    public Boolean getShoppingListState()
+    {
+        ShoppingList shoppingList= getUserShoppingList();
+        return shoppingList.getState();
+    }
+
+    public void setShoppingListState(Boolean newState)
+    {
+        ShoppingList shoppingList = getUserShoppingList();
+        shoppingList.setState(newState);
     }
 
 //    public ShoppingList getUserShoppingList()

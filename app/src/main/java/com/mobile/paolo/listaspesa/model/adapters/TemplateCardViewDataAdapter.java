@@ -279,17 +279,6 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
             cardUseTemplateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View clickedView) {
-//                    List<Product> products = selectedTemplate.getProductList();
-//                    JSONObject jsonHelper = new JSONObject();
-//                    try {
-//                        for(int i = 0; i < products.size(); i++) {
-//                            Product product = products.get(i);
-//                            jsonHelper.put(String.valueOf(i), product);
-//                        }
-//                        Log.d("LISTJSON", jsonHelper.toString());
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
 
                     // Create list from the selected template and save it in the cache
                     ShoppingList list = ShoppingList.fromJSON(selectedTemplate.toJSON());

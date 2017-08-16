@@ -3,8 +3,11 @@ package com.mobile.paolo.listaspesa.view.home.shoppingList;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,6 +30,7 @@ import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.view.home.template.AddProductsActivity;
 
 import org.json.JSONArray;
@@ -67,6 +71,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
     // Network response logic
     private NetworkResponseHandler createShoppingListResponseHandler;
+    private NetworkResponseHandler stateShoppingListResponseHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,6 +87,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
         // Load fragment.
         View loadedFragment = inflater.inflate(R.layout.fragment_manage_shopping_list, container, false);
+
+        setHasOptionsMenu(true);
 
         initializeWidgets(loadedFragment);
 
@@ -115,16 +122,25 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-
         // Load menu
-        getActivity().getMenuInflater().inflate(R.menu.shopping_list_confirm_menu, menu);
+        getActivity().getMenuInflater().inflate(R.menu.shopping_list_menu, menu);
 
-        // Add listener to menu action
+        // Add listener to confirm menu action
         MenuItem addProductsItem = menu.findItem(R.id.confirmListCreationButton);
         addProductsItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 sendShoppingListCreationRequest();
+                return false;
+            }
+        });
+
+        // Add listener to take in charge menu action
+        MenuItem takeInCharge = menu.findItem(R.id.takeListInCharge);
+        takeInCharge.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                takeListInCharge();
                 return false;
             }
         });
@@ -177,6 +193,58 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
         // Set the adapter model
         adapter.replaceAll(productModelList);
+    }
+
+    private void takeListInCharge()
+    {
+        updateShoppingListState();
+
+        // Change fragment
+        FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getGroceryStoreFragment());
+        transaction.commit();
+    }
+
+    private void updateShoppingListState()
+    {
+        GlobalValuesManager gvm = GlobalValuesManager.getInstance(getContext());
+        int userID = gvm.getLoggedUser().getId();
+        int groupID = gvm.getLoggedUserGroup().getID();
+
+        // JSON POST parameters
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("userID", userID);
+            jsonParams.put("groupID", groupID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        setupShoppingListStateUpdate();
+
+        ShoppingListDatabaseHelper.shoppingListStateUpdate(jsonParams, getContext(), stateShoppingListResponseHandler);
+    }
+
+    private void setupShoppingListStateUpdate()
+    {
+        this.stateShoppingListResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+                        GlobalValuesManager.getInstance(getContext()).setShoppingListState(true);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                error.printStackTrace();
+            }
+        };
     }
 
     private void setupCreateShoppingListRequest()

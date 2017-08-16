@@ -73,6 +73,7 @@ public class HomeActivity extends AppCompatActivity {
     private static final int USER_HAS_GROUP = 1;
     private static final int USER_DOESNT_HAVE_GROUP = 2;
 
+
     // GlobalValuesManager
     GlobalValuesManager contextualizer;
 
@@ -274,17 +275,35 @@ public class HomeActivity extends AppCompatActivity {
                         if(shoppingList.getProductList().size() == 0)
                         {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(false);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.NO_LIST);
                         }
                         else
                         {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_NO_CHARGE);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveUserShoppingList(shoppingList.toJSON());
                             Contextualizer.getInstance().setHasUserList(true);
+                        }
+                    }
+                    if(response.getInt("success") == 2)
+                    //In questo caso la lista della spesa del gruppo è stata presa in carico, devo discriminare il caso in cui l'utente loggato l'ha presa in carico
+                    //e quello in cui l'utente loggato non l'ha presa in carico
+                    {
+                        if(response.getInt("userID")== GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser().getId())
+                        {
+                            //TODO recuperare la lista della spesa dal DB locale e salvare la lista della spesa nelle shared preferences
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER);
+                        }
+                        else
+                        {
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER);
                         }
                     }
                     else
                     {
                         GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(false);
+                        GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.NO_LIST);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -393,8 +412,19 @@ public class HomeActivity extends AppCompatActivity {
         Fragment selectedFragment;
         if(contextualizer.hasUserShoppingList())
         {
-            // ManageShoppingList
-            selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
+            if(contextualizer.hasUserShoppingListInCharge().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE)) {
+                // ManageShoppingList
+                selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
+            }
+            else if(contextualizer.hasUserShoppingListInCharge().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER))
+            {
+                // EmptyShoppingList: it will be different because the user has a list but it's taken in charge by someone else
+                selectedFragment = HomeFragmentContainer.getInstance().getEmptyShoppingListFragment();
+            }
+            else
+            {   //List is taken in charge by the logged user, so i have to this fragment
+                selectedFragment = HomeFragmentContainer.getInstance().getGroceryStoreFragment();
+            }
         }
         else if(contextualizer.isUserCreatingShoppingList())
         {

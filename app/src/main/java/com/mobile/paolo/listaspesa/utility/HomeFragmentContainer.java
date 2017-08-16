@@ -5,6 +5,7 @@ import com.mobile.paolo.listaspesa.view.home.group.EmptyGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.shoppingList.CreateShoppingListFragment;
 import com.mobile.paolo.listaspesa.view.home.shoppingList.EmptyShoppingListFragment;
+import com.mobile.paolo.listaspesa.view.home.shoppingList.GroceryStoreFragment;
 import com.mobile.paolo.listaspesa.view.home.shoppingList.ManageShoppingListFragment;
 import com.mobile.paolo.listaspesa.view.home.template.CreateTemplateFragment;
 import com.mobile.paolo.listaspesa.view.home.template.EmptyTemplateFragment;
@@ -30,6 +31,7 @@ public class HomeFragmentContainer
     private EmptyShoppingListFragment emptyShoppingListFragment;
     private CreateShoppingListFragment createShoppingListFragment;
     private ManageShoppingListFragment manageShoppingListFragment;
+    private GroceryStoreFragment groceryStoreFragment;
 
     public static synchronized HomeFragmentContainer getInstance()
     {
@@ -128,5 +130,13 @@ public class HomeFragmentContainer
             this.manageShoppingListFragment = new ManageShoppingListFragment();
         }
         return manageShoppingListFragment;
+    }
+
+    public GroceryStoreFragment getGroceryStoreFragment() {
+        if(this.groceryStoreFragment == null)
+        {
+            this.groceryStoreFragment = new GroceryStoreFragment();
+        }
+        return groceryStoreFragment;
     }
 }

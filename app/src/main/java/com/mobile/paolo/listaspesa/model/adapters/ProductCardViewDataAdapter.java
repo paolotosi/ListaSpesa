@@ -3,6 +3,7 @@ package com.mobile.paolo.listaspesa.model.adapters;
 import android.databinding.ViewDataBinding;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.CheckBox;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutEditBinding;
+import com.mobile.paolo.listaspesa.databinding.CardProductLayoutGroceryBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutShoppingListBinding;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
@@ -40,6 +42,7 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
     public static final int ADD_MODE = 1;
     public static final int EDIT_MODE = 2;
     public static final int LIST_MODE = 3;
+    public static final int GROCERY_MODE = 4;
 
     // ClickListener (received from the outside)
     ViewHolder.ClickListener clickListener;
@@ -68,7 +71,8 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
         {
             case ADD_MODE:  productBinding = CardProductLayoutBinding.inflate(layoutInflater, parent, false); break;
             case EDIT_MODE: productBinding = CardProductLayoutEditBinding.inflate(layoutInflater, parent, false); break;
-            case LIST_MODE: productBinding = CardProductLayoutShoppingListBinding.inflate(layoutInflater, parent, false);
+            case LIST_MODE: productBinding = CardProductLayoutShoppingListBinding.inflate(layoutInflater, parent, false); break;
+            case GROCERY_MODE: productBinding = CardProductLayoutGroceryBinding.inflate(layoutInflater, parent, false);
                             return new ViewHolder(productBinding, clickListener);
         }
         return new ViewHolder(productBinding);
@@ -86,6 +90,7 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
             case ADD_MODE:  setupAddMode(viewHolder, position); break;
             case EDIT_MODE: setupEditMode(viewHolder, position); break;
             case LIST_MODE: setupListMode(viewHolder, position); break;
+            case GROCERY_MODE: setupGroceryMode(viewHolder, position); break;
         }
     }
 
@@ -182,6 +187,37 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
 
         // Show transparent overlay if product is selected in action mode
         binding.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void setupGroceryMode(final ViewHolder viewHolder, final int position)
+    {
+
+        // Cast superclass binding to add mode binding
+        CardProductLayoutGroceryBinding binding = (CardProductLayoutGroceryBinding) viewHolder.binding;
+
+        // Custom logic for product quantity
+        binding.productQuantity.setText(String.valueOf(sortedList.get(position).getQuantity()));
+
+
+        // Since the RecyclerView reuses elements, we need a way to remember which products where checked
+        binding.productCheckbox.setChecked(sortedList.get(position).isChecked());
+
+        // Save the product in the tag field of the checkbox, it'll be used later.
+        binding.productCheckbox.setTag(sortedList.get(position));
+
+        // When a checkbox is clicked:
+        binding.productCheckbox.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                // Retrieve the corresponding product.
+                CheckBox checkbox = (CheckBox) v;
+                Product product = (Product) checkbox.getTag();
+
+                // Set the 'checked' field of the product both in the checkbox tag field and in the list
+                product.setChecked(checkbox.isChecked());
+                sortedList.get(viewHolder.getAdapterPosition()).setChecked(checkbox.isChecked());
+            }
+        });
     }
 
     private void setupSortedList()
@@ -395,13 +431,18 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
                 ((CardProductLayoutEditBinding) binding).setProduct(product);
                 bindingType = EDIT_MODE;
             }
-            else
+            else if(binding instanceof  CardProductLayoutShoppingListBinding)
             {
                 ((CardProductLayoutShoppingListBinding) binding).setProduct(product);
                 // Set listeners
                 ((CardProductLayoutShoppingListBinding) binding).cardProduct.setOnClickListener(this);
                 ((CardProductLayoutShoppingListBinding) binding).cardProduct.setOnLongClickListener(this);
                 bindingType = LIST_MODE;
+            }
+            else
+            {
+                ((CardProductLayoutGroceryBinding) binding).setProduct(product);
+                bindingType = GROCERY_MODE;
             }
             binding.executePendingBindings();
             return bindingType;

@@ -82,5 +82,14 @@ public class ShoppingList extends Template
         return list;
     }
 
+    public void setState(Boolean newState)
+    {
+        this.state = newState;
+    }
+
+    public Boolean getState()
+    {
+        return this.state;
+    }
 
 }
