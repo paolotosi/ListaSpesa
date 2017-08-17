@@ -71,9 +71,9 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
         {
             case ADD_MODE:  productBinding = CardProductLayoutBinding.inflate(layoutInflater, parent, false); break;
             case EDIT_MODE: productBinding = CardProductLayoutEditBinding.inflate(layoutInflater, parent, false); break;
-            case LIST_MODE: productBinding = CardProductLayoutShoppingListBinding.inflate(layoutInflater, parent, false); break;
-            case GROCERY_MODE: productBinding = CardProductLayoutGroceryBinding.inflate(layoutInflater, parent, false);
-                            return new ViewHolder(productBinding, clickListener);
+            case LIST_MODE: productBinding = CardProductLayoutShoppingListBinding.inflate(layoutInflater, parent, false);
+                                             return new ViewHolder(productBinding, clickListener);
+            case GROCERY_MODE: productBinding = CardProductLayoutGroceryBinding.inflate(layoutInflater, parent, false); break;
         }
         return new ViewHolder(productBinding);
     }
@@ -191,13 +191,11 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
 
     private void setupGroceryMode(final ViewHolder viewHolder, final int position)
     {
-
         // Cast superclass binding to add mode binding
         CardProductLayoutGroceryBinding binding = (CardProductLayoutGroceryBinding) viewHolder.binding;
 
         // Custom logic for product quantity
         binding.productQuantity.setText(String.valueOf(sortedList.get(position).getQuantity()));
-
 
         // Since the RecyclerView reuses elements, we need a way to remember which products where checked
         binding.productCheckbox.setChecked(sortedList.get(position).isChecked());

@@ -16,10 +16,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.database.local.ListaSpesaDB;
+import com.mobile.paolo.listaspesa.database.local.ProductsLocalDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
+import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
@@ -28,6 +34,8 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
     private ProductCardViewDataAdapter adapter;
 
     private Toolbar groceryToolbar;
+
+    private List<Product> groceryList = new ArrayList<>();
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,9 +53,19 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
         setupToolbar();
 
+        readProductsFromLocalDatabase();
+
         setupRecyclerView(loadedFragment);
 
         return loadedFragment;
+    }
+
+    private void readProductsFromLocalDatabase()
+    {
+        ProductsLocalDatabaseHelper localDatabaseHelper = ProductsLocalDatabaseHelper.getInstance(getContext());
+        localDatabaseHelper.open();
+        groceryList = localDatabaseHelper.getAllProducts();
+        localDatabaseHelper.close();
     }
 
     private void setupRecyclerView(View loadedFragment)
@@ -67,7 +85,9 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         // set the adapter object to the RecyclerView
         recyclerView.setAdapter(adapter);
 
-        ShoppingList shoppingList = GlobalValuesManager.getInstance(getContext()).getUserShoppingList();
+        int groupID = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID();
+        ShoppingList shoppingList = new ShoppingList(groupID, groceryList);
+
         adapter.replaceAll(shoppingList.getProductList());
 
     }

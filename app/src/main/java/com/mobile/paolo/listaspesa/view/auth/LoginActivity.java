@@ -4,19 +4,19 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
-import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.UsersDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
@@ -38,14 +38,13 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     // Widgets
-    private Button btnLogin;
+    private FloatingActionButton btnLogin;
     private EditText usernameField, passwordField;
     private TextInputLayout usernameInputLayout, passwordInputLayout;
     private ImageView logo;
 
     // NetworkResponseHandler & UsersDatabaseHelper
     private NetworkResponseHandler networkResponseHandler;
-    private UsersDatabaseHelper usersDatabaseHelper;
 
     // JSON Node names
     private static final String TAG_SUCCESS = "success";
@@ -86,6 +85,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onBackPressed();
         overridePendingTransition(R.anim.back_slide_in, R.anim.back_slide_out);
     }
+
+
 
     private void enteringAnimation()
     {
@@ -141,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initializeWidgets()
     {
-        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnLogin = (FloatingActionButton) findViewById(R.id.btnLogin);
 
         usernameField = (EditText) findViewById(R.id.usernameField);
         passwordField = (EditText) findViewById(R.id.passwordField);

@@ -1,4 +1,4 @@
-package com.mobile.paolo.listaspesa.database;
+package com.mobile.paolo.listaspesa.database.remote;
 
 import android.content.Context;
 
@@ -34,7 +34,7 @@ public class ShoppingListDatabaseHelper
         NetworkMessageSender.sendHTTPRequest(URL_UPDATE_STATE, jsonPostData, context, networkResponseHandler);
     }
 
-    public static void deleteShoppingList(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
+    public static void sendDeleteShoppingListRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
         NetworkMessageSender.sendHTTPRequest(URL_DELETE_LIST, jsonPostData, context, networkResponseHandler);
     }

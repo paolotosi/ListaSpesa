@@ -27,10 +27,11 @@
         <activity android:name=".view.init.WelcomeActivity" />
 
         <!-- The login activity. -->
-        <activity android:name=".view.auth.LoginActivity" />
+        <activity android:name=".view.auth.LoginActivity"/>
 
         <!-- The register activity. -->
-        <activity android:name=".view.auth.RegisterActivity" />
+        <activity android:name=".view.auth.RegisterActivity"
+            android:windowSoftInputMode="adjustPan"/>
 
         <!-- The edit group activity. -->
         <activity android:name=".view.home.group.EditGroupActivity" />

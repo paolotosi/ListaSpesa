@@ -12,9 +12,9 @@ import android.view.MenuItem;
 import com.android.volley.VolleyError;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.R;
-import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
-import com.mobile.paolo.listaspesa.database.ShoppingListDatabaseHelper;
-import com.mobile.paolo.listaspesa.database.TemplatesDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.GroupsDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.User;
@@ -182,7 +182,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // The POST parameters.
         Map<String, String> params = new HashMap<>();
-        params.put("id", ((Integer) (loggedUser.getId())).toString());
+        params.put("id", ((Integer) (loggedUser.getID())).toString());
 
         // Encapsulate in JSON.
         JSONObject jsonPostParameters = new JSONObject(params);
@@ -261,24 +261,31 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupListResponseHandler()
     {
+        /*
+            Possible outcomes:
+                - server error
+                - list in charge, taken by me -> show grocery store
+                - list in charge, not taken by me -> show list in creation
+         */
         this.listResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
                 try {
-                    Log.d("LIST_RESPONSE", response.toString());
+                    Log.d("GET_LIST_RESP", response.toString());
                     if(response.getInt("success") == 1)
                     {
-                        // Determine if the group has templates and update the SharedPreferences accordingly
-                        // JSONArray list = response.getJSONArray("list");
+                        // List is not taken
                         JSONObject jsonShoppingList = response.getJSONObject("list");
                         ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
                         if(shoppingList.getProductList().size() == 0)
                         {
+                            // List is empty
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(false);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.NO_LIST);
                         }
                         else
                         {
+                            // List is not empty
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_NO_CHARGE);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveUserShoppingList(shoppingList.toJSON());
@@ -289,20 +296,24 @@ public class HomeActivity extends AppCompatActivity {
                     //In questo caso la lista della spesa del gruppo è stata presa in carico, devo discriminare il caso in cui l'utente loggato l'ha presa in carico
                     //e quello in cui l'utente loggato non l'ha presa in carico
                     {
-                        if(response.getInt("userID")== GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser().getId())
+                        // List is taken
+                        if(response.getInt("userID")== GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser().getID())
                         {
+                            // By me
                             //TODO recuperare la lista della spesa dal DB locale e salvare la lista della spesa nelle shared preferences
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER);
                         }
                         else
                         {
+                            // Not by me
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER);
                         }
                     }
                     else
                     {
+                        // Error
                         GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(false);
                         GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.NO_LIST);
                     }
@@ -338,7 +349,7 @@ public class HomeActivity extends AppCompatActivity {
         JSONObject jsonPostParameters = new JSONObject(params);
 
         // Debug
-        Log.d("JSON_LIST", jsonPostParameters.toString());
+        Log.d("GET_LIST_REQ", jsonPostParameters.toString());
 
         // Send request
         ShoppingListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getApplicationContext(), listResponseHandler);
@@ -413,7 +424,6 @@ public class HomeActivity extends AppCompatActivity {
         Fragment selectedFragment;
         if(contextualizer.hasUserShoppingList())
         {
-            Log.d("PORCODDIO", contextualizer.hasUserShoppingListInCharge());
             if(contextualizer.hasUserShoppingListInCharge().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE)) {
                 // ManageShoppingList
                 selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
@@ -424,7 +434,7 @@ public class HomeActivity extends AppCompatActivity {
                 selectedFragment = HomeFragmentContainer.getInstance().getEmptyShoppingListFragment();
             }
             else
-            {   //List is taken in charge by the logged user, so i have to this fragment
+            {   // List is taken in charge by the logged user, so i have to this fragment
                 selectedFragment = HomeFragmentContainer.getInstance().getGroceryStoreFragment();
             }
         }

@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
-import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;

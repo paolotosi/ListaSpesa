@@ -316,24 +316,15 @@ public class GlobalValuesManager
         return shoppingList;
     }
 
-    public void saveUserShoppingList(List<ShoppingList> shoppingList)
+    public void deleteShoppingList()
     {
-        JSONArray jsonShoppingList = new JSONArray();
-        for(int i = 0; i < shoppingList.size(); i++)
-        {
-            try {
-                jsonShoppingList.put(i, shoppingList.get(i).toJSON());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
+        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), "");
     }
 
     public void updateShoppingList(Collection<Product> newProductList)
     {
         ShoppingList shoppingList = getUserShoppingList();
-        shoppingList.setProductList(new ArrayList<Product>(newProductList));
+        shoppingList.setProductList(new ArrayList<>(newProductList));
         saveUserShoppingList(shoppingList.toJSON());
     }
 
@@ -365,7 +356,7 @@ public class GlobalValuesManager
         return shoppingList.getState();
     }
 
-    public void setShoppingListState(Boolean newState)
+    public void setShoppingListState(boolean newState)
     {
         ShoppingList shoppingList = getUserShoppingList();
         shoppingList.setState(newState);

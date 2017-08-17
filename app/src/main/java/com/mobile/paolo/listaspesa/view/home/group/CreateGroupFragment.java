@@ -15,8 +15,8 @@ import android.widget.EditText;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
-import com.mobile.paolo.listaspesa.database.GroupsDatabaseHelper;
-import com.mobile.paolo.listaspesa.database.UsersDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.GroupsDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.UsersDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
@@ -127,7 +127,7 @@ public class CreateGroupFragment extends Fragment
             {
                 JSONObject jsonUser = (JSONObject) jsonUserList.get(i);
                 User toBeAdded = new User(jsonUser);
-                if(loggedUser.getId() != toBeAdded.getId())
+                if(loggedUser.getID() != toBeAdded.getID())
                 {
                     userModelList.add(toBeAdded);
                 }
@@ -179,7 +179,7 @@ public class CreateGroupFragment extends Fragment
 
             // The first one is the logged user
             User loggedUser = GlobalValuesManager.getInstance(getContext()).getLoggedUser();
-            selectedIDs.put(0, loggedUser.getId());
+            selectedIDs.put(0, loggedUser.getID());
 
             // Get the user list
             List<User> userList = ((UserCardViewDataAdapter) adapter).getUserList();
@@ -191,7 +191,7 @@ public class CreateGroupFragment extends Fragment
                 User singleUser = userList.get(i);
                 if (singleUser.isChecked())
                 {
-                    selectedIDs.put(pos, singleUser.getId());
+                    selectedIDs.put(pos, singleUser.getID());
                     pos++;
                 }
             }
@@ -338,7 +338,7 @@ public class CreateGroupFragment extends Fragment
 
         // The POST parameters.
         Map<String, String> params = new HashMap<>();
-        params.put("id", ((Integer) (loggedUser.getId())).toString());
+        params.put("id", ((Integer) (loggedUser.getID())).toString());
 
         // Encapsulate in JSON.
         JSONObject jsonPostParameters = new JSONObject(params);

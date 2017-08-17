@@ -64,7 +64,7 @@ public class User implements Serializable
         return username;
     }
 
-    public int getId() {
+    public int getID() {
         return id;
     }
 

@@ -35,6 +35,11 @@ public class ShoppingList extends Template
         this.details = new HashMap<>();
     }
 
+    public ShoppingList(Integer groupID, List<Product> productList)
+    {
+        super("", groupID, productList);
+    }
+
     public void addDetails(String fieldName, String field)
     {
         details.put(fieldName, field);
@@ -82,12 +87,12 @@ public class ShoppingList extends Template
         return list;
     }
 
-    public void setState(Boolean newState)
+    public void setState(boolean newState)
     {
         this.state = newState;
     }
 
-    public Boolean getState()
+    public boolean getState()
     {
         return this.state;
     }

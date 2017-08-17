@@ -104,6 +104,8 @@
 
     <!-- ManageShoppingList strings. -->
     <string name="toolbar_title">Lista della spesa</string>
+    <string name="delete_list_dialog">Sei sicuro di volere eliminare la lista?</string>
+    <string name="delete_action">Elimina</string>
 
     <!-- CreateShoppingListFragment strings. -->
     <string name="create_list_fragment_toolbar">Selezione template</string>

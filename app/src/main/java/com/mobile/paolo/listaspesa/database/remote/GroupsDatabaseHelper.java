@@ -1,4 +1,4 @@
-package com.mobile.paolo.listaspesa.database;
+package com.mobile.paolo.listaspesa.database.remote;
 
 import android.content.Context;
 

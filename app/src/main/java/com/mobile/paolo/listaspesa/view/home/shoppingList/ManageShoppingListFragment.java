@@ -1,13 +1,14 @@
 package com.mobile.paolo.listaspesa.view.home.shoppingList;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,7 +25,8 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
-import com.mobile.paolo.listaspesa.database.ShoppingListDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.local.ProductsLocalDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
@@ -38,9 +40,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
 Shows the shopping list of the group and provides operations to manipulate the shopping list
@@ -61,9 +61,6 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     private ProductCardViewDataAdapter adapter;
     private ShoppingList shoppingList;
     private List<Product> productModelList = new ArrayList<>();
-
-    // Final set of list products
-    private Set<Product> finalProductSet = new HashSet<>();
 
     // Action mode
     private ActionMode actionMode;
@@ -103,17 +100,6 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
         populateProductList();
 
-        // Define what to do when the server response to get products is received.
-        //setupFetchProductsResponseHandler();
-
-        // Send the network request to get all users.
-/*        valuesManager = GlobalValuesManager.getInstance(getActivity().getApplicationContext());
-        Map<String, String> params = new HashMap<>();
-        int groupId = valuesManager.getLoggedUserGroup().getID();
-        params.put("id", String.valueOf(groupId));
-        JSONObject jsonPostParameters = new JSONObject(params);
-        ProductsDatabaseHelper.sendGetProductsShopListRequest(jsonPostParameters, getActivity().getApplicationContext(), fetchProductsResponseHandler);*/
-
         // Needed to show the menu action
         setHasOptionsMenu(true);
 
@@ -126,7 +112,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         // Load menu
         getActivity().getMenuInflater().inflate(R.menu.shopping_list_menu, menu);
 
-        // Add listener to confirm menu action
+        // Add listener to 'Confirm' menu action
         MenuItem addProductsItem = menu.findItem(R.id.confirmListCreationButton);
         addProductsItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -136,22 +122,22 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
             }
         });
 
-        // Add listener to take in charge menu action
+        // Add listener to 'Take in charge' menu action
         MenuItem takeInCharge = menu.findItem(R.id.takeListInCharge);
         takeInCharge.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                takeListInCharge();
+                sendTakeListInChargeRequest();
                 return false;
             }
         });
 
-        // Add listener to take in charge menu action
+        // Add listener to 'Delete' menu action
         MenuItem deleteList = menu.findItem(R.id.deleteList);
         deleteList.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                sendDeleteListRequest();
+                showDeleteListAlertDialog();
                 return false;
             }
         });
@@ -173,21 +159,9 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         addProductToListButton = (FloatingActionButton) loadedFragment.findViewById(R.id.addProductToListButton);
     }
 
-    private void sendDeleteListRequest()
+    private void sendDeleteShoppingListRequest()
     {
-        deleteShoppingList();
-
-        // Change fragment
-        FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getEmptyShoppingListFragment());
-        transaction.commit();
-    }
-
-    private void deleteShoppingList()
-    {
-        GlobalValuesManager gvm = GlobalValuesManager.getInstance(getContext());
-        GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
-        int groupID = gvm.getLoggedUserGroup().getID();
+        int groupID = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID();
 
         // JSON POST parameters
         JSONObject jsonParams = new JSONObject();
@@ -197,24 +171,75 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
             e.printStackTrace();
         }
 
-        setupShoppingListDeletion();
+        // Debug
+        Log.d("DELETE_REQ", jsonParams.toString());
 
-        ShoppingListDatabaseHelper.deleteShoppingList(jsonParams, getContext(), deleteShoppingListResponseHandler);
+        // Define what to do on response
+        setupDeleteShoppingListResponseHandler();
+
+        // Send request
+        ShoppingListDatabaseHelper.sendDeleteShoppingListRequest(jsonParams, getContext(), deleteShoppingListResponseHandler);
     }
 
-    private void setupShoppingListDeletion()
+    private void setupDeleteShoppingListResponseHandler()
     {
         this.deleteShoppingListResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
+                try {
+                    Log.d("DELETE_RESP", response.toString());
+                    if(response.getInt("success") == 1)
+                    {
+                        // Update cache
+                        GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
+                        GlobalValuesManager.getInstance(getContext()).deleteShoppingList();
+
+                        // Change fragment: show EmptyShoppingListFragment
+                        FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getEmptyShoppingListFragment());
+                        transaction.commit();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
             }
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
         };
+    }
+
+    private void showDeleteListAlertDialog()
+    {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Light_Dialog);
+
+        dialogBuilder.setMessage(getString(R.string.delete_list_dialog));
+        dialogBuilder.setCancelable(true);
+
+        dialogBuilder.setPositiveButton(
+                getString(R.string.delete_action),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Send delete request
+                        sendDeleteShoppingListRequest();
+                    }
+                });
+
+        dialogBuilder.setNegativeButton(
+                getString(R.string.cancel_action),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getActivity().getColor(R.color.materialRed500));
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getActivity().getColor(R.color.materialGrey600));
     }
 
     private void setupRecyclerView()
@@ -243,27 +268,14 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         // Get the product list
         productModelList = shoppingList.getProductList();
 
-        // Initialize the final set
-        finalProductSet.addAll(productModelList);
-
         // Set the adapter model
         adapter.replaceAll(productModelList);
     }
 
-    private void takeListInCharge()
-    {
-        updateShoppingListState();
-
-        // Change fragment
-        FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getGroceryStoreFragment());
-        transaction.commit();
-    }
-
-    private void updateShoppingListState()
+    private void sendTakeListInChargeRequest()
     {
         GlobalValuesManager gvm = GlobalValuesManager.getInstance(getContext());
-        int userID = gvm.getLoggedUser().getId();
+        int userID = gvm.getLoggedUser().getID();
         int groupID = gvm.getLoggedUserGroup().getID();
 
         // JSON POST parameters
@@ -275,20 +287,33 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
             e.printStackTrace();
         }
 
-        setupShoppingListStateUpdate();
+        // Debug
+        Log.d("TAKE_CHARGE_REQ", jsonParams.toString());
 
+        // Define what to do on response
+        setupShoppingListStateUpdateResponseHandler();
+
+        // Send the request
         ShoppingListDatabaseHelper.shoppingListStateUpdate(jsonParams, getContext(), stateShoppingListResponseHandler);
     }
 
-    private void setupShoppingListStateUpdate()
+    private void setupShoppingListStateUpdateResponseHandler()
     {
         this.stateShoppingListResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
+                Log.d("TAKE_CHARGE_RESP", response.toString());
                 try {
                     if(response.getInt("success") == 1)
                     {
+                        saveShoppingListInLocalDatabase();
+
                         GlobalValuesManager.getInstance(getContext()).setShoppingListState(true);
+
+                        // Change fragment: show GroceryStoreFragment
+                        FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getGroceryStoreFragment());
+                        transaction.commit();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -302,6 +327,19 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         };
     }
 
+    private void saveShoppingListInLocalDatabase()
+    {
+        List<Product> productListToSave = adapter.getModelAsCollection();
+        ProductsLocalDatabaseHelper localDatabaseHelper = ProductsLocalDatabaseHelper.getInstance(getContext());
+        localDatabaseHelper.open();
+        localDatabaseHelper.resetAllProducts();
+        for(Product product : productListToSave)
+        {
+            localDatabaseHelper.insertProduct(product);
+        }
+        localDatabaseHelper.close();
+    }
+
     private void setupCreateShoppingListRequest()
     {
         this.createShoppingListResponseHandler = new NetworkResponseHandler() {
@@ -311,7 +349,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                     if(response.getInt("success") == 1)
                     {
                         Toast.makeText(getContext(), "OK", Toast.LENGTH_LONG).show();
-                        GlobalValuesManager.getInstance(getContext()).updateShoppingList(finalProductSet);
+                        GlobalValuesManager.getInstance(getContext()).updateShoppingList(adapter.getModelAsCollection());
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -327,8 +365,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
     private void sendShoppingListCreationRequest()
     {
-        // Final set as list
-        List<Product> finalProductList = new ArrayList<>(finalProductSet);
+        // Get the products from the adapter
+        List<Product> finalProductList = adapter.getModelAsCollection();
 
         // JSON POST parameters
         JSONObject jsonParams = new JSONObject();
@@ -364,12 +402,6 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
             This way the user won't see products already in the template in the add activity.
          */
 
-        // Update cached template with deleted products
-        // GlobalValuesManager.getInstance(getContext()).removeTemplateProducts(template.getID(), adapter.getDeleteList());
-
-        // Take note of the deleted products before changing activity
-        // deleteSet.addAll(adapter.getDeleteList());
-
         // Get the current list from adapter
         List<Product> currentList = adapter.getModelAsCollection();
 
@@ -394,24 +426,18 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
             if(resultCode == Activity.RESULT_OK)
             {
                 try {
-                    // Get added products from result and add them to the final set
+                    // Get added products from result
                     List<Product> productsAdded = Product.parseJSONProductList(new JSONArray(data.getStringExtra("RESULT")));
+
+                    // For each of them, set the quantity to 1
                     for(Product product : productsAdded)
                     {
                         product.setQuantity(1);
                     }
-                    finalProductSet.addAll(productsAdded);
 
-                    // Update adapter
+                    // Update adapter list
                     adapter.add(productsAdded);
                     adapter.notifyDataSetChanged();
-
-                    // Update cached template
-                    // GlobalValuesManager.getInstance(getApplicationContext()).addTemplateProducts(template.getID(), addSet);
-
-                    // Remove from the delete set the products just inserted
-                    // adapter.getDeleteList().removeAll(addSet);
-                    // deleteSet.removeAll(addSet);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -475,10 +501,6 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 if(item.getItemId() == R.id.deleteTemplate)
                 {
-                    // sendDeleteTemplatesRequest();
-                    // selectedListItems.addAll(adapter.getSelectedItems());
-                    List<Product> deletedProducts = getActionModeSelectedProducts(adapter.getSelectedItems());
-                    finalProductSet.removeAll(deletedProducts);
                     adapter.removeItems(adapter.getSelectedItems());
                     mode.finish();
                     return true;
@@ -492,15 +514,5 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 actionMode = null;
             }
         };
-    }
-
-    private List<Product> getActionModeSelectedProducts(List<Integer> selectedIndexes)
-    {
-        List<Product> selectedProducts = new ArrayList<>();
-        for(int i = 0; i < selectedIndexes.size(); i++)
-        {
-            selectedProducts.add(adapter.getModelAsCollection().get(selectedIndexes.get(i)));
-        }
-        return selectedProducts;
     }
 }

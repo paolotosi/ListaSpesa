@@ -26,8 +26,8 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
-import com.mobile.paolo.listaspesa.database.ProductsDatabaseHelper;
-import com.mobile.paolo.listaspesa.database.TemplatesDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.ProductsDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.Template;

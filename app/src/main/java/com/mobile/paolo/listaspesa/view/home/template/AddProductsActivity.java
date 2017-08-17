@@ -17,7 +17,7 @@ import android.view.View;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
-import com.mobile.paolo.listaspesa.database.ProductsDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.ProductsDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;

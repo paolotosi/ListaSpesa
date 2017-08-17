@@ -276,6 +276,7 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
                 }
             });
 
+            // Use template to create list
             cardUseTemplateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View clickedView) {
