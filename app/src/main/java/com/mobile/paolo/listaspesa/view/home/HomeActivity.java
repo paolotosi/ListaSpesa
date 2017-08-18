@@ -310,7 +310,17 @@ public class HomeActivity extends AppCompatActivity {
                             // Not by me
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
                             getUserTookList(response.getInt("userID"));
-                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER);
+                            JSONObject jsonShoppingList = response.getJSONObject("list");
+                            ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
+                            if(shoppingList.getProductList().size() > 0)
+                            {
+                                GlobalValuesManager.getInstance(getApplicationContext()).saveUserShoppingList(shoppingList.toJSON());
+                                GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST);
+
+                            }
+                            else {
+                                GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER);
+                            }
                         }
                     }
                     else
@@ -434,6 +444,10 @@ public class HomeActivity extends AppCompatActivity {
             {
                 // EmptyShoppingList: it will be different because the user has a list but it's taken in charge by someone else
                 selectedFragment = HomeFragmentContainer.getInstance().getEmptyShoppingListFragment();
+            }
+            else if(contextualizer.hasUserShoppingListInCharge().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST))
+            {
+                selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
             }
             else
             {   // List is taken in charge by the logged user, so i have to this fragment

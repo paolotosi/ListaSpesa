@@ -31,6 +31,7 @@ public class GlobalValuesManager
     public static final String LIST_NO_CHARGE = "LIST_NO_CHARGE";
     public static final String LIST_IN_CHARGE_LOGGED_USER = "LIST_IN_CHARGE_LOGGED_USER";
     public static final String LIST_IN_CHARGE_ANOTHER_USER = "LIST_IN_CHARGE_ANOTHER_USER";
+    public static final String LIST_IN_CHARGE_ANOTHER_LIST = "LIST_IN_CHARGE_ANOTHER_LIST";
 
     private GlobalValuesManager(Context context)
     {
