@@ -34,9 +34,10 @@ public class Group
         {
             try {
                 JSONObject jsonUser = members.getJSONObject(i);
+                int userID = jsonUser.getInt("id");
                 String username = jsonUser.getString("username");
                 String address = jsonUser.getString("address");
-                this.members.add(i, new User(-1, username, null, address));
+                this.members.add(i, new User(userID, username, null, address));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

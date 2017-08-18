@@ -35,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -147,6 +148,7 @@ public class HomeActivity extends AppCompatActivity {
                         case USER_HAS_GROUP:
                             // Create group from response and updated SharedPreferences
                             GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(true);
+                            Log.d("MEMBERS", response.getJSONArray("members").toString());
                             Group group = new Group(response.getInt("groupID"), response.getString("groupName"), response.getJSONArray("members"));
                             GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUserGroup(group);
                             Contextualizer.getInstance().setUserPartOfAGroup(true);
@@ -300,7 +302,6 @@ public class HomeActivity extends AppCompatActivity {
                         if(response.getInt("userID")== GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser().getID())
                         {
                             // By me
-                            //TODO recuperare la lista della spesa dal DB locale e salvare la lista della spesa nelle shared preferences
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER);
                         }
@@ -308,6 +309,7 @@ public class HomeActivity extends AppCompatActivity {
                         {
                             // Not by me
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
+                            getUserTookList(response.getInt("userID"));
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER);
                         }
                     }
@@ -451,11 +453,18 @@ public class HomeActivity extends AppCompatActivity {
         return selectedFragment;
     }
 
+private String getUserTookList(int id) {
+    List<User> members = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers();
+    String userInCharge = "";
+    for (int i = 0; i < members.size(); i++) {
+        if(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers().get(i).getID() == id) {
+            userInCharge = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers().get(i).getUsername();
+            GlobalValuesManager.getInstance(getApplicationContext()).saveUserTookList(userInCharge);
+        }
+    }
 
-
-
-
-
+    return userInCharge;
+}
 
 
 

@@ -379,4 +379,13 @@ public class GlobalValuesManager
 //        return shoppingList;
 //    }
 
+    public void saveUserTookList(String userToSave)
+    {
+        sharedPreferencesManager.writeString(context.getString(R.string.user_in_charge), userToSave);
+    }
+
+    public String getUserTookList()
+    {
+        return sharedPreferencesManager.readString(context.getString(R.string.user_in_charge));
+    }
 }

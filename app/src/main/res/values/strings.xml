@@ -13,6 +13,7 @@
     <string name="has_user_templates">HAS_USER_TEMPLATES</string>
     <string name="has_user_list">HAS_USER_LIST</string>
     <string name="has_user_list_charge">HAS_USER_LIST_CHARGE</string>
+    <string name="user_in_charge">USER_IN_CHARGE</string>
 
     <!-- WelcomeActivity strings. -->
     <string name="login_button">Accedi</string>
