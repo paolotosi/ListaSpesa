@@ -51,6 +51,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
     // Constants
     private static final int ADD_PRODUCTS_REQUEST = 1;
+    private static final boolean takenCharge = true;
+    private static final boolean notTakenCharge = false;
 
     // Widgets
     private FloatingActionButton addProductToListButton;
@@ -70,6 +72,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     private NetworkResponseHandler createShoppingListResponseHandler;
     private NetworkResponseHandler stateShoppingListResponseHandler;
     private NetworkResponseHandler deleteShoppingListResponseHandler;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -159,7 +162,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         addProductToListButton = (FloatingActionButton) loadedFragment.findViewById(R.id.addProductToListButton);
     }
 
-    private void sendDeleteShoppingListRequest()
+    private void sendDeleteShoppingListRequest(boolean takingCharge)
     {
         int groupID = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID();
 
@@ -175,13 +178,13 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         Log.d("DELETE_REQ", jsonParams.toString());
 
         // Define what to do on response
-        setupDeleteShoppingListResponseHandler();
+        setupDeleteShoppingListResponseHandler(takingCharge);
 
         // Send request
         ShoppingListDatabaseHelper.sendDeleteShoppingListRequest(jsonParams, getContext(), deleteShoppingListResponseHandler);
     }
 
-    private void setupDeleteShoppingListResponseHandler()
+    private void setupDeleteShoppingListResponseHandler(final boolean takingCharge)
     {
         this.deleteShoppingListResponseHandler = new NetworkResponseHandler() {
             @Override
@@ -190,15 +193,19 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                     Log.d("DELETE_RESP", response.toString());
                     if(response.getInt("success") == 1)
                     {
-                        // Update cache
-                        GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
-                        GlobalValuesManager.getInstance(getContext()).deleteShoppingList();
+                        if(!takingCharge)
+                        {
+                            // Update cache
+                            GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
+                            GlobalValuesManager.getInstance(getContext()).deleteShoppingList();
 
-                        // Change fragment: show EmptyShoppingListFragment
-                        FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
-                        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getEmptyShoppingListFragment());
-                        transaction.commit();
+                            // Change fragment: show EmptyShoppingListFragment
+                            FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
+                            transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getEmptyShoppingListFragment());
+                            transaction.commit();
+                        }
                     }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -224,7 +231,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Send delete request
-                        sendDeleteShoppingListRequest();
+                        sendDeleteShoppingListRequest(notTakenCharge);
                     }
                 });
 
@@ -306,7 +313,11 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 try {
                     if(response.getInt("success") == 1)
                     {
+                        // Save the list locally
                         saveShoppingListInLocalDatabase();
+
+                        // Delete the list on the server
+                        sendDeleteShoppingListRequest(takenCharge);
 
                         GlobalValuesManager.getInstance(getContext()).setShoppingListState(true);
 
