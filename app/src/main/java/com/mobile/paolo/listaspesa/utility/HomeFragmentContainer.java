@@ -1,5 +1,6 @@
 package com.mobile.paolo.listaspesa.utility;
 
+import com.mobile.paolo.listaspesa.view.home.group.AddMemberFragment;
 import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.EmptyGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
@@ -32,6 +33,8 @@ public class HomeFragmentContainer
     private CreateShoppingListFragment createShoppingListFragment;
     private ManageShoppingListFragment manageShoppingListFragment;
     private GroceryStoreFragment groceryStoreFragment;
+
+    private AddMemberFragment addMemberFragment;
 
     public static synchronized HomeFragmentContainer getInstance()
     {
@@ -143,5 +146,18 @@ public class HomeFragmentContainer
             this.groceryStoreFragment = new GroceryStoreFragment();
         }
         return groceryStoreFragment;
+    }
+
+    public AddMemberFragment getAddMemberFragment() {
+        if(this.addMemberFragment == null)
+        {
+            this.addMemberFragment = new AddMemberFragment();
+        }
+        return addMemberFragment;
+    }
+
+    public void setAddMemberFragment(AddMemberFragment addMemberFragment) {
+
+            this.addMemberFragment = addMemberFragment;
     }
 }

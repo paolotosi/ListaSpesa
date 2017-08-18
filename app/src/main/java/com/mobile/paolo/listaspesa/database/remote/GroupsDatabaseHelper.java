@@ -17,6 +17,7 @@ public class GroupsDatabaseHelper
     private static final String URL_CREATE_GROUP = "http://10.0.2.2/listaspesa/android_connect/groups/create_group.php";
     private static final String URL_GET_GROUP_DETAILS = "http://10.0.2.2/listaspesa/android_connect/groups/get_user_group_details.php";
     private static final String URL_MODIFY_GROUP_NAME = "http://10.0.2.2/listaspesa/android_connect/groups/modify_group_name.php";
+    private static final String URL_UPDATE_GROUP = "http://10.0.2.2/listaspesa/android_connect/groups/update_group_members.php";
 
     public static void sendCreateGroupRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
@@ -32,6 +33,12 @@ public class GroupsDatabaseHelper
     {
         NetworkMessageSender.sendHTTPRequest(URL_MODIFY_GROUP_NAME, jsonPostData, context, networkResponseHandler);
     }
+
+    public static void sendUpdateGroupRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
+    {
+        NetworkMessageSender.sendHTTPRequest(URL_UPDATE_GROUP, jsonPostData, context, networkResponseHandler);
+    }
+
 
 
 }

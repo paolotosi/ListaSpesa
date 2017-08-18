@@ -58,6 +58,11 @@
     <string name="group_creation_KO_no_users">Seleziona almeno un utente.</string>
     <string name="remote_group_creation_error">Errore nella creazione del gruppo sul database.</string>
 
+    <!-- addMemberFragment strings. -->
+    <string name="add_toolbar">Aggiunti utenti</string>
+    <string name="add_OK">Inserimento avvenuto con successo!</string>
+    <string name="add_KO_no_users">Seleziona almeno un utente.</string>
+
     <!-- ManageGroupFragment strings. -->
     <string name="logout_dialog">Sei sicuro di voler uscire?</string>
     <string name="logout_action">Logout</string>

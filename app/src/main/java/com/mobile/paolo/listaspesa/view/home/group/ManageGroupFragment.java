@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -63,6 +64,8 @@ public class ManageGroupFragment extends Fragment {
 
         setupLogoutButtonListener(this.getView());
 
+        setupAddMemeberButtonListener(this.getView());
+
         setupRecyclerView(this.getView());
     }
 
@@ -117,6 +120,23 @@ public class ManageGroupFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 showLogoutDialog();
+            }
+        });
+    }
+
+    private void setupAddMemeberButtonListener(View loadedFragment)
+    {
+        loadedFragment.findViewById(R.id.addMembers).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    if(HomeFragmentContainer.getInstance().getAddMemberFragment() == null)
+                    {
+                        AddMemberFragment addMemberFragment = new AddMemberFragment();
+                        HomeFragmentContainer.getInstance().setAddMemberFragment(addMemberFragment);
+                    }
+                    transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getAddMemberFragment());
+                    transaction.commit();
             }
         });
     }
