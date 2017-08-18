@@ -1,45 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+<RelativeLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    card_view:cardCornerRadius="5dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    card_view:cardUseCompatPadding="true" >
-
-    <RelativeLayout
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp" >
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:layout_margin="8dp"
+        android:elevation="2dp"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/cardTextViewName"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:text="name"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/cardTextViewAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/cardTextViewName"
-            android:text="address"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <CheckBox
-            android:id="@+id/cardCheckbox"
-            android:visibility="invisible"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            />
+                <TextView
+                    android:id="@+id/cardTextViewName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Nome"
+                    android:textColor="#000"
+                    android:textSize="18sp" />
 
-    </RelativeLayout>
+                <TextView
+                    android:id="@+id/cardTextViewAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Indirizzo"
+                    android:textColor="#555"
+                    android:textSize="16sp"
+                    android:textStyle="italic"/>
 
-</android.support.v7.widget.CardView>
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/cardCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>
+

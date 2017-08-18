@@ -42,6 +42,11 @@ public class HomeFragmentContainer
         return instance;
     }
 
+    public void destroy()
+    {
+        instance = null;
+    }
+
     public EmptyGroupFragment getEmptyGroupFragment() {
         if(this.emptyGroupFragment == null)
         {

@@ -9,8 +9,6 @@ import android.util.Log;
 
 import com.mobile.paolo.listaspesa.model.objects.Product;
 
-import java.util.Random;
-
 /**
  * Created by paolo on 17/08/17.
  */

@@ -1,9 +1,11 @@
 package com.mobile.paolo.listaspesa.view.home.group;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +17,9 @@ import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
+import com.mobile.paolo.listaspesa.utility.SharedPreferencesManager;
+import com.mobile.paolo.listaspesa.view.init.WelcomeActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +60,8 @@ public class ManageGroupFragment extends Fragment {
         setupToolbar(this.getView());
 
         setupEditButtonListener(this.getView());
+
+        setupLogoutButtonListener(this.getView());
 
         setupRecyclerView(this.getView());
     }
@@ -104,6 +111,53 @@ public class ManageGroupFragment extends Fragment {
         });
     }
 
+    private void setupLogoutButtonListener(View loadedFragment)
+    {
+        loadedFragment.findViewById(R.id.logoutFAB).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLogoutDialog();
+            }
+        });
+    }
 
+    private void showLogoutDialog()
+    {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Light_Dialog);
+
+        dialogBuilder.setMessage(getString(R.string.logout_dialog));
+        dialogBuilder.setCancelable(true);
+
+        dialogBuilder.setPositiveButton(
+                getString(R.string.logout_action),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        logout();
+                    }
+                });
+
+        dialogBuilder.setNegativeButton(
+                getString(R.string.cancel_action),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getActivity().getColor(R.color.materialRed500));
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getActivity().getColor(R.color.materialGrey600));
+    }
+
+    private void logout()
+    {
+        // Flush SharedPreferences and reset fragments
+        SharedPreferencesManager.getInstance(getContext()).flush();
+        HomeFragmentContainer.getInstance().destroy();
+
+        Intent intent = new Intent(getContext(), WelcomeActivity.class);
+        startActivity(intent);
+    }
 
 }

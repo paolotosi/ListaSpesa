@@ -51,7 +51,7 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
 
 
         // Create ViewHolder. (A ViewHolder describes an item view and metadata about its place within the RecyclerView.)
-        ViewHolder viewHolder = new ViewHolder(itemLayoutView);
+        ViewHolder viewHolder = new ViewHolder(itemLayoutView, this.visualizationMode);
 
         return viewHolder;
     }
@@ -90,6 +90,11 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
         }
     }
 
+    // method to access in activity after updating selection
+    public List<User> getUserList() {
+        return userList;
+    }
+
     // Return the size of the model list.
     @Override
     public int getItemCount() {
@@ -98,23 +103,30 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView cardTextViewName;
-        public TextView cardTextViewAddress;
-        public CheckBox cardCheckbox;
+        private TextView cardTextViewName;
+        private TextView cardTextViewAddress;
+        private CheckBox cardCheckbox;
 
-        public User user;
+        private int visualizationMode;
 
-        public ViewHolder(View itemLayoutView) {
+        public ViewHolder(View itemLayoutView, int visualizationMode)
+        {
             super(itemLayoutView);
+            this.visualizationMode = visualizationMode;
+            initializeWidgets(itemLayoutView);
 
+        }
+
+        private void initializeWidgets(View itemLayoutView)
+        {
             cardTextViewName = (TextView) itemLayoutView.findViewById(R.id.cardTextViewName);
             cardTextViewAddress = (TextView) itemLayoutView.findViewById(R.id.cardTextViewAddress);
-            cardCheckbox = (CheckBox) itemLayoutView.findViewById(R.id.cardCheckbox);
+            if(visualizationMode == CREATION_MODE)
+            {
+                cardCheckbox = (CheckBox) itemLayoutView.findViewById(R.id.cardCheckbox);
+            }
         }
     }
 
-    // method to access in activity after updating selection
-    public List<User> getUserList() {
-        return userList;
-    }
+
 }
