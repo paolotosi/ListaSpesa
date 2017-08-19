@@ -14,6 +14,8 @@
     <string name="has_user_list">HAS_USER_LIST</string>
     <string name="shopping_list_state">SHOPPING_LIST_STATE</string>
     <string name="user_in_charge">USER_IN_CHARGE</string>
+    <string name="are_there_products_not_found">ARE_THERE_PRODUCTS_NOT_FOUND</string>
+    <string name="products_not_found">PRODUCTS_NOT_FOUND</string>
 
     <!-- WelcomeActivity strings. -->
     <string name="login_button">Accedi</string>
@@ -58,7 +60,7 @@
     <string name="group_creation_KO_no_users">Seleziona almeno un utente.</string>
     <string name="remote_group_creation_error">Errore nella creazione del gruppo sul database.</string>
 
-    <!-- addMemberFragment strings. -->
+    <!-- AddMemberFragment strings. -->
     <string name="add_toolbar">Aggiunti utenti</string>
     <string name="add_OK">Inserimento avvenuto con successo!</string>
     <string name="add_KO_no_users">Seleziona almeno un utente.</string>
@@ -100,6 +102,9 @@
     <string name="exit_action">Esci</string>
     <string name="cancel_action">Annulla</string>
 
+    <!-- EditTemplateActivity strings. -->
+    <string name="toast_list_with_old_products">Sono stati aggiunti automaticamente i prodotti non trovati nell\'ultima spesa.</string>
+
     <!-- AddProductsActivity strings. -->
     <string name="add_template_products_toolbar">Aggiungi prodotti</string>
 
@@ -113,6 +118,7 @@
     <string name="create_new_list_button_alt">Sembra che uno dei tuoi compagni di gruppo abbia già preso in carico la vostra lista della spesa! Crea una nuova lista della spesa. Attenzione: i prodotti non trovati dal tuo compagno verranno inseriti automaticamente.</string>
 
     <!-- ManageShoppingList strings. -->
+    <string name="list_saved">La lista è stata salvata.</string>
     <string name="toolbar_title">Lista della spesa</string>
     <string name="delete_list_dialog">Sei sicuro di volere eliminare la lista?</string>
     <string name="delete_action">Elimina</string>

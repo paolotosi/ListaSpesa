@@ -13,22 +13,17 @@ import com.android.volley.VolleyError;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.remote.GroupsDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.ProductsDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
+import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.Contextualizer;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
-import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
-import com.mobile.paolo.listaspesa.view.home.group.EmptyGroupFragment;
-import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
-import com.mobile.paolo.listaspesa.view.home.template.EmptyTemplateFragment;
-import com.mobile.paolo.listaspesa.view.home.template.ManageTemplateFragment;
-import com.mobile.paolo.listaspesa.view.home.shoppingList.EmptyShoppingListFragment;
-import com.mobile.paolo.listaspesa.view.home.shoppingList.ManageShoppingListFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,27 +48,18 @@ import java.util.Map;
  * SharedPreferences for future uses.
  */
 
-public class HomeActivity extends AppCompatActivity {
-
-    // The fragments
-    private EmptyGroupFragment emptyGroupFragment;
-    private CreateGroupFragment createGroupFragment;
-    private ManageGroupFragment manageGroupFragment;
-    private EmptyTemplateFragment emptyTemplateFragment;
-    private ManageTemplateFragment manageTemplateFragment;
-    private EmptyShoppingListFragment emptyListFragment;
-    private ManageShoppingListFragment manageListFragment;
-
+public class HomeActivity extends AppCompatActivity
+{
     // The networkResponseHandlers
     private NetworkResponseHandler groupResponseHandler;
     private NetworkResponseHandler templateResponseHandler;
-    private NetworkResponseHandler listResponseHandler;
+    private NetworkResponseHandler shoppingListResponseHandler;
+    private NetworkResponseHandler getProductsNotFoundResponseHandler;
 
     // Response codes
     private static final int NETWORK_ERROR = 0;
     private static final int USER_HAS_GROUP = 1;
     private static final int USER_DOESNT_HAVE_GROUP = 2;
-
 
     // GlobalValuesManager
     GlobalValuesManager contextualizer;
@@ -98,9 +84,11 @@ public class HomeActivity extends AppCompatActivity {
 
     private void contextualize()
     {
-        // Determine if logged user is already part of a group
-        // NOTE: it also contains the request to verify if the group has already defined some templates
-        // The second request has to be sent only after the first is finished.
+        // Determine if logged user is already part of a group.
+        // NOTE: it also contains the request to verify if the group has already defined some templates,
+        // a shopping list or has some products left from previous lists.
+        // These requests have to be sent only after the first one is finished, because we don't know
+        // the groupID beforehand
         sendGetGroupDetailsRequest();
     }
 
@@ -138,7 +126,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(JSONObject response) {
                 // Debug
-                Log.d("GROUP_DETAILS", response.toString());
+                Log.d("GET_GROUP_RESP", response.toString());
 
                 try {
                     int responseCode = response.getInt("success");
@@ -152,10 +140,11 @@ public class HomeActivity extends AppCompatActivity {
                             Group group = new Group(response.getInt("groupID"), response.getString("groupName"), response.getJSONArray("members"));
                             GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUserGroup(group);
                             Contextualizer.getInstance().setUserPartOfAGroup(true);
-                            // Query for templates only if the user has a group.
+                            // Query for templates, shopping list and products not found only if the user has a group.
                             // The request needs to be sent now, otherwise we don't know the group ID!
                             sendGetTemplatesRequest();
-                            sendGetListRequest();
+                            sendGetShoppingListRequest();
+                            sendGetProductsNotFoundRequest();
                             break;
                         case USER_DOESNT_HAVE_GROUP:
                             GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(false);
@@ -190,7 +179,7 @@ public class HomeActivity extends AppCompatActivity {
         JSONObject jsonPostParameters = new JSONObject(params);
 
         // Print parameters to console for debug purposes.
-        Log.d("JSON_GET_GROUP_DETAILS", jsonPostParameters.toString());
+        Log.d("GET_GROUP_REQ", jsonPostParameters.toString());
 
         GroupsDatabaseHelper.sendGetGroupDetailsRequest(jsonPostParameters, getApplicationContext(), groupResponseHandler);
     }
@@ -202,7 +191,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(JSONObject response) {
                 try {
-                    Log.d("TEMPLATE_RESPONSE", response.toString());
+                    Log.d("GET_TEMPLATES_RESP", response.toString());
                     if(response.getInt("success") == 1)
                     {
                         // Determine if the group has templates and update the SharedPreferences accordingly
@@ -254,14 +243,14 @@ public class HomeActivity extends AppCompatActivity {
         JSONObject jsonPostParameters = new JSONObject(params);
 
         // Debug
-        Log.d("JSON_TEMPLATES", jsonPostParameters.toString());
+        Log.d("GET_TEMPLATES_REQ", jsonPostParameters.toString());
 
         // Send request
         TemplatesDatabaseHelper.sendGetGroupTemplatesRequest(jsonPostParameters, getApplicationContext(), templateResponseHandler);
 
     }
 
-    private void setupListResponseHandler()
+    private void setupShoppingListResponseHandler()
     {
         /*
             Possible outcomes:
@@ -269,7 +258,7 @@ public class HomeActivity extends AppCompatActivity {
                 - list in charge, taken by me -> show grocery store
                 - list in charge, not taken by me -> show list in creation
          */
-        this.listResponseHandler = new NetworkResponseHandler() {
+        this.shoppingListResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
                 try {
@@ -341,10 +330,10 @@ public class HomeActivity extends AppCompatActivity {
         };
     }
 
-    private void sendGetListRequest()
+    private void sendGetShoppingListRequest()
     {
         // Define what to do on response
-        setupListResponseHandler();
+        setupShoppingListResponseHandler();
 
         Integer groupID = -1;
 
@@ -364,7 +353,72 @@ public class HomeActivity extends AppCompatActivity {
         Log.d("GET_LIST_REQ", jsonPostParameters.toString());
 
         // Send request
-        ShoppingListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getApplicationContext(), listResponseHandler);
+        ShoppingListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getApplicationContext(), shoppingListResponseHandler);
+
+    }
+
+    private void setupGetProductsNotFoundResponseHandler()
+    {
+        this.getProductsNotFoundResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("GET_PROD_NOT_FOUND_RESP", response.toString());
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+                        // -- Success --
+                        // Get the products
+                        JSONArray jsonProductsNotFound = response.getJSONArray("products_not_found");
+
+                        if(jsonProductsNotFound.length() > 0)
+                        {
+                            // Save them in cache
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveAreThereProductsNotFound(true);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveProductsNotFound(jsonProductsNotFound);
+                        }
+                        else
+                        {
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveAreThereProductsNotFound(false);
+                        }
+                    }
+                    else
+                    {
+                        // -- Error --
+                        Log.e("GET_PROD_NOT_FOUND_ERR", response.getString("message"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                error.printStackTrace();
+            }
+        };
+    }
+
+    private void sendGetProductsNotFoundRequest()
+    {
+        // Parameters
+        int groupID = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID();
+
+        // Encapsulate in JSON
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("groupID", groupID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Debug
+        Log.d("GET_PROD_NOT_FOUND_REQ", jsonParams.toString());
+
+        // Define what to do on response
+        setupGetProductsNotFoundResponseHandler();
+
+        // Send request
+        ProductsDatabaseHelper.sendGetProductsNotFoundRequest(jsonParams, getApplicationContext(), getProductsNotFoundResponseHandler);
 
     }
 
@@ -436,49 +490,60 @@ public class HomeActivity extends AppCompatActivity {
         Fragment selectedFragment;
         if(contextualizer.hasUserShoppingList())
         {
-            if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE)) {
+            // -- LIST PRESENT --
+            if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE))
+            {
+                // -- NOT TAKEN --
                 // ManageShoppingList
                 selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
             }
+            else if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER))
+            {
+                // -- TAKEN BY ME --
+                // GroceryStoreFragment
+                selectedFragment = HomeFragmentContainer.getInstance().getGroceryStoreFragment();
+            }
             else if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER))
             {
+                // -- TAKEN BY SOMEONE ELSE, NO SECOND LIST --
                 // EmptyShoppingList: it will be different because the user has a list but it's taken in charge by someone else
                 selectedFragment = HomeFragmentContainer.getInstance().getEmptyShoppingListFragment();
             }
-            else if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST))
-            {
-                selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
-            }
             else
-            {   // List is taken in charge by the logged user, so i have to this fragment
-                selectedFragment = HomeFragmentContainer.getInstance().getGroceryStoreFragment();
+            {
+                // -- TAKEN BY SOMEONE ELSE, SECOND LIST PRESENT --
+                selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
             }
         }
         else if(contextualizer.isUserCreatingShoppingList())
         {
+            // -- LIST IN CREATION --
             // CreateShoppingList
             selectedFragment = HomeFragmentContainer.getInstance().getCreateShoppingListFragment();
         }
         else
         {
+            // -- NO LIST --
             // EmptyShoppingList
             selectedFragment = HomeFragmentContainer.getInstance().getEmptyShoppingListFragment();
         }
         return selectedFragment;
     }
 
-private String getUserTookList(int id) {
-    List<User> members = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers();
-    String userInCharge = "";
-    for (int i = 0; i < members.size(); i++) {
-        if(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers().get(i).getID() == id) {
-            userInCharge = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers().get(i).getUsername();
-            GlobalValuesManager.getInstance(getApplicationContext()).saveUserTookList(userInCharge);
+    private String getUserTookList(int id)
+    {
+        List<User> members = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers();
+        String userInCharge = "";
+        for (int i = 0; i < members.size(); i++)
+        {
+            if(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers().get(i).getID() == id)
+            {
+                userInCharge = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers().get(i).getUsername();
+                GlobalValuesManager.getInstance(getApplicationContext()).saveUserTookList(userInCharge);
+            }
         }
+        return userInCharge;
     }
-
-    return userInCharge;
-}
 
 
 

@@ -15,15 +15,17 @@ public class ProductsDatabaseHelper
 {
     // The URLs.
     private static final String URL_GET_PRODUCTS = "http://10.0.2.2/listaspesa/android_connect/products/get_all_products.php";
-    private static final String URL_GET_PRODUCTS_SHOPLIST = "http://10.0.2.2/listaspesa/android_connect/products/get_products_shopList.php";
+    private static final String URL_GET_PRODUCTS_NOT_FOUND = "http://10.0.2.2/listaspesa/android_connect/products/get_products_not_found.php";
 
     public static void sendGetAllProductsRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
         NetworkMessageSender.sendHTTPRequest(URL_GET_PRODUCTS, jsonPostData, context, networkResponseHandler);
     }
 
-    public static void sendGetProductsShopListRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
+    public static void sendGetProductsNotFoundRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
-        NetworkMessageSender.sendHTTPRequest(URL_GET_PRODUCTS_SHOPLIST, jsonPostData, context, networkResponseHandler);
+        NetworkMessageSender.sendHTTPRequest(URL_GET_PRODUCTS_NOT_FOUND, jsonPostData, context, networkResponseHandler);
     }
+
+
 }

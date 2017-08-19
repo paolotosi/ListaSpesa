@@ -28,6 +28,11 @@ public class Product
     // This attribute will be used only in lists where is required to select products
     private boolean isChecked;
 
+    public Product(String name)
+    {
+        this.name = name;
+    }
+
     public Product(String name, String brand, String description)
     {
         this.name = name;
@@ -50,9 +55,17 @@ public class Product
 
         try {
             String name = jsonProduct.getString("name");
-            String brand = jsonProduct.getString("brand");
-            String description = jsonProduct.getString("description");
-            product = new Product(name, brand, description);
+            product = new Product(name);
+            if(jsonProduct.has("brand"))
+            {
+                String brand = jsonProduct.getString("brand");
+                product.setBrand(brand);
+            }
+            if(jsonProduct.has("description"))
+            {
+                String description = jsonProduct.getString("description");
+                product.setDescription(description);
+            }
             if(jsonProduct.has("quantity"))
             {
                 int quantity = jsonProduct.getInt("quantity");

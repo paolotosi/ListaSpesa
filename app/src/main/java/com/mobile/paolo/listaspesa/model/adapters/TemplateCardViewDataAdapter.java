@@ -1,5 +1,6 @@
 package com.mobile.paolo.listaspesa.model.adapters;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -12,13 +13,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.view.home.template.EditTemplateActivity;
+
+import org.json.JSONArray;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -286,19 +291,43 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
             cardUseTemplateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View clickedView) {
-
-                    // Create list from the selected template and save it in the cache
-                    ShoppingList list = ShoppingList.fromJSON(selectedTemplate.toJSON());
-                    GlobalValuesManager.getInstance(clickedView.getContext()).saveHasUserShoppingList(true);
-                    GlobalValuesManager.getInstance(clickedView.getContext()).saveUserShoppingList(list.toJSON());
-
-                    // Change fragment
-                    FragmentTransaction transaction = ((FragmentActivity)clickedView.getContext()).getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageShoppingListFragment());
-                    transaction.commit();
+                    createShoppingList(clickedView.getContext());
+                    changeFragment(clickedView.getContext());
 
                 }
             });
+        }
+
+        private void createShoppingList(Context context)
+        {
+            // Create list from the selected template and save it in the cache
+            ShoppingList shoppingList;
+            if(!GlobalValuesManager.getInstance(context).areThereProductsNotFound())
+            {
+                // Create list with products only from the template
+                shoppingList = new ShoppingList(selectedTemplate);
+            }
+            else
+            {
+                // There are some products left from the previous list
+                List<Product> remainingProducts = GlobalValuesManager.getInstance(context).getProductsNotFound();
+                shoppingList = new ShoppingList(selectedTemplate, remainingProducts);
+                Toast.makeText(context, context.getString(R.string.toast_list_with_old_products), Toast.LENGTH_LONG).show();
+            }
+
+            // Update state
+            GlobalValuesManager.getInstance(context).saveHasUserShoppingList(true);
+            GlobalValuesManager.getInstance(context).saveIsUserCreatingShoppingList(false);
+            GlobalValuesManager.getInstance(context).saveProductsNotFound(new JSONArray());
+            GlobalValuesManager.getInstance(context).saveUserShoppingList(shoppingList.toJSON());
+        }
+
+        private void changeFragment(Context context)
+        {
+            // Change fragment: show ManageShoppingListFragment
+            FragmentTransaction transaction = ((FragmentActivity) context).getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageShoppingListFragment());
+            transaction.commit();
         }
     }
 }

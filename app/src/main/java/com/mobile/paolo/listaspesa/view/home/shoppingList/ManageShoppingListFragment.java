@@ -68,11 +68,13 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     private ActionMode actionMode;
     private ActionMode.Callback actionModeCallback;
 
+    // List is changed?
+    boolean listChanged = false;
+
     // Network response logic
     private NetworkResponseHandler createShoppingListResponseHandler;
     private NetworkResponseHandler takeShoppingListResponseHandler;
     private NetworkResponseHandler deleteShoppingListResponseHandler;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,10 +83,6 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        if(!(getArguments() == null)){
-        String strtext=getArguments().getString("LIST");
-        Log.d("JSON", strtext);}
 
         // Load fragment.
         View loadedFragment = inflater.inflate(R.layout.fragment_manage_shopping_list, container, false);
@@ -319,7 +317,9 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         // Delete the list on the server
                         sendDeleteShoppingListRequest(takenCharge);
 
-                        GlobalValuesManager.getInstance(getContext()).setShoppingListTaken(true);
+                        // Update cache
+                        GlobalValuesManager.getInstance(getContext()).saveShoppingListTaken(true);
+                        GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER);
 
                         // Change fragment: show GroceryStoreFragment
                         FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
@@ -362,6 +362,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                     {
                         Toast.makeText(getContext(), "OK", Toast.LENGTH_LONG).show();
                         GlobalValuesManager.getInstance(getContext()).updateShoppingListProducts(adapter.getModelAsCollection());
+                        GlobalValuesManager.getInstance(getContext()).saveAreThereProductsNotFound(false);
+                        GlobalValuesManager.getInstance(getContext()).saveProductsNotFound(new JSONArray());
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

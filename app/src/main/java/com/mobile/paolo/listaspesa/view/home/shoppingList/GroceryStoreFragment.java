@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
@@ -28,7 +27,6 @@ import com.mobile.paolo.listaspesa.database.local.ProductsLocalDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
-import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
@@ -150,10 +148,7 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         // set the adapter object to the RecyclerView
         recyclerView.setAdapter(adapter);
 
-        int groupID = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID();
-        ShoppingList shoppingList = new ShoppingList(groupID, groceryList);
-
-        adapter.replaceAll(shoppingList.getProductList());
+        adapter.replaceAll(groceryList);
 
     }
 
@@ -162,16 +157,26 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         finishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeFragment();
+                showCreateListFragment();
             }
         });
     }
 
-    private void changeFragment()
+    private void showCreateListFragment()
     {
         // Change fragment: show CreateShoppingList
         FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateShoppingListFragment());
+        transaction.commit();
+
+        // Update state
+        GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingShoppingList(true);
+    }
+    private void showEmptyListFragment()
+    {
+        // Change fragment: show EmptyShoppingList
+        FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getEmptyShoppingListFragment());
         transaction.commit();
     }
 
@@ -210,8 +215,18 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
     private void endShopping()
     {
+        // Save remaining products on the remote db
         sendCompleteShoppingListRequest(PRODUCTS_LEFT);
-        changeFragment();
+
+        // Save remaining products in the cache
+        GlobalValuesManager.getInstance(getContext()).saveAreThereProductsNotFound(true);
+        GlobalValuesManager.getInstance(getContext()).saveProductsNotFound(Product.asJSONProductList(adapter.getModelAsCollection()));
+
+        // Update state
+        GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
+        GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
+
+        showEmptyListFragment();
     }
 
     private void showEndShoppingWithProductsAlertDialog()

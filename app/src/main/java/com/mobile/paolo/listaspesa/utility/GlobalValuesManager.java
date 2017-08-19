@@ -352,7 +352,7 @@ public class GlobalValuesManager
         return shoppingList.isTaken();
     }
 
-    public void setShoppingListTaken(boolean newState)
+    public void saveShoppingListTaken(boolean newState)
     {
         ShoppingList shoppingList = getUserShoppingList();
         shoppingList.setTaken(newState);
@@ -366,5 +366,31 @@ public class GlobalValuesManager
     public String getUserTookList()
     {
         return sharedPreferencesManager.readString(context.getString(R.string.user_in_charge));
+    }
+
+    public boolean areThereProductsNotFound()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.are_there_products_not_found));
+    }
+
+    public void saveAreThereProductsNotFound(boolean areThereProductsNotFound)
+    {
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.are_there_products_not_found), areThereProductsNotFound);
+    }
+
+    public List<Product> getProductsNotFound()
+    {
+        List<Product> productsNotFound = new ArrayList<>();
+        try {
+            productsNotFound = Product.parseJSONProductList(new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.products_not_found))));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return productsNotFound;
+    }
+
+    public void saveProductsNotFound(JSONArray jsonProductsNotFound)
+    {
+        sharedPreferencesManager.writeString(context.getString(R.string.products_not_found), jsonProductsNotFound.toString());
     }
 }
