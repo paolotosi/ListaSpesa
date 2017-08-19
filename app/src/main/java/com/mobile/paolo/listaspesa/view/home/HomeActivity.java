@@ -283,13 +283,13 @@ public class HomeActivity extends AppCompatActivity {
                         {
                             // List is empty
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(false);
-                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.NO_LIST);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
                         }
                         else
                         {
                             // List is not empty
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
-                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_NO_CHARGE);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveUserShoppingList(shoppingList.toJSON());
                             Contextualizer.getInstance().setHasUserList(true);
                         }
@@ -303,7 +303,7 @@ public class HomeActivity extends AppCompatActivity {
                         {
                             // By me
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
-                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER);
                         }
                         else
                         {
@@ -315,11 +315,11 @@ public class HomeActivity extends AppCompatActivity {
                             if(shoppingList.getProductList().size() > 0)
                             {
                                 GlobalValuesManager.getInstance(getApplicationContext()).saveUserShoppingList(shoppingList.toJSON());
-                                GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST);
+                                GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST);
 
                             }
                             else {
-                                GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER);
+                                GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER);
                             }
                         }
                     }
@@ -327,7 +327,7 @@ public class HomeActivity extends AppCompatActivity {
                     {
                         // Error
                         GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(false);
-                        GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingListInCharge(GlobalValuesManager.NO_LIST);
+                        GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -436,16 +436,16 @@ public class HomeActivity extends AppCompatActivity {
         Fragment selectedFragment;
         if(contextualizer.hasUserShoppingList())
         {
-            if(contextualizer.hasUserShoppingListInCharge().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE)) {
+            if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE)) {
                 // ManageShoppingList
                 selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
             }
-            else if(contextualizer.hasUserShoppingListInCharge().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER))
+            else if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER))
             {
                 // EmptyShoppingList: it will be different because the user has a list but it's taken in charge by someone else
                 selectedFragment = HomeFragmentContainer.getInstance().getEmptyShoppingListFragment();
             }
-            else if(contextualizer.hasUserShoppingListInCharge().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST))
+            else if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST))
             {
                 selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
             }

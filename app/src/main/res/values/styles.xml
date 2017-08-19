@@ -46,6 +46,10 @@
         <item name="android:backgroundTint">@color/white</item>
     </style>
 
+    <style name="MyAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+        <!-- Used for the title and text -->
+        <item name="android:textColor">@color/blackText</item>
+    </style>
 
     <style name="MyToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
 

@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,6 @@ import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
-import com.mobile.paolo.listaspesa.view.home.shoppingList.ManageShoppingListFragment;
 import com.mobile.paolo.listaspesa.view.home.template.EditTemplateActivity;
 
 import java.util.Collections;
@@ -256,11 +256,17 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
                 public void onClick(View v) {
                     if(cardTemplateDetails.getVisibility() == View.GONE)
                     {
+                        // Show details
+                        TransitionManager.beginDelayedTransition(cardTemplate);
                         cardTemplateDetails.setVisibility(View.VISIBLE);
+                        cardExpandTemplateDetails.setImageDrawable(v.getContext().getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp));
+
                     }
                     else
                     {
+                        // Hide details
                         cardTemplateDetails.setVisibility(View.GONE);
+                        cardExpandTemplateDetails.setImageDrawable(v.getContext().getDrawable(R.drawable.ic_keyboard_arrow_down_black_24dp));
                     }
                 }
             });

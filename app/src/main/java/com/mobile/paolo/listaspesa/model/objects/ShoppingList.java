@@ -14,10 +14,10 @@ import java.util.HashMap;
 
 public class ShoppingList extends Template
 {
-    /**Variable state provides the state of the list between "in preparazione"
+    /**Variable taken provides the taken of the list between "in preparazione"
      * and "in acquisto"
      */
-    private boolean state;
+    private boolean taken;
     private HashMap<String, String> details;
 
     public ShoppingList(String name, Integer groupID, List<Product> productList)
@@ -31,7 +31,7 @@ public class ShoppingList extends Template
                 getProductList().get(i).setQuantity(1);
             }
         }
-        this.state = false;
+        this.taken = false;
         this.details = new HashMap<>();
     }
 
@@ -58,7 +58,7 @@ public class ShoppingList extends Template
             jsonList.put("name", getName());
             jsonList.put("groupID", getGroupID().toString());
             jsonList.put("productList", Product.asJSONProductList(getProductList()));
-            jsonList.put("state", this.state);
+            jsonList.put("taken", this.taken);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -87,14 +87,14 @@ public class ShoppingList extends Template
         return list;
     }
 
-    public void setState(boolean newState)
+    public void setTaken(boolean isTaken)
     {
-        this.state = newState;
+        this.taken = isTaken;
     }
 
-    public boolean getState()
+    public boolean isTaken()
     {
-        return this.state;
+        return this.taken;
     }
 
 }

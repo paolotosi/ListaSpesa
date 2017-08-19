@@ -286,22 +286,17 @@ public class GlobalValuesManager
         return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_list));
     }
 
-    public void saveHasUserShoppingListInCharge(String hasUserListInCharge)
+    public void saveShoppingListState(String state)
     {
-        sharedPreferencesManager.writeString(context.getString(R.string.has_user_list_charge), hasUserListInCharge);
+        sharedPreferencesManager.writeString(context.getString(R.string.shopping_list_state), state);
     }
 
-    public String hasUserShoppingListInCharge()
+    public String getShoppingListState()
     {
-        return sharedPreferencesManager.readString(context.getString(R.string.has_user_list_charge));
+        return sharedPreferencesManager.readString(context.getString(R.string.shopping_list_state));
     }
 
     public void saveUserShoppingList(JSONObject jsonShoppingList)
-    {
-        sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
-    }
-
-    public void saveUserShoppingList(JSONArray jsonShoppingList)
     {
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
     }
@@ -322,7 +317,7 @@ public class GlobalValuesManager
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), "");
     }
 
-    public void updateShoppingList(Collection<Product> newProductList)
+    public void updateShoppingListProducts(Collection<Product> newProductList)
     {
         ShoppingList shoppingList = getUserShoppingList();
         shoppingList.setProductList(new ArrayList<>(newProductList));
@@ -351,34 +346,17 @@ public class GlobalValuesManager
         saveUserShoppingList(shoppingList.toJSON());
     }
 
-    public Boolean getShoppingListState()
+    public Boolean isShoppingListTaken()
     {
         ShoppingList shoppingList= getUserShoppingList();
-        return shoppingList.getState();
+        return shoppingList.isTaken();
     }
 
-    public void setShoppingListState(boolean newState)
+    public void setShoppingListTaken(boolean newState)
     {
         ShoppingList shoppingList = getUserShoppingList();
-        shoppingList.setState(newState);
+        shoppingList.setTaken(newState);
     }
-
-//    public ShoppingList getUserShoppingList()
-//    {
-//        ShoppingList shoppingList = null;
-//        int groupID = getLoggedUserGroup().getID();
-//        try {
-//            JSONArray shoppingListArray = new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.logged_user_list)));
-//            JSONObject jsonShoppingList = new JSONObject();
-//            jsonShoppingList.put("groupID", String.valueOf(groupID));
-//            jsonShoppingList.put("list", shoppingListArray);
-//            shoppingList = ShoppingList.fromJSON(jsonShoppingList);
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return shoppingList;
-//    }
 
     public void saveUserTookList(String userToSave)
     {

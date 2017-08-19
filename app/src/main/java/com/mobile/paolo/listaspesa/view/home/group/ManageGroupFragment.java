@@ -64,7 +64,7 @@ public class ManageGroupFragment extends Fragment {
 
         setupLogoutButtonListener(this.getView());
 
-        setupAddMemeberButtonListener(this.getView());
+        setupAddMemberButtonListener(this.getView());
 
         setupRecyclerView(this.getView());
     }
@@ -124,7 +124,7 @@ public class ManageGroupFragment extends Fragment {
         });
     }
 
-    private void setupAddMemeberButtonListener(View loadedFragment)
+    private void setupAddMemberButtonListener(View loadedFragment)
     {
         loadedFragment.findViewById(R.id.addMembers).setOnClickListener(new View.OnClickListener() {
             @Override

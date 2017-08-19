@@ -128,6 +128,15 @@ public class ProductsLocalDatabaseHelper implements ProductDAO
     }
 
     @Override
+    public void deleteProducts(List<Product> productList)
+    {
+        for(Product product : productList)
+        {
+            deleteSingleProduct(product);
+        }
+    }
+
+    @Override
     public void updateSingleProduct(String key, String newName, String newBrand, String newDescription, int newQuantity)
     {
         Product product = new Product(newName, newBrand, newDescription, newQuantity);

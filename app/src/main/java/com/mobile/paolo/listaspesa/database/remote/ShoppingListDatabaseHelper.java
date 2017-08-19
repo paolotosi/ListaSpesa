@@ -16,8 +16,9 @@ public class ShoppingListDatabaseHelper
     // The URLs.
     private static final String URL_GET_LIST = "http://10.0.2.2/listaspesa/android_connect/shoppingList/get_group_list.php";
     private static final String URL_CREATE_LIST = "http://10.0.2.2/listaspesa/android_connect/shoppingList/create_shopping_list.php";
-    private static final String URL_UPDATE_STATE = "http://10.0.2.2/listaspesa/android_connect/shoppingList/update_shopping_list_state.php";
+    private static final String URL_TAKE_LIST = "http://10.0.2.2/listaspesa/android_connect/shoppingList/take_shopping_list.php";
     private static final String URL_DELETE_LIST = "http://10.0.2.2/listaspesa/android_connect/shoppingList/delete_shopping_list.php";
+    private static final String URL_COMPLETE_LIST = "http://10.0.2.2/listaspesa/android_connect/shoppingList/complete_shopping_list.php";
 
     public static void sendGetGroupListRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
@@ -29,14 +30,19 @@ public class ShoppingListDatabaseHelper
         NetworkMessageSender.sendHTTPRequest(URL_CREATE_LIST, jsonPostData, context, networkResponseHandler);
     }
 
-    public static void shoppingListStateUpdate(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
+    public static void sendTakeShoppingListRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
-        NetworkMessageSender.sendHTTPRequest(URL_UPDATE_STATE, jsonPostData, context, networkResponseHandler);
+        NetworkMessageSender.sendHTTPRequest(URL_TAKE_LIST, jsonPostData, context, networkResponseHandler);
     }
 
     public static void sendDeleteShoppingListRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
         NetworkMessageSender.sendHTTPRequest(URL_DELETE_LIST, jsonPostData, context, networkResponseHandler);
+    }
+
+    public static void sendCompleteShoppingListRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
+    {
+        NetworkMessageSender.sendHTTPRequest(URL_COMPLETE_LIST, jsonPostData, context, networkResponseHandler);
     }
 
 

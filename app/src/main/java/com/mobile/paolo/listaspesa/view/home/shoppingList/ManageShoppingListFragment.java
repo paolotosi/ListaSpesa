@@ -70,7 +70,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
     // Network response logic
     private NetworkResponseHandler createShoppingListResponseHandler;
-    private NetworkResponseHandler stateShoppingListResponseHandler;
+    private NetworkResponseHandler takeShoppingListResponseHandler;
     private NetworkResponseHandler deleteShoppingListResponseHandler;
 
 
@@ -298,15 +298,15 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         Log.d("TAKE_CHARGE_REQ", jsonParams.toString());
 
         // Define what to do on response
-        setupShoppingListStateUpdateResponseHandler();
+        setupTakeShoppingListResponseHandler();
 
         // Send the request
-        ShoppingListDatabaseHelper.shoppingListStateUpdate(jsonParams, getContext(), stateShoppingListResponseHandler);
+        ShoppingListDatabaseHelper.sendTakeShoppingListRequest(jsonParams, getContext(), takeShoppingListResponseHandler);
     }
 
-    private void setupShoppingListStateUpdateResponseHandler()
+    private void setupTakeShoppingListResponseHandler()
     {
-        this.stateShoppingListResponseHandler = new NetworkResponseHandler() {
+        this.takeShoppingListResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
                 Log.d("TAKE_CHARGE_RESP", response.toString());
@@ -319,7 +319,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         // Delete the list on the server
                         sendDeleteShoppingListRequest(takenCharge);
 
-                        GlobalValuesManager.getInstance(getContext()).setShoppingListState(true);
+                        GlobalValuesManager.getInstance(getContext()).setShoppingListTaken(true);
 
                         // Change fragment: show GroceryStoreFragment
                         FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
@@ -356,11 +356,12 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         this.createShoppingListResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
+                Log.d("CREATE_LIST_RESP", response.toString());
                 try {
                     if(response.getInt("success") == 1)
                     {
                         Toast.makeText(getContext(), "OK", Toast.LENGTH_LONG).show();
-                        GlobalValuesManager.getInstance(getContext()).updateShoppingList(adapter.getModelAsCollection());
+                        GlobalValuesManager.getInstance(getContext()).updateShoppingListProducts(adapter.getModelAsCollection());
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -388,7 +389,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
             e.printStackTrace();
         }
 
-        Log.d("CREATE_LIST_PARAM", jsonParams.toString());
+        Log.d("CREATE_LIST_REQ", jsonParams.toString());
 
         setupCreateShoppingListRequest();
 

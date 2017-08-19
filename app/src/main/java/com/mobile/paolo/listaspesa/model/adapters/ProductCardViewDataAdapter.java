@@ -352,6 +352,43 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
         return sortedList;
     }
 
+    public List<Integer> getCheckedProductsIndexes()
+    {
+        List<Integer> selectedProductsIndexes = new ArrayList<>();
+        for(int i = 0; i < getModelAsCollection().size(); i++)
+        {
+            if(getModelAsCollection().get(i).isChecked())
+            {
+                selectedProductsIndexes.add(i);
+            }
+        }
+        return selectedProductsIndexes;
+    }
+
+    public void removeCheckedProducts()
+    {
+        for(int i = getModelAsCollection().size()-1; i >= 0; i--)
+        {
+            if(getModelAsCollection().get(i).isChecked())
+            {
+                sortedList.remove(getModelAsCollection().get(i));
+            }
+        }
+    }
+
+    public List<Product> getCheckedProducts()
+    {
+        List<Product> productList = new ArrayList<>();
+        for(int i = getModelAsCollection().size()-1; i >= 0; i--)
+        {
+            if(getModelAsCollection().get(i).isChecked())
+            {
+                productList.add(sortedList.get(i));
+            }
+        }
+        return productList;
+    }
+
     public List<Product> getModelAsCollection()
     {
         List<Product> productList = new ArrayList<>();
