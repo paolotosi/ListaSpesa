@@ -11,9 +11,9 @@
         android:icon="@drawable/ic_local_grocery_store_24dp"
         app:showAsAction="always"/>
 
-    <item android:id="@+id/confirmListCreationButton"
-        android:title="@string/action_search"
-        android:icon="@drawable/ic_check_white_24dp"
-        app:showAsAction="always"/>
+    <!--<item android:id="@+id/confirmListCreationButton"-->
+        <!--android:title="@string/action_search"-->
+        <!--android:icon="@drawable/ic_check_white_24dp"-->
+        <!--app:showAsAction="always"/>-->
 
 </menu>

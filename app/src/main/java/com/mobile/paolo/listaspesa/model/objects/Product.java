@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,9 +18,6 @@ import java.util.List;
 
 public class Product
 {
-    private final static String BASE = "baseProduct";
-    private final static String SHOPLIST = "shopListProduct";
-
     private String name;
     private String brand;
     private String description;
@@ -27,6 +25,14 @@ public class Product
 
     // This attribute will be used only in lists where is required to select products
     private boolean isChecked;
+
+    // Used to compare two products
+    public static final Comparator<Product> ALPHABETICAL_COMPARATOR = new Comparator<Product>() {
+        @Override
+        public int compare(Product p1, Product p2) {
+            return p1.getName().compareTo(p2.getName());
+        }
+    };
 
     public Product(String name)
     {

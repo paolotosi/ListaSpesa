@@ -1,6 +1,7 @@
 package com.mobile.paolo.listaspesa.view.home.shoppingList;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,11 +20,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.local.ProductsLocalDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
@@ -39,7 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,8 +54,10 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
     // Constants
     private static final int ADD_PRODUCTS_REQUEST = 1;
-    private static final boolean takenCharge = true;
-    private static final boolean notTakenCharge = false;
+    private static final boolean TAKEN_CHARGE = true;
+    private static final boolean NOT_TAKEN_CHARGE = false;
+
+    private List<Product> initialProductList;
 
     // Widgets
     private FloatingActionButton addProductToListButton;
@@ -61,20 +66,21 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
     private ProductCardViewDataAdapter adapter;
-    private ShoppingList shoppingList;
-    private List<Product> productModelList = new ArrayList<>();
 
     // Action mode
     private ActionMode actionMode;
     private ActionMode.Callback actionModeCallback;
 
-    // List is changed?
-    boolean listChanged = false;
-
     // Network response logic
     private NetworkResponseHandler createShoppingListResponseHandler;
     private NetworkResponseHandler takeShoppingListResponseHandler;
     private NetworkResponseHandler deleteShoppingListResponseHandler;
+
+    // This boolean is needed to avoid showing save feedback when adding products
+    private boolean addingProducts = false;
+
+    // Avoid saving list on exit if the list has been deleted
+    private boolean listDeleted = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,6 +94,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         View loadedFragment = inflater.inflate(R.layout.fragment_manage_shopping_list, container, false);
 
         setHasOptionsMenu(true);
+
+        listDeleted = false;
 
         initializeWidgets(loadedFragment);
 
@@ -113,15 +121,15 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         // Load menu
         getActivity().getMenuInflater().inflate(R.menu.shopping_list_menu, menu);
 
-        // Add listener to 'Confirm' menu action
-        MenuItem addProductsItem = menu.findItem(R.id.confirmListCreationButton);
-        addProductsItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                sendShoppingListCreationRequest();
-                return false;
-            }
-        });
+//        // Add listener to 'Confirm' menu action
+//        MenuItem addProductsItem = menu.findItem(R.id.confirmListCreationButton);
+//        addProductsItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem item) {
+//                sendShoppingListCreationRequest();
+//                return false;
+//            }
+//        });
 
         // Add listener to 'Take in charge' menu action
         MenuItem takeInCharge = menu.findItem(R.id.takeListInCharge);
@@ -142,6 +150,15 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onPause() {
+        if(!listDeleted)
+        {
+            sendShoppingListCreationRequest();
+        }
+        super.onPause();
     }
 
     private void setupToolbar()
@@ -191,6 +208,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                     Log.d("DELETE_RESP", response.toString());
                     if(response.getInt("success") == 1)
                     {
+                        listDeleted = true;
                         if(!takingCharge)
                         {
                             // Update cache
@@ -229,7 +247,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Send delete request
-                        sendDeleteShoppingListRequest(notTakenCharge);
+                        sendDeleteShoppingListRequest(NOT_TAKEN_CHARGE);
                     }
                 });
 
@@ -268,13 +286,13 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     private void populateProductList()
     {
         // Get the shopping list from cache
-        shoppingList = GlobalValuesManager.getInstance(getContext()).getUserShoppingList();
+        ShoppingList shoppingList = GlobalValuesManager.getInstance(getContext()).getUserShoppingList();
 
-        // Get the product list
-        productModelList = shoppingList.getProductList();
+        // Save the initial the product list
+        initialProductList = shoppingList.getProductList();
 
         // Set the adapter model
-        adapter.replaceAll(productModelList);
+        adapter.replaceAll(shoppingList.getProductList());
     }
 
     private void sendTakeListInChargeRequest()
@@ -315,7 +333,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         saveShoppingListInLocalDatabase();
 
                         // Delete the list on the server
-                        sendDeleteShoppingListRequest(takenCharge);
+                        sendDeleteShoppingListRequest(TAKEN_CHARGE);
 
                         // Update cache
                         GlobalValuesManager.getInstance(getContext()).saveShoppingListTaken(true);
@@ -351,8 +369,9 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         localDatabaseHelper.close();
     }
 
-    private void setupCreateShoppingListRequest()
+    private void setupCreateShoppingListRequest(final Context context)
     {
+        // Context is needed because the response arrives after the fragment has been changed
         this.createShoppingListResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
@@ -360,10 +379,13 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 try {
                     if(response.getInt("success") == 1)
                     {
-                        Toast.makeText(getContext(), "OK", Toast.LENGTH_LONG).show();
-                        GlobalValuesManager.getInstance(getContext()).updateShoppingListProducts(adapter.getModelAsCollection());
-                        GlobalValuesManager.getInstance(getContext()).saveAreThereProductsNotFound(false);
-                        GlobalValuesManager.getInstance(getContext()).saveProductsNotFound(new JSONArray());
+                        if(!addingProducts)
+                        {
+                            Toast.makeText(context, context.getString(R.string.list_saved), Toast.LENGTH_SHORT).show();
+                        }
+                        GlobalValuesManager.getInstance(context).updateShoppingListProducts(adapter.getModelAsCollection());
+                        GlobalValuesManager.getInstance(context).saveAreThereProductsNotFound(false);
+                        GlobalValuesManager.getInstance(context).saveProductsNotFound(new JSONArray());
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -393,10 +415,33 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
         Log.d("CREATE_LIST_REQ", jsonParams.toString());
 
-        setupCreateShoppingListRequest();
+        setupCreateShoppingListRequest(getContext());
 
         ShoppingListDatabaseHelper.sendCreateShoppingListRequest(jsonParams, getContext(), createShoppingListResponseHandler);
 
+    }
+
+    private boolean productListChanged(List<Product> finalProductList)
+    {
+        // Sort the lists
+        Collections.sort(initialProductList, Product.ALPHABETICAL_COMPARATOR);
+        Collections.sort(finalProductList, Product.ALPHABETICAL_COMPARATOR);
+
+        // Check sizes
+        if(finalProductList.size() != initialProductList.size())
+        {
+            return true;
+        }
+        else
+        {
+            for(int i = 0; i < finalProductList.size(); i++)
+            {
+                if(!finalProductList.get(i).getName().equalsIgnoreCase(initialProductList.get(i).getName())) return true;
+                if(!finalProductList.get(i).getBrand().equalsIgnoreCase(initialProductList.get(i).getBrand())) return true;
+                if(finalProductList.get(i).getQuantity() != initialProductList.get(i).getQuantity()) return true;
+            }
+            return false;
+        }
     }
 
     private void setupAddProductsButtonListener()
@@ -404,6 +449,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         addProductToListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                addingProducts = true;
                 startAddProductsActivityForResult();
             }
         });
@@ -434,6 +480,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        addingProducts = false;
 
         if(requestCode == ADD_PRODUCTS_REQUEST)
         {
