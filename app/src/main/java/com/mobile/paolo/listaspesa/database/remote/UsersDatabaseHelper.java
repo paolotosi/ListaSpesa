@@ -20,10 +20,12 @@ import org.json.JSONObject;
 
 public class UsersDatabaseHelper
 {
+    private static String host = RemoteDatabaseHelper.getInstance().getHost();
+
     // The URLs.
-    private static final String URL_GET_ALL_USERS = "http://10.0.2.2/listaspesa/android_connect/users/get_all_users.php";
-    private static final String URL_LOGIN = "http://10.0.2.2/listaspesa/android_connect/users/login.php";
-    private static final String URL_ADD_USER = "http://10.0.2.2/listaspesa/android_connect/users/add_user.php";
+    private static final String URL_GET_ALL_USERS = "http://" + host + "/listaspesa/android_connect/users/get_all_users.php";
+    private static final String URL_LOGIN = "http://" + host + "/listaspesa/android_connect/users/login.php";
+    private static final String URL_ADD_USER = "http://" + host + "/listaspesa/android_connect/users/add_user.php";
 
     // Retrieve all users.
     public static void sendGetAllUsersRequest(Context context, NetworkResponseHandler networkResponseHandler)

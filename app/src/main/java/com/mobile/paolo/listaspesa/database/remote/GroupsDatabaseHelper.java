@@ -13,11 +13,13 @@ import org.json.JSONObject;
 
 public class GroupsDatabaseHelper
 {
+    private static String host = RemoteDatabaseHelper.getInstance().getHost();
+
     // The URLs.
-    private static final String URL_CREATE_GROUP = "http://10.0.2.2/listaspesa/android_connect/groups/create_group.php";
-    private static final String URL_GET_GROUP_DETAILS = "http://10.0.2.2/listaspesa/android_connect/groups/get_user_group_details.php";
-    private static final String URL_MODIFY_GROUP_NAME = "http://10.0.2.2/listaspesa/android_connect/groups/modify_group_name.php";
-    private static final String URL_UPDATE_GROUP = "http://10.0.2.2/listaspesa/android_connect/groups/update_group_members.php";
+    private static final String URL_CREATE_GROUP = "http://" + host + "/listaspesa/android_connect/groups/create_group.php";
+    private static final String URL_GET_GROUP_DETAILS = "http://" + host + "/listaspesa/android_connect/groups/get_user_group_details.php";
+    private static final String URL_MODIFY_GROUP_NAME = "http://" + host + "listaspesa/android_connect/groups/modify_group_name.php";
+    private static final String URL_UPDATE_GROUP = "http://" + host + "/listaspesa/android_connect/groups/update_group_members.php";
 
     public static void sendCreateGroupRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {

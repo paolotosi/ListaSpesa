@@ -13,9 +13,11 @@ import org.json.JSONObject;
 
 public class ProductsDatabaseHelper
 {
+    private static String host = RemoteDatabaseHelper.getInstance().getHost();
+
     // The URLs.
-    private static final String URL_GET_PRODUCTS = "http://10.0.2.2/listaspesa/android_connect/products/get_all_products.php";
-    private static final String URL_GET_PRODUCTS_NOT_FOUND = "http://10.0.2.2/listaspesa/android_connect/products/get_products_not_found.php";
+    private static final String URL_GET_PRODUCTS = "http://" + host + "/listaspesa/android_connect/products/get_all_products.php";
+    private static final String URL_GET_PRODUCTS_NOT_FOUND = "http://" + host + "/listaspesa/android_connect/products/get_products_not_found.php";
 
     public static void sendGetAllProductsRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {

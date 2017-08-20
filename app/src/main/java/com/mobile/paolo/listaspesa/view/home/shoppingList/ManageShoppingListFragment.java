@@ -79,8 +79,11 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     // This boolean is needed to avoid showing save feedback when adding products
     private boolean addingProducts = false;
 
-    // Avoid saving list on exit if the list has been deleted
+    // Avoid showing save feedback on exit if the list has been deleted
     private boolean listDeleted = false;
+
+    // Avoid showing save feedback on exit if the list has been taken
+    private boolean listTaken = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,6 +99,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         setHasOptionsMenu(true);
 
         listDeleted = false;
+
+        listTaken = false;
 
         initializeWidgets(loadedFragment);
 
@@ -121,16 +126,6 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         // Load menu
         getActivity().getMenuInflater().inflate(R.menu.shopping_list_menu, menu);
 
-//        // Add listener to 'Confirm' menu action
-//        MenuItem addProductsItem = menu.findItem(R.id.confirmListCreationButton);
-//        addProductsItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                sendShoppingListCreationRequest();
-//                return false;
-//            }
-//        });
-
         // Add listener to 'Take in charge' menu action
         MenuItem takeInCharge = menu.findItem(R.id.takeListInCharge);
         takeInCharge.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -154,7 +149,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
     @Override
     public void onPause() {
-        if(!listDeleted)
+        if(!listDeleted && !listTaken)
         {
             sendShoppingListCreationRequest();
         }
@@ -329,6 +324,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 try {
                     if(response.getInt("success") == 1)
                     {
+                        listTaken = true;
+
                         // Save the list locally
                         saveShoppingListInLocalDatabase();
 

@@ -2,6 +2,7 @@ package com.mobile.paolo.listaspesa.view.home.shoppingList;
 
 import android.animation.ValueAnimator;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -40,6 +41,7 @@ import java.util.List;
 public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
     // Constants
+    private static final int SELECT_MARKET_REQUEST = 1;
     private static final boolean PRODUCTS_LEFT = true;
     private static final boolean NO_PRODUCTS_LEFT = false;
 
@@ -48,6 +50,7 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
     private ImageView listImage;
     private Button finishButton;
     private Toolbar groceryToolbar;
+    private MenuItem showMarketMapMenuAction;
     private MenuItem putInCartMenuAction;
     private MenuItem endShoppingMenuAction;
 
@@ -91,6 +94,16 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
         // Load menu
         getActivity().getMenuInflater().inflate(R.menu.grocery_menu, menu);
+
+        // Add listener to 'Show Market Map' menu action
+        showMarketMapMenuAction = menu.findItem(R.id.showMapButton);
+        showMarketMapMenuAction.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                showMarketMapActivity();
+                return false;
+            }
+        });
 
         // Add listener to 'Put in shopping cart' menu action
         putInCartMenuAction = menu.findItem(R.id.confirmProductButton);
@@ -162,6 +175,12 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         });
     }
 
+    private void showMarketMapActivity()
+    {
+        Intent intent = new Intent(getContext(), MarketMapActivity.class);
+        startActivityForResult(intent, SELECT_MARKET_REQUEST);
+    }
+
     private void showCreateListFragment()
     {
         // Change fragment: show CreateShoppingList
@@ -202,6 +221,7 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         if(adapter.getItemCount() == 0)
         {
             // Hide menu actions
+            showMarketMapMenuAction.setVisible(false);
             putInCartMenuAction.setVisible(false);
             endShoppingMenuAction.setVisible(false);
 

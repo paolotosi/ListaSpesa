@@ -13,11 +13,13 @@ import org.json.JSONObject;
 
 public class TemplatesDatabaseHelper
 {
+    private static String host = RemoteDatabaseHelper.getInstance().getHost();
+
     // The URLs.
-    private static final String URL_GET_TEMPLATES = "http://10.0.2.2/listaspesa/android_connect/templates/get_group_templates.php";
-    private static final String URL_CREATE_TEMPLATE = "http://10.0.2.2/listaspesa/android_connect/templates/create_template.php";
-    private static final String URL_DELETE_TEMPLATES = "http://10.0.2.2/listaspesa/android_connect/templates/delete_templates.php";
-    private static final String URL_UPDATE_TEMPLATE_DETAILS = "http://10.0.2.2/listaspesa/android_connect/templates/update_template_details.php";
+    private static final String URL_GET_TEMPLATES = "http://" + host + "/listaspesa/android_connect/templates/get_group_templates.php";
+    private static final String URL_CREATE_TEMPLATE = "http://" + host + "/listaspesa/android_connect/templates/create_template.php";
+    private static final String URL_DELETE_TEMPLATES = "http://" + host + "/listaspesa/android_connect/templates/delete_templates.php";
+    private static final String URL_UPDATE_TEMPLATE_DETAILS = "http://" + host + "/listaspesa/android_connect/templates/update_template_details.php";
 
     public static void sendGetGroupTemplatesRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {

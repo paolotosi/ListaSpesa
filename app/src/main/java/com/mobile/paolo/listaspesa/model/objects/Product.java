@@ -160,6 +160,21 @@ public class Product
         return result;
     }
 
+    public String toString()
+    {
+        return this.name + " " + this.brand;
+    }
+
+    public static String asStringProductList(List<Product> productList)
+    {
+        String productListString = "";
+        for (Product product : productList)
+        {
+            productListString += product.toString() + "\n";
+        }
+        return productListString;
+    }
+
     public static JSONArray asJSONProductList(List<Product> productList)
     {
         JSONArray jsonProductList = new JSONArray();
