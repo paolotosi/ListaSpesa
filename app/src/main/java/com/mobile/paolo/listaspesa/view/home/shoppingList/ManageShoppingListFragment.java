@@ -209,6 +209,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                             // Update cache
                             GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
                             GlobalValuesManager.getInstance(getContext()).deleteShoppingList();
+                            GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
 
                             // Change fragment: show EmptyShoppingListFragment
                             FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();

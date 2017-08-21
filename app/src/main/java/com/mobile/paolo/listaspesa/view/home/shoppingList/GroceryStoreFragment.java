@@ -28,7 +28,9 @@ import com.mobile.paolo.listaspesa.database.local.ProductsLocalDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
+import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
+import com.mobile.paolo.listaspesa.utility.Contextualizer;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 
@@ -36,7 +38,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
@@ -62,6 +66,7 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
     // Complete list response handler
     private NetworkResponseHandler completeShoppingListResponseHandler;
+    private  NetworkResponseHandler newListCheckerResponseHangler;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -199,6 +204,14 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         transaction.commit();
     }
 
+    private void showManagementFragment()
+    {
+        // Change fragment: show ManageShoppingList
+        FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageShoppingListFragment());
+        transaction.commit();
+    }
+
     private void readProductsFromLocalDatabase()
     {
         ProductsLocalDatabaseHelper localDatabaseHelper = ProductsLocalDatabaseHelper.getInstance(getContext());
@@ -243,10 +256,69 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         GlobalValuesManager.getInstance(getContext()).saveProductsNotFound(Product.asJSONProductList(adapter.getModelAsCollection()));
 
         // Update state
-        GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
-        GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
+        setupCheckNewListResponseHandler();
 
-        showEmptyListFragment();
+        Integer groupID = -1;
+
+        if(GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup() != null)
+        {
+            groupID = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID();
+        }
+        // The POST parameters
+        Map<String, String> params = new HashMap<>();
+        params.put("groupID", groupID.toString());
+
+        // Encapsulate in JSON
+        JSONObject jsonPostParameters = new JSONObject(params);
+        ShoppingListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getContext(), newListCheckerResponseHangler);
+    }
+
+
+    private void setupCheckNewListResponseHandler()
+    {
+        this.newListCheckerResponseHangler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("CHECK_NEW_LIST_RESP", response.toString());
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+                        // -- Success --
+                        // Update state
+                        JSONObject jsonShoppingList = response.getJSONObject("list");
+                        ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
+                        if(shoppingList.getProductList().size() == 0)
+                        {
+                            // List is empty
+                            GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
+                            GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
+                            showEmptyListFragment();
+                        }
+                        else
+                        {
+                            // List is not empty
+                            GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(true);
+                            GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
+                            GlobalValuesManager.getInstance(getContext()).saveUserShoppingList(shoppingList.toJSON());
+                            showManagementFragment();
+                        }
+                    }
+                    else
+                    {
+                        // -- Error --
+                        Log.e("CHECK_LIST_ERR", response.getString("message"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                error.printStackTrace();
+            }
+        };
     }
 
     private void showEndShoppingWithProductsAlertDialog()
