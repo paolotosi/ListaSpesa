@@ -1,7 +1,11 @@
 package com.mobile.paolo.listaspesa.database.remote;
 
 /**
- * Created by paolo on 20/08/17.
+ * -- RemoteDatabaseHelper --
+ * The attribute 'mode' of this class let the user choose between running the app
+ * on the emulator or on a real android device.
+ * In order to do so, the development machine IP address needs to be set in the
+ * 'DEV_ADDRESS' variable and the phone must be on the same network.
  */
 
 public class RemoteDatabaseHelper
@@ -18,7 +22,7 @@ public class RemoteDatabaseHelper
     private static final int EMULATOR_MODE = 1;
     private static final int REAL_DEVICE_MODE = 2;
 
-    private int mode = EMULATOR_MODE;
+    private int mode = REAL_DEVICE_MODE;
 
     public static synchronized RemoteDatabaseHelper getInstance()
     {
@@ -29,7 +33,7 @@ public class RemoteDatabaseHelper
         return instance;
     }
 
-    public String getHost()
+    String getHost()
     {
         if(this.mode == EMULATOR_MODE)
         {

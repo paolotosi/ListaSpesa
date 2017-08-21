@@ -19,20 +19,27 @@ import java.util.Locale;
  * Created by paolo on 20/08/17.
  */
 
-public class Market
+public class Supermarket
 {
+    private int id;
     private String name;
     private String address;
     // The list of products that can be found in this market
     private List<Product> productList;
     private LatLng cachedAbsolutePosition;
 
-    public Market(String name, String address, List<Product> productList)
+    public Supermarket(int id, String name, String address, List<Product> productList)
     {
+        this.id = id;
         this.name = name;
         this.address = address;
         this.productList = productList;
         this.cachedAbsolutePosition = null;
+    }
+
+    public int getID()
+    {
+        return id;
     }
 
     public String getName() {
@@ -96,24 +103,26 @@ public class Market
         return availableProducts;
     }
 
-    public static Market fromJSON(JSONObject jsonMarket)
+    public static Supermarket fromJSON(JSONObject jsonMarket)
     {
-        Market market = null;
+        Supermarket supermarket = null;
         try {
+            int id = jsonMarket.getInt("id");
             String name = jsonMarket.getString("name");
             String address = jsonMarket.getString("address");
             List<Product> productList = Product.parseJSONProductList(jsonMarket.getJSONArray("productList"));
-            market = new Market(name, address, productList);
+            supermarket = new Supermarket(id, name, address, productList);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return market;
+        return supermarket;
     }
 
     public JSONObject toJSON()
     {
         JSONObject jsonMarket = new JSONObject();
         try {
+            jsonMarket.put("id", this.id);
             jsonMarket.put("name", this.name);
             jsonMarket.put("address", this.address);
             jsonMarket.put("productList", Product.asJSONProductList(this.productList));
@@ -121,5 +130,40 @@ public class Market
             e.printStackTrace();
         }
         return jsonMarket;
+    }
+
+    public static JSONArray asJSONSupermarketList(List<Supermarket> supermarketList)
+    {
+        JSONArray jsonSupermarketList = new JSONArray();
+        for(int i = 0; i < supermarketList.size(); i++)
+        {
+            try {
+                jsonSupermarketList.put(i, supermarketList.get(i).toJSON());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return jsonSupermarketList;
+    }
+
+    public static List<Supermarket> parseJSONSupermarketList(JSONArray jsonSupermarketList)
+    {
+        List<Supermarket> supermarketList = new ArrayList<>();
+        for(int i = 0; i < jsonSupermarketList.length(); i++)
+        {
+            try {
+                JSONObject jsonSupermarket = jsonSupermarketList.getJSONObject(i);
+                supermarketList.add(Supermarket.fromJSON(jsonSupermarket));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return supermarketList;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

@@ -1,8 +1,10 @@
 package com.mobile.paolo.listaspesa.view.home.shoppingList;
 
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -18,9 +20,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
@@ -29,8 +34,8 @@ import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
+import com.mobile.paolo.listaspesa.model.objects.Supermarket;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
-import com.mobile.paolo.listaspesa.utility.Contextualizer;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 
@@ -54,6 +59,7 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
     private ImageView listImage;
     private Button finishButton;
     private Toolbar groceryToolbar;
+    private Spinner supermarketSpinner;
     private MenuItem showMarketMapMenuAction;
     private MenuItem putInCartMenuAction;
     private MenuItem endShoppingMenuAction;
@@ -62,11 +68,13 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
     private RecyclerView recyclerView;
     private ProductCardViewDataAdapter adapter;
 
+    // Products and supermarket lists
     private List<Product> groceryList = new ArrayList<>();
+    private List<Supermarket> supermarketList = new ArrayList<>();
 
     // Complete list response handler
     private NetworkResponseHandler completeShoppingListResponseHandler;
-    private  NetworkResponseHandler newListCheckerResponseHangler;
+    private NetworkResponseHandler newListCheckerResponseHandler;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +92,8 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
         setupToolbar();
 
+        setupSupermarketSpinner();
+
         setupFinishButtonListener();
 
         readProductsFromLocalDatabase();
@@ -100,7 +110,7 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         // Load menu
         getActivity().getMenuInflater().inflate(R.menu.grocery_menu, menu);
 
-        // Add listener to 'Show Market Map' menu action
+        // Add listener to 'Show Supermarket Map' menu action
         showMarketMapMenuAction = menu.findItem(R.id.showMapButton);
         showMarketMapMenuAction.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -137,6 +147,7 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         imageLayout = (LinearLayout) loadedFragment.findViewById(R.id.imageLayout);
         listImage = (ImageView) loadedFragment.findViewById(R.id.listImage);
         finishButton = (Button) loadedFragment.findViewById(R.id.finishButton);
+        supermarketSpinner = (Spinner) loadedFragment.findViewById(R.id.supermarketSpinner);
     }
 
     private void setupToolbar()
@@ -146,6 +157,43 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
         // Needed to show the menu action
         ((AppCompatActivity)getActivity()).setSupportActionBar(groceryToolbar);
+
+    }
+
+    private void setupSupermarketSpinner()
+    {
+        // Define the ArrayAdapter overriding methods in order to show a hint
+        ArrayAdapter<Supermarket> supermarketArrayAdapter = new ArrayAdapter<Supermarket>(getContext(), R.layout.spinner_item){
+            @Override
+            public boolean isEnabled(int position){
+                return position != 0; // all position are enabled except the first one, used by the hint
+            }
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent)
+            {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView tv = (TextView) view;
+                if(position == 0){
+                    // Set the hint text color gray
+                    tv.setTextColor(Color.GRAY);
+                }
+                else {
+                    tv.setTextColor(Color.BLACK);
+                }
+                return view;
+            }
+        };
+
+        // Get the supermarkets from cache, add the hint
+        supermarketList = GlobalValuesManager.getInstance(getContext()).getSupermarkets();
+        Supermarket hint = new Supermarket(-1, "Seleziona un supermercato...", "", null);
+        supermarketList.add(0, hint);
+
+        // Add supermarkets to adapter
+        supermarketArrayAdapter.addAll(supermarketList);
+
+        // Set the adapter
+        supermarketSpinner.setAdapter(supermarketArrayAdapter);
 
     }
 
@@ -182,8 +230,36 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
     private void showMarketMapActivity()
     {
-        Intent intent = new Intent(getContext(), MarketMapActivity.class);
+        Intent intent = new Intent(getContext(), SupermarketMapActivity.class);
         startActivityForResult(intent, SELECT_MARKET_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == SELECT_MARKET_REQUEST)
+        {
+            if(resultCode == Activity.RESULT_OK)
+            {
+                try {
+                    // Get supermarket from result
+                    Supermarket selectedSupermarket = Supermarket.fromJSON(new JSONObject(data.getStringExtra("RESULT")));
+
+                    // Find it and select it in the spinner list
+                    for(int i = 0; i < supermarketSpinner.getAdapter().getCount(); i++)
+                    {
+                        if(((Supermarket) supermarketSpinner.getAdapter().getItem(i)).getID() == selectedSupermarket.getID())
+                        {
+                            supermarketSpinner.setSelection(i);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private void showCreateListFragment()
@@ -270,13 +346,13 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
         // Encapsulate in JSON
         JSONObject jsonPostParameters = new JSONObject(params);
-        ShoppingListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getContext(), newListCheckerResponseHangler);
+        ShoppingListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getContext(), newListCheckerResponseHandler);
     }
 
 
     private void setupCheckNewListResponseHandler()
     {
-        this.newListCheckerResponseHangler = new NetworkResponseHandler() {
+        this.newListCheckerResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
                 Log.d("CHECK_NEW_LIST_RESP", response.toString());

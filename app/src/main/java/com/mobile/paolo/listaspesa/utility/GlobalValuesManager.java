@@ -6,6 +6,7 @@ import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
+import com.mobile.paolo.listaspesa.model.objects.Supermarket;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.model.objects.User;
 
@@ -393,4 +394,28 @@ public class GlobalValuesManager
     {
         sharedPreferencesManager.writeString(context.getString(R.string.products_not_found), jsonProductsNotFound.toString());
     }
+
+    /*
+        ------------------
+        SUPERMARKET METHODS
+        ------------------
+     */
+
+    public void saveSupermarkets(JSONArray supermarketList)
+    {
+        sharedPreferencesManager.writeString(context.getString(R.string.supermarket_list), supermarketList.toString());
+    }
+
+    public List<Supermarket> getSupermarkets()
+    {
+        List<Supermarket> supermarketList = new ArrayList<>();
+        try {
+            supermarketList = Supermarket.parseJSONSupermarketList(new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.supermarket_list))));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return supermarketList;
+    }
+
+
 }
