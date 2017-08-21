@@ -56,7 +56,7 @@
 
         <activity android:name=".view.home.template.EditTemplateActivity" />
         <activity android:name=".view.home.template.AddProductsActivity" />
-        <activity android:name=".view.home.shoppingList.MarketMapActivity"/>
+        <activity android:name=".view.home.shoppingList.SupermarketMapActivity"/>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

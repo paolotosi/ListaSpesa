@@ -15,6 +15,7 @@ import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.remote.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.ProductsDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.SupermarketDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.Product;
@@ -55,6 +56,7 @@ public class HomeActivity extends AppCompatActivity
     private NetworkResponseHandler templateResponseHandler;
     private NetworkResponseHandler shoppingListResponseHandler;
     private NetworkResponseHandler getProductsNotFoundResponseHandler;
+    private NetworkResponseHandler supermarketsResponseHandler;
 
     // Response codes
     private static final int NETWORK_ERROR = 0;
@@ -145,6 +147,7 @@ public class HomeActivity extends AppCompatActivity
                             sendGetTemplatesRequest();
                             sendGetShoppingListRequest();
                             sendGetProductsNotFoundRequest();
+                            sendGetAllSupermarketsRequest();
                             break;
                         case USER_DOESNT_HAVE_GROUP:
                             GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(false);
@@ -419,6 +422,44 @@ public class HomeActivity extends AppCompatActivity
 
         // Send request
         ProductsDatabaseHelper.sendGetProductsNotFoundRequest(jsonParams, getApplicationContext(), getProductsNotFoundResponseHandler);
+
+    }
+
+    private void setupSupermarketResponseHandler()
+    {
+        this.supermarketsResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("GET_ALL_SUPERMARKET_RES", response.toString());
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+                        GlobalValuesManager.getInstance(getApplicationContext()).saveSupermarkets(response.getJSONArray("supermarkets"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+
+            }
+        };
+    }
+
+    private void sendGetAllSupermarketsRequest()
+    {
+        // No need for parameters
+
+        // Debug
+        Log.d("GET_ALL_SUPERMARKET_REQ", "Request sent");
+
+        // Define what to do on response
+        setupSupermarketResponseHandler();
+
+        // Send request
+        SupermarketDatabaseHelper.sendGetAllSupermarketsRequest(new JSONObject(), getApplicationContext(), supermarketsResponseHandler);
 
     }
 

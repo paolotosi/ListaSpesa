@@ -16,6 +16,7 @@
     <string name="user_in_charge">USER_IN_CHARGE</string>
     <string name="are_there_products_not_found">ARE_THERE_PRODUCTS_NOT_FOUND</string>
     <string name="products_not_found">PRODUCTS_NOT_FOUND</string>
+    <string name="supermarket_list">SUPERMARKET_LIST</string>
 
     <!-- WelcomeActivity strings. -->
     <string name="login_button">Accedi</string>
