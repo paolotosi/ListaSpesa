@@ -21,7 +21,9 @@ public class ProductsLocalDatabaseHelper implements ProductDAO
     private LocalDatabaseHelper dbHelper;
     private Context context;
 
-    private String[] allColumns = { ListaSpesaDB.LocalProduct.COLUMN_NAME,
+    private String[] allColumns = {
+                                    ListaSpesaDB.LocalProduct.COLUMN_ID,
+                                    ListaSpesaDB.LocalProduct.COLUMN_NAME,
                                     ListaSpesaDB.LocalProduct.COLUMN_BRAND,
                                     ListaSpesaDB.LocalProduct.COLUMN_DESCRIPTION,
                                     ListaSpesaDB.LocalProduct.COLUMN_QUANTITY};
@@ -94,8 +96,8 @@ public class ProductsLocalDatabaseHelper implements ProductDAO
         // Query = SELECT * FROM local_products WHERE name = product.getName()
         Cursor cursor = database.query( ListaSpesaDB.LocalProduct.TABLE_LOCAL_PRODUCT_LIST,
                                         allColumns,
-                                        ListaSpesaDB.LocalProduct.COLUMN_NAME + " = ?",
-                                        new String[] {"" + product.getName()},
+                                        ListaSpesaDB.LocalProduct.COLUMN_ID + " = ?",
+                                        new String[] {"" + String.valueOf(product.getID())},
                                         null,
                                         null,
                                         null);
@@ -123,8 +125,8 @@ public class ProductsLocalDatabaseHelper implements ProductDAO
     {
         // Query = DELETE * FROM local_products WHERE name = product.getName()
         database.delete(ListaSpesaDB.LocalProduct.TABLE_LOCAL_PRODUCT_LIST,
-                        ListaSpesaDB.LocalProduct.COLUMN_NAME + " = ?",
-                        new String[] {"" + product.getName()});
+                        ListaSpesaDB.LocalProduct.COLUMN_ID + " = ?",
+                        new String[] {"" + String.valueOf(product.getID())});
     }
 
     @Override
@@ -137,15 +139,15 @@ public class ProductsLocalDatabaseHelper implements ProductDAO
     }
 
     @Override
-    public void updateSingleProduct(String key, String newName, String newBrand, String newDescription, int newQuantity)
+    public void updateSingleProduct(String key,int id,  String newName, String newBrand, String newDescription, int newQuantity)
     {
-        Product product = new Product(newName, newBrand, newDescription, newQuantity);
+        Product product = new Product(id, newName, newBrand, newDescription, newQuantity);
         ContentValues dataToInsert = productToValues(product);
         // Query = UPDATE local_products SET name = newName, brand = newBrand, description = newDescription, quantity = newQuantity
         //         WHERE name = key
         database.update(ListaSpesaDB.LocalProduct.TABLE_LOCAL_PRODUCT_LIST,
                         dataToInsert,
-                        ListaSpesaDB.LocalProduct.COLUMN_NAME + " = ?",
+                        ListaSpesaDB.LocalProduct.COLUMN_ID + " = ?",
                         new String[] {"" + key});
     }
 
@@ -153,6 +155,7 @@ public class ProductsLocalDatabaseHelper implements ProductDAO
     private ContentValues productToValues(Product product)
     {
         ContentValues values = new ContentValues();
+        values.put(ListaSpesaDB.LocalProduct.COLUMN_ID, product.getID());
         values.put(ListaSpesaDB.LocalProduct.COLUMN_NAME, product.getName());
         values.put(ListaSpesaDB.LocalProduct.COLUMN_BRAND,  product.getBrand());
         values.put(ListaSpesaDB.LocalProduct.COLUMN_DESCRIPTION, product.getDescription());
@@ -163,10 +166,11 @@ public class ProductsLocalDatabaseHelper implements ProductDAO
     // Convert from database item to Product object
     private Product cursorToProduct(Cursor cursor)
     {
-        String name = cursor.getString(0);
-        String brand = cursor.getString(1);
-        String description = cursor.getString(2);
-        int quantity = cursor.getInt(3);
-        return new Product(name, brand, description, quantity);
+        int id = cursor.getInt(0);
+        String name = cursor.getString(1);
+        String brand = cursor.getString(2);
+        String description = cursor.getString(3);
+        int quantity = cursor.getInt(4);
+        return new Product(id, name, brand, description, quantity);
     }
 }
