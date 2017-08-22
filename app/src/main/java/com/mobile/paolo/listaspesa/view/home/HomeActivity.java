@@ -51,6 +51,12 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity
 {
+    // Constants
+    private static final int SUPERMARKET_TAB = 0;
+    private static final int TEMPLATE_TAB = 1;
+    private static final int SHOPPING_LIST_TAB = 2;
+    private static final int GROUP_TAB = 3;
+
     // The networkResponseHandlers
     private NetworkResponseHandler groupResponseHandler;
     private NetworkResponseHandler templateResponseHandler;
@@ -62,6 +68,9 @@ public class HomeActivity extends AppCompatActivity
     private static final int NETWORK_ERROR = 0;
     private static final int USER_HAS_GROUP = 1;
     private static final int USER_DOESNT_HAVE_GROUP = 2;
+
+    // The bottom navigation view
+    BottomNavigationViewEx bottomNavigationView;
 
     // GlobalValuesManager
     GlobalValuesManager contextualizer;
@@ -86,6 +95,10 @@ public class HomeActivity extends AppCompatActivity
 
     private void contextualize()
     {
+        /* TODO: make a single request to get all details: template, list and supermarket all require
+           TODO: only the groupID to be sent. This way we can simplify the logic and select the correct
+           TODO: fragment at startup (now we can't because we don't know which response arrives first)
+         */
         // Determine if logged user is already part of a group.
         // NOTE: it also contains the request to verify if the group has already defined some templates,
         // a shopping list or has some products left from previous lists.
@@ -96,7 +109,7 @@ public class HomeActivity extends AppCompatActivity
 
     private void setupBottomNavigationView()
     {
-        BottomNavigationViewEx bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.home_bottom_navigation);
+        bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.home_bottom_navigation);
         bottomNavigationView.enableShiftingMode(false);
         bottomNavigationView.enableItemShiftingMode(false);
 
@@ -584,6 +597,39 @@ public class HomeActivity extends AppCompatActivity
             }
         }
         return userInCharge;
+    }
+
+    private Fragment selectFirstFragment()
+    {
+        Fragment firstFragment;
+
+        // If the user doesn't have a group, show the empty group fragment
+        if(!contextualizer.isUserPartOfAGroup())
+        {
+            firstFragment = HomeFragmentContainer.getInstance().getEmptyGroupFragment();
+            bottomNavigationView.getMenu().getItem(GROUP_TAB).setChecked(true);
+            return firstFragment;
+        }
+
+        // If the user has a group, but the group hasn't defined template, show the empty template fragment
+        if(!contextualizer.hasUserTemplates())
+        {
+            firstFragment = HomeFragmentContainer.getInstance().getEmptyTemplateFragment();
+            bottomNavigationView.getMenu().getItem(TEMPLATE_TAB).setChecked(true);
+            return firstFragment;
+        }
+
+        // If the user group has some templates, but not a list, show the empty list fragment
+        if(!contextualizer.hasUserShoppingList())
+        {
+            firstFragment = HomeFragmentContainer.getInstance().getEmptyShoppingListFragment();
+            bottomNavigationView.getMenu().getItem(SHOPPING_LIST_TAB).setChecked(true);
+            return firstFragment;
+        }
+
+        // The user has a list, return the correct list fragment
+        bottomNavigationView.getMenu().getItem(SHOPPING_LIST_TAB).setChecked(true);
+        return selectListFragment();
     }
 
 
