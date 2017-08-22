@@ -18,7 +18,8 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper
     // Database creation SQL statement
     private static final String DATABASE_CREATE = "create table "
             + ListaSpesaDB.LocalProduct.TABLE_LOCAL_PRODUCT_LIST + "("
-            + ListaSpesaDB.LocalProduct.COLUMN_NAME + " varchar primary key,"
+            + ListaSpesaDB.LocalProduct.COLUMN_ID + " varchar primary key,"
+            + ListaSpesaDB.LocalProduct.COLUMN_NAME + " varchar not null,"
             + ListaSpesaDB.LocalProduct.COLUMN_BRAND + " varchar not null,"
             + ListaSpesaDB.LocalProduct.COLUMN_DESCRIPTION + " varchar,"
             + ListaSpesaDB.LocalProduct.COLUMN_QUANTITY + " integer not null);";
@@ -63,6 +64,7 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper
     private ContentValues productToValues(Product product)
     {
         ContentValues values = new ContentValues();
+        values.put(ListaSpesaDB.LocalProduct.COLUMN_ID, product.getID());
         values.put(ListaSpesaDB.LocalProduct.COLUMN_NAME, product.getName());
         values.put(ListaSpesaDB.LocalProduct.COLUMN_BRAND,  product.getBrand());
         values.put(ListaSpesaDB.LocalProduct.COLUMN_DESCRIPTION, product.getDescription());
@@ -73,10 +75,11 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper
     // Convert from database item to Product object
     private Product cursorToProduct(Cursor cursor)
     {
-        String name = cursor.getString(0);
-        String brand = cursor.getString(1);
-        String description = cursor.getString(2);
-        int quantity = cursor.getInt(3);
-        return new Product(name, brand, description, quantity);
+        int id = cursor.getInt(0);
+        String name = cursor.getString(1);
+        String brand = cursor.getString(2);
+        String description = cursor.getString(3);
+        int quantity = cursor.getInt(4);
+        return new Product(id, name, brand, description, quantity);
     }
 }

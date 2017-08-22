@@ -22,6 +22,7 @@ public class Product
     private String brand;
     private String description;
     private int quantity;
+    private int id;
 
     // This attribute will be used only in lists where is required to select products
     private boolean isChecked;
@@ -39,16 +40,18 @@ public class Product
         this.name = name;
     }
 
-    public Product(String name, String brand, String description)
+    public Product(int id, String name, String brand, String description)
     {
+        this.id = id;
         this.name = name;
         this.brand = brand;
         this.description = description;
         this.quantity = 0;
     }
 
-    public Product(String name, String brand, String description, int quantity)
+    public Product(int id, String name, String brand, String description, int quantity)
     {
+        this.id = id;
         this.name = name;
         this.brand = brand;
         this.description = description;
@@ -60,8 +63,14 @@ public class Product
         Product product = null;
 
         try {
+
             String name = jsonProduct.getString("name");
             product = new Product(name);
+            if(jsonProduct.has("id"))
+            {
+                int id = jsonProduct.getInt("id");
+                product.setID(id);
+            }
             if(jsonProduct.has("brand"))
             {
                 String brand = jsonProduct.getString("brand");
@@ -87,6 +96,7 @@ public class Product
     public JSONObject toJSON()
     {
         HashMap<String, String> values = new HashMap<>();
+        values.put("id", String.valueOf(this.id));
         values.put("name", this.name);
         values.put("brand", this.brand);
         values.put("description", this.description);
@@ -107,6 +117,16 @@ public class Product
     public int getQuantity()
     {
         return quantity;
+    }
+
+    public void setID(int id)
+    {
+        this.id = id;
+    }
+
+    public int getID()
+    {
+        return id;
     }
 
     public void setName(String name) {

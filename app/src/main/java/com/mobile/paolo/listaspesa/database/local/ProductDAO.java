@@ -20,5 +20,5 @@ public interface ProductDAO
     void resetAllProducts();
     void deleteSingleProduct(Product product);
     void deleteProducts(List<Product> productList);
-    void updateSingleProduct(String key, String newName, String newBrand, String newDescription, int newQuantity);
+    void updateSingleProduct(String key,int id, String newName, String newBrand, String newDescription, int newQuantity);
 }
