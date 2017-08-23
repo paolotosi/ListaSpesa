@@ -77,6 +77,10 @@
     <string name="same_name_warning">Il nome inserito è identico al precedente.</string>
     <string name="success_feedback">Modifica avvenuta con successo!</string>
 
+    <!-- InsertProductActivity strings -->
+    <string name="empty_field_error">Questo campo non può essere vuoto</string>
+    <string name="success_feedback_product">Inserimento avvenuto con successo!</string>
+
     <!-- EmptyTemplateFragment strings. -->
     <string name="no_templates_message">Il tuo gruppo non ha ancora definito dei template.\nI template ti aiutano a creare più velocemente la lista della spesa.</string>
     <string name="no_template_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter definire dei template.</string>
@@ -108,6 +112,9 @@
 
     <!-- AddProductsActivity strings. -->
     <string name="add_template_products_toolbar">Aggiungi prodotti</string>
+    <string name="product_name_hint">Nome prodotto</string>
+    <string name="product_brand_hint">Marca prodotto</string>
+    <string name="product_description_hint">(Opzionale) Descrizione</string>
 
     <!-- Generic error strings. -->
     <string name="generic_error">Errore sconosciuto.</string>
