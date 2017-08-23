@@ -57,6 +57,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     private static final int ADD_PRODUCTS_REQUEST = 1;
     private static final boolean TAKEN_CHARGE = true;
     private static final boolean NOT_TAKEN_CHARGE = false;
+    private static final boolean SHOW_SAVE_FEEDBACK = true;
+    private static final boolean HIDE_SAVE_FEEDBACK = false;
 
     private List<Product> initialProductList;
 
@@ -82,10 +84,10 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     // This boolean is needed to avoid showing save feedback when adding products
     private boolean addingProducts = false;
 
-    // Avoid showing save feedback on exit if the list has been deleted
+    // Avoid saving list on exit if the list has been deleted
     private boolean listDeleted = false;
 
-    // Avoid showing save feedback on exit if the list has been taken
+    // Avoid saving list on exit if the list has been taken
     private boolean listTaken = false;
 
     @Override
@@ -98,8 +100,6 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
         // Load fragment.
         View loadedFragment = inflater.inflate(R.layout.fragment_manage_shopping_list, container, false);
-
-        setHasOptionsMenu(true);
 
         listDeleted = false;
 
@@ -118,6 +118,9 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         setupAddProductsButtonListener();
 
         populateProductList();
+
+        // Create list on the database after selecting a template
+        sendShoppingListCreationRequest(HIDE_SAVE_FEEDBACK);
 
         // Needed to show the menu action
         setHasOptionsMenu(true);
@@ -156,7 +159,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     public void onPause() {
         if(!listDeleted && !listTaken)
         {
-            sendShoppingListCreationRequest();
+            sendShoppingListCreationRequest(SHOW_SAVE_FEEDBACK);
         }
         super.onPause();
     }
@@ -443,7 +446,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         localDatabaseHelper.close();
     }
 
-    private void setupCreateShoppingListRequest(final Context context)
+    private void setupCreateShoppingListRequest(final Context context, final boolean showFeedback)
     {
         // Context is needed because the response arrives after the fragment has been changed
         this.createShoppingListResponseHandler = new NetworkResponseHandler() {
@@ -453,7 +456,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 try {
                     if(response.getInt("success") == 1)
                     {
-                        if(!addingProducts)
+                        if(showFeedback && !addingProducts)
                         {
                             Toast.makeText(context, context.getString(R.string.list_saved), Toast.LENGTH_SHORT).show();
                         }
@@ -473,7 +476,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         };
     }
 
-    private void sendShoppingListCreationRequest()
+    private void sendShoppingListCreationRequest(boolean showFeedback)
     {
         // Get the products from the adapter
         List<Product> finalProductList = adapter.getModelAsCollection();
@@ -489,7 +492,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
         Log.d("CREATE_LIST_REQ", jsonParams.toString());
 
-        setupCreateShoppingListRequest(getContext());
+        setupCreateShoppingListRequest(getContext(), showFeedback);
 
         ShoppingListDatabaseHelper.sendCreateShoppingListRequest(jsonParams, getContext(), createShoppingListResponseHandler);
 
@@ -575,6 +578,9 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                     adapter.add(productsAdded);
                     adapter.notifyDataSetChanged();
 
+                    // Save new list on the db
+                    sendShoppingListCreationRequest(SHOW_SAVE_FEEDBACK);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -638,7 +644,14 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 if(item.getItemId() == R.id.deleteTemplate)
                 {
                     adapter.removeItems(adapter.getSelectedItems());
-                    deleteListIfEmpty();
+                    if(adapter.getItemCount() == 0)
+                    {
+                        deleteListIfEmpty();
+                    }
+                    else
+                    {
+                        sendShoppingListCreationRequest(SHOW_SAVE_FEEDBACK);
+                    }
                     mode.finish();
                     return true;
                 }

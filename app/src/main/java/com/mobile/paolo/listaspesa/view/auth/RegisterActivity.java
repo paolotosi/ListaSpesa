@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +40,7 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity {
 
     // Widgets
-    private Button btnRegister;
+    private FloatingActionButton btnRegister;
     private EditText usernameField, passwordField, addressField;
     private TextInputLayout usernameInputLayout, passwordInputLayout, addressInputLayout;
     private ImageView logo;
@@ -146,7 +147,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void initializeWidgets()
     {
-        btnRegister = (Button) findViewById(R.id.btnRegister);
+        btnRegister = (FloatingActionButton) findViewById(R.id.btnRegister);
 
         usernameField = (EditText) findViewById(R.id.usernameField);
         usernameInputLayout = (TextInputLayout) findViewById(R.id.usernameInputLayout);
