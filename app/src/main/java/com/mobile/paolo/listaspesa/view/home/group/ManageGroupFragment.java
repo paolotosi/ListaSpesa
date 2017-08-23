@@ -20,6 +20,7 @@ import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.utility.SharedPreferencesManager;
+import com.mobile.paolo.listaspesa.view.home.template.AddProductsActivity;
 import com.mobile.paolo.listaspesa.view.init.WelcomeActivity;
 
 import java.util.ArrayList;
@@ -66,6 +67,8 @@ public class ManageGroupFragment extends Fragment {
 
         setupAddMemberButtonListener(this.getView());
 
+        setupAddProductsButtonListener(this.getView());
+
         setupRecyclerView(this.getView());
     }
 
@@ -108,6 +111,18 @@ public class ManageGroupFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), EditGroupActivity.class);
+                intent.putExtra("groupName", groupName);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void setupAddProductsButtonListener(View loadedFragment)
+    {
+        loadedFragment.findViewById(R.id.addProducts).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), InsertProductsActivity.class);
                 intent.putExtra("groupName", groupName);
                 startActivity(intent);
             }

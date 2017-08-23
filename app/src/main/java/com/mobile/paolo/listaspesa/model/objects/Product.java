@@ -23,6 +23,7 @@ public class Product
     private String description;
     private int quantity;
     private int id;
+    private Boolean matrix;
 
     // This attribute will be used only in lists where is required to select products
     private boolean isChecked;
@@ -47,6 +48,7 @@ public class Product
         this.brand = brand;
         this.description = description;
         this.quantity = 0;
+        this.matrix = false;
     }
 
     public Product(int id, String name, String brand, String description, int quantity)
@@ -56,6 +58,7 @@ public class Product
         this.brand = brand;
         this.description = description;
         this.quantity = quantity;
+        this.matrix = false;
     }
 
     public static Product fromJSON(JSONObject jsonProduct)
@@ -86,6 +89,14 @@ public class Product
                 int quantity = jsonProduct.getInt("quantity");
                 product.setQuantity(quantity);
             };
+            if(jsonProduct.has("matrix"))
+            {
+                int matrix = 0;
+                if(jsonProduct.getString("matrix") != null) {
+                    matrix = jsonProduct.getInt("matrix");
+                }
+                product.setMatrix(matrix);
+            };
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -101,12 +112,40 @@ public class Product
         values.put("brand", this.brand);
         values.put("description", this.description);
         values.put("quantity", ((Integer) this.quantity).toString());
+        if(this.matrix == null)
+        {
+            this.matrix = false;
+        }
+        if(this.matrix) {
+            values.put("matrix", String.valueOf(1));
+        }
+        else
+        {
+            values.put("matrix", String.valueOf(0));
+        }
         return new JSONObject(values);
     }
 
     public String getName() {
 
         return name;
+    }
+
+    public Boolean getMatrix()
+    {
+        return matrix;
+    }
+
+    public void setMatrix(int i)
+    {
+        if(i > 0)
+        {
+            this.matrix = true;
+        }
+        else
+        {
+            this.matrix = false;
+        }
     }
 
     public void setQuantity(int quantity)

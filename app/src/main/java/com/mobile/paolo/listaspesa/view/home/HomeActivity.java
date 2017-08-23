@@ -471,8 +471,15 @@ public class HomeActivity extends AppCompatActivity
         // Define what to do on response
         setupSupermarketResponseHandler();
 
+        JSONObject toSend = new JSONObject();
+        try {
+            toSend.put("id", String.valueOf(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         // Send request
-        SupermarketDatabaseHelper.sendGetAllSupermarketsRequest(new JSONObject(), getApplicationContext(), supermarketsResponseHandler);
+        SupermarketDatabaseHelper.sendGetAllSupermarketsRequest(toSend, getApplicationContext(), supermarketsResponseHandler);
 
     }
 

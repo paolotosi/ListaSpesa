@@ -6,15 +6,16 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- To determine user’s location using WiFi and mobile cell data -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <!-- To determine user’s location using GPS -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- Required OpenGL ES 2.0. for Maps V2 -->
-    <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -52,15 +53,15 @@
             android:name=".view.home.HomeActivity"
             android:label="@string/title_activity_home"
             android:windowSoftInputMode="adjustPan" />
-
         <activity android:name=".view.home.template.EditTemplateActivity" />
         <activity android:name=".view.home.template.AddProductsActivity" />
-        <activity android:name=".view.home.shoppingList.SupermarketMapActivity"/>
+        <activity android:name=".view.home.shoppingList.SupermarketMapActivity" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyAXPTQ4YGGtXUK3DEAwWKEypxOIafzocHA" />
 
+        <activity android:name=".view.home.group.InsertProductsActivity"></activity>
     </application>
 
 </manifest>

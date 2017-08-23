@@ -82,7 +82,14 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
 
         setupFetchProductsResponseHandler();
 
-        ProductsDatabaseHelper.sendGetAllProductsRequest(null, getContext(), fetchProductsResponseHandler);
+        JSONObject jsonID = new JSONObject();
+        try {
+            jsonID.put("id", String.valueOf(GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID()));
+            Log.d("GroupID", jsonID.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ProductsDatabaseHelper.sendGetAllProductsRequest(jsonID, getContext(), fetchProductsResponseHandler);
 
         return loadedFragment;
     }
@@ -115,6 +122,7 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
 
     private void setupFetchProductsResponseHandler()
     {
+        Log.d("setupFetchProducts", "Eccomi");
         this.fetchProductsResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
