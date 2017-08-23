@@ -404,6 +404,11 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
         return this.deleteList;
     }
 
+    public void deleteAllProducts()
+    {
+        sortedList.clear();
+    }
+
     // ------------------------------------------------------------------------------------------//
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener

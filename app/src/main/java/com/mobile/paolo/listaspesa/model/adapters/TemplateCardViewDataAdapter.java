@@ -15,12 +15,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
+import com.mobile.paolo.listaspesa.view.home.HomeActivity;
 import com.mobile.paolo.listaspesa.view.home.template.EditTemplateActivity;
 
 import org.json.JSONArray;
@@ -230,18 +232,23 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
             return false;
         }
 
-
         private void initializeWidgets(View itemLayoutView)
         {
             cardTemplate = (CardView) itemLayoutView.findViewById(R.id.cardTemplate);
             cardTemplateName = (TextView) itemLayoutView.findViewById(R.id.templateName);
             cardProductsSnippet = (TextView) itemLayoutView.findViewById(R.id.productsSnippet);
             cardUseTemplateButton = (Button) itemLayoutView.findViewById(R.id.useTemplateButton);
+            if(GlobalValuesManager.getInstance(itemLayoutView.getContext()).hasUserShoppingList())
+            {
+                // Hide use button if the user already has a list
+                cardUseTemplateButton.setVisibility(View.GONE);
+            }
             cardEditTemplateButton = (Button) itemLayoutView.findViewById(R.id.editTemplateButton);
             selectedOverlay = itemLayoutView.findViewById(R.id.selectedOverlay);
 
             if(!editVisibility)
             {
+                // Hide the edit button if the user is creating a list
                 cardEditTemplateButton.setVisibility(View.GONE);
             }
             cardExpandTemplateDetails = (ImageView) itemLayoutView.findViewById(R.id.expandTemplateDetails);
@@ -325,6 +332,10 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
 
         private void changeFragment(Context context)
         {
+            // Change selected tab in bottom navigation view
+            BottomNavigationViewEx homeBottomNavigationView = (BottomNavigationViewEx) ((HomeActivity) context).findViewById(R.id.home_bottom_navigation);
+            homeBottomNavigationView.getMenu().getItem(2).setChecked(true);
+
             // Change fragment: show ManageShoppingListFragment
             FragmentTransaction transaction = ((FragmentActivity) context).getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageShoppingListFragment());

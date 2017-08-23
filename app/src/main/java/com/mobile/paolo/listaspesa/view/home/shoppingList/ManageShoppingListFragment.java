@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -62,6 +63,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     // Widgets
     private FloatingActionButton addProductToListButton;
     private Toolbar createListToolbar;
+    private SwipeRefreshLayout refreshShoppingListLayout;
 
     // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
@@ -73,6 +75,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
     // Network response logic
     private NetworkResponseHandler createShoppingListResponseHandler;
+    private NetworkResponseHandler refreshShoppingListResponseHandler;
     private NetworkResponseHandler takeShoppingListResponseHandler;
     private NetworkResponseHandler deleteShoppingListResponseHandler;
 
@@ -105,6 +108,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         initializeWidgets(loadedFragment);
 
         setupToolbar();
+
+        setupSwipeToRefresh();
 
         setupActionModeCallback();
 
@@ -169,7 +174,70 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     {
         createListToolbar = (Toolbar) loadedFragment.findViewById(R.id.shoppingListToolbar);
         recyclerView = (RecyclerView) loadedFragment.findViewById(R.id.recyclerViewShopProducts);
+        refreshShoppingListLayout = (SwipeRefreshLayout) loadedFragment.findViewById(R.id.refreshShoppingListLayout);
         addProductToListButton = (FloatingActionButton) loadedFragment.findViewById(R.id.addProductToListButton);
+    }
+
+    private void setupSwipeToRefresh()
+    {
+        refreshShoppingListLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRefreshShoppingListRequest();
+            }
+        });
+    }
+
+    private void setupRefreshShoppingListResponseHandler()
+    {
+        this.refreshShoppingListResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("REFRESH_LIST_RESP", response.toString());
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+                        JSONObject jsonShoppingList = response.getJSONObject("list");
+                        ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
+                        adapter.deleteAllProducts();
+                        adapter.add(shoppingList.getProductList());
+                        deleteListIfEmpty();
+                        refreshShoppingListLayout.setRefreshing(false);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                error.printStackTrace();
+            }
+        };
+    }
+
+    private void sendRefreshShoppingListRequest()
+    {
+        // Get group ID
+        Integer groupID = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID();
+
+        // JSON post parameters
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("groupID", groupID.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Debug
+        Log.d("REFRESH_LIST_REQ", jsonParams.toString());
+
+        // Define what to do on response
+        setupRefreshShoppingListResponseHandler();
+
+        // Send the request
+        ShoppingListDatabaseHelper.sendGetGroupListRequest(jsonParams, getContext(), refreshShoppingListResponseHandler);
     }
 
     private void sendDeleteShoppingListRequest(boolean takingCharge)
@@ -229,6 +297,14 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 error.printStackTrace();
             }
         };
+    }
+
+    private void deleteListIfEmpty()
+    {
+        if(adapter.getItemCount() == 0)
+        {
+            sendDeleteShoppingListRequest(NOT_TAKEN_CHARGE);
+        }
     }
 
     private void showDeleteListAlertDialog()
@@ -562,6 +638,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 if(item.getItemId() == R.id.deleteTemplate)
                 {
                     adapter.removeItems(adapter.getSelectedItems());
+                    deleteListIfEmpty();
                     mode.finish();
                     return true;
                 }
