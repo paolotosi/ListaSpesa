@@ -21,9 +21,8 @@ import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
-import com.mobile.paolo.listaspesa.utility.Contextualizer;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,7 +58,7 @@ public class CreateGroupFragment extends Fragment
 
     // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
+    private UserCardViewDataAdapter adapter;
     private ArrayList<User> userModelList = new ArrayList<>();
 
     // Network response logic
@@ -107,7 +106,7 @@ public class CreateGroupFragment extends Fragment
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
         };
     }
@@ -115,29 +114,32 @@ public class CreateGroupFragment extends Fragment
     // Populate userList with server response
     private void populateUserList(JSONObject serverResponse)
     {
-        try {
-            // Split the response in a list.
-            JSONArray jsonUserList = serverResponse.getJSONArray("users");
+        if(userModelList.isEmpty())
+        {
+            try {
+                // Split the response in a list.
+                JSONArray jsonUserList = serverResponse.getJSONArray("users");
 
-            // Get logged user to exclude him from the list
-            User loggedUser = GlobalValuesManager.getInstance(getContext()).getLoggedUser();
+                // Get logged user to exclude him from the list
+                User loggedUser = GlobalValuesManager.getInstance(getContext()).getLoggedUser();
 
-            // For each user, create a User object and add it to the list.
-            for(int i = 0; i < jsonUserList.length(); i++)
-            {
-                JSONObject jsonUser = (JSONObject) jsonUserList.get(i);
-                User toBeAdded = new User(jsonUser);
-                if(loggedUser.getID() != toBeAdded.getID())
+                // For each user, create a User object and add it to the list.
+                for(int i = 0; i < jsonUserList.length(); i++)
                 {
-                    userModelList.add(toBeAdded);
+                    JSONObject jsonUser = (JSONObject) jsonUserList.get(i);
+                    User toBeAdded = new User(jsonUser);
+                    if(loggedUser.getID() != toBeAdded.getID())
+                    {
+                        userModelList.add(toBeAdded);
+                    }
                 }
+
+                // Tell the RecyclerView to reload elements
+                adapter.notifyDataSetChanged();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-
-            // Tell the RecyclerView to reload elements
-            adapter.notifyDataSetChanged();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 
@@ -242,7 +244,6 @@ public class CreateGroupFragment extends Fragment
             @Override
             public void onError(VolleyError error) {
                 showFeedback(CONNECTION_ERROR);
-
             }
         };
     }
@@ -259,7 +260,7 @@ public class CreateGroupFragment extends Fragment
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
 
         // create an Object for Adapter
-        adapter = new UserCardViewDataAdapter(userModelList, 1);
+        adapter = new UserCardViewDataAdapter(userModelList, UserCardViewDataAdapter.CREATION_MODE);
 
         // set the adapter object to the Recyclerview
         recyclerView.setAdapter(adapter);
@@ -287,14 +288,9 @@ public class CreateGroupFragment extends Fragment
         snackShowStatus.show();
     }
 
-    private void changeFragment()
+    private void showManageGroupFragment()
     {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        if(HomeFragmentContainer.getInstance().getManageGroupFragment() == null)
-        {
-            ManageGroupFragment manageGroupFragment = new ManageGroupFragment();
-            HomeFragmentContainer.getInstance().setManageGroupFragment(manageGroupFragment);
-        }
         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageGroupFragment());
         transaction.commit();
     }
@@ -312,10 +308,9 @@ public class CreateGroupFragment extends Fragment
                     if(responseCode == 1)
                     {
                         GlobalValuesManager.getInstance(getContext()).saveIsUserPartOfAGroup(true);
-                        Contextualizer.getInstance().setUserPartOfAGroup(true);
                         Group group = new Group(response.getInt("groupID"), response.getString("groupName"), response.getJSONArray("members"));
                         GlobalValuesManager.getInstance(getContext()).saveLoggedUserGroup(group);
-                        changeFragment();
+                        showManageGroupFragment();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -324,7 +319,7 @@ public class CreateGroupFragment extends Fragment
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
         };
     }

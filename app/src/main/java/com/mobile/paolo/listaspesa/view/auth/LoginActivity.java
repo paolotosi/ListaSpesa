@@ -60,6 +60,9 @@ public class LoginActivity extends AppCompatActivity {
     private static final int LOGIN_KO_WRONG_PASSWORD = 3;
     private static final int CONNECTION_ERROR =        4;
 
+    // Used to avoid multiple animations
+    private boolean animationStarted = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isInsertionValid())
+                if(isInsertionValid() && !animationStarted)
                 {
                     setupNetworkResponseHandler();
                     sendLoginRequest();
@@ -138,6 +141,8 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         motionAnimator.start();
+
+        animationStarted = true;
     }
 
     private void initializeWidgets()

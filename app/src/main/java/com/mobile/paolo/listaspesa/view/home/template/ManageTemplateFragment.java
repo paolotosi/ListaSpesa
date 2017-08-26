@@ -24,7 +24,7 @@ import com.mobile.paolo.listaspesa.model.adapters.TemplateCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -133,19 +133,17 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
         newTemplateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeFragment();
+                showCreateTemplateFragment();
             }
         });
     }
 
-    private void changeFragment()
+    private void showCreateTemplateFragment()
     {
+        // Reset create template fragment (get rid of old insertion)
+        HomeFragmentContainer.getInstance().destroyCreateTemplateFragment();
+
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        if(HomeFragmentContainer.getInstance().getCreateTemplateFragment() == null)
-        {
-            CreateTemplateFragment createTemplateFragment = new CreateTemplateFragment();
-            HomeFragmentContainer.getInstance().setCreateTemplateFragment(createTemplateFragment);
-        }
         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateTemplateFragment());
         transaction.commit();
     }

@@ -18,13 +18,10 @@ import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.SupermarketDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
-import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
-import com.mobile.paolo.listaspesa.utility.Contextualizer;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -154,7 +151,7 @@ public class HomeActivity extends AppCompatActivity
                             Log.d("MEMBERS", response.getJSONArray("members").toString());
                             Group group = new Group(response.getInt("groupID"), response.getString("groupName"), response.getJSONArray("members"));
                             GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUserGroup(group);
-                            Contextualizer.getInstance().setUserPartOfAGroup(true);
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(true);
                             // Query for templates, shopping list and products not found only if the user has a group.
                             // The request needs to be sent now, otherwise we don't know the group ID!
                             sendGetTemplatesRequest();
@@ -164,7 +161,6 @@ public class HomeActivity extends AppCompatActivity
                             break;
                         case USER_DOESNT_HAVE_GROUP:
                             GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(false);
-                            Contextualizer.getInstance().setUserPartOfAGroup(false);
                             break;
                     }
                 } catch (JSONException e) {
@@ -220,7 +216,6 @@ public class HomeActivity extends AppCompatActivity
                         {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserTemplates(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveUserTemplates(templates);
-                            Contextualizer.getInstance().setHasUserTemplates(true);
                         }
                     }
                     else
@@ -296,7 +291,6 @@ public class HomeActivity extends AppCompatActivity
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveUserShoppingList(shoppingList.toJSON());
-                            Contextualizer.getInstance().setHasUserList(true);
                         }
                     }
                     else if(response.getInt("success") == 2)

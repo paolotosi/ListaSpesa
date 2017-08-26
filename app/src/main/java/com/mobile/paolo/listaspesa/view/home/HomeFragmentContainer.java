@@ -1,4 +1,4 @@
-package com.mobile.paolo.listaspesa.utility;
+package com.mobile.paolo.listaspesa.view.home;
 
 import com.mobile.paolo.listaspesa.view.home.group.AddMemberFragment;
 import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
@@ -45,6 +45,7 @@ public class HomeFragmentContainer
         return instance;
     }
 
+    // On logout, reset all fragments
     public void destroy()
     {
         instance = null;
@@ -58,20 +59,12 @@ public class HomeFragmentContainer
         return emptyGroupFragment;
     }
 
-    public void setEmptyGroupFragment(EmptyGroupFragment emptyGroupFragment) {
-        this.emptyGroupFragment = emptyGroupFragment;
-    }
-
     public ManageGroupFragment getManageGroupFragment() {
         if(this.manageGroupFragment == null)
         {
             this.manageGroupFragment = new ManageGroupFragment();
         }
         return manageGroupFragment;
-    }
-
-    public void setManageGroupFragment(ManageGroupFragment manageGroupFragment) {
-        this.manageGroupFragment = manageGroupFragment;
     }
 
     public CreateGroupFragment getCreateGroupFragment() {
@@ -82,6 +75,13 @@ public class HomeFragmentContainer
         return createGroupFragment;
     }
 
+    public AddMemberFragment getAddMemberFragment() {
+        if(this.addMemberFragment == null)
+        {
+            this.addMemberFragment = new AddMemberFragment();
+        }
+        return addMemberFragment;
+    }
 
     public EmptyTemplateFragment getEmptyTemplateFragment() {
         if(this.emptyTemplateFragment == null)
@@ -91,17 +91,12 @@ public class HomeFragmentContainer
         return emptyTemplateFragment;
     }
 
-
     public ManageTemplateFragment getManageTemplateFragment() {
         if(this.manageTemplateFragment == null)
         {
             this.manageTemplateFragment = new ManageTemplateFragment();
         }
         return manageTemplateFragment;
-    }
-
-    public void setManageTemplateFragment(ManageTemplateFragment manageTemplateFragment) {
-        this.manageTemplateFragment = manageTemplateFragment;
     }
 
     public CreateTemplateFragment getCreateTemplateFragment() {
@@ -112,8 +107,9 @@ public class HomeFragmentContainer
         return createTemplateFragment;
     }
 
-    public void setCreateTemplateFragment(CreateTemplateFragment createTemplateFragment) {
-        this.createTemplateFragment = createTemplateFragment;
+    public void destroyCreateTemplateFragment()
+    {
+        this.createTemplateFragment = null;
     }
 
     public EmptyShoppingListFragment getEmptyShoppingListFragment() {
@@ -148,16 +144,4 @@ public class HomeFragmentContainer
         return groceryStoreFragment;
     }
 
-    public AddMemberFragment getAddMemberFragment() {
-        if(this.addMemberFragment == null)
-        {
-            this.addMemberFragment = new AddMemberFragment();
-        }
-        return addMemberFragment;
-    }
-
-    public void setAddMemberFragment(AddMemberFragment addMemberFragment) {
-
-            this.addMemberFragment = addMemberFragment;
-    }
 }
