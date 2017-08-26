@@ -12,11 +12,8 @@ import android.widget.TextView;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mobile.paolo.listaspesa.R;
-import com.mobile.paolo.listaspesa.utility.Contextualizer;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
-import com.mobile.paolo.listaspesa.view.home.ItemOneFragment;
-import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 
 
 /**
@@ -52,7 +49,7 @@ public class EmptyTemplateFragment extends Fragment
         goToGroupCreationButton = (Button) loadedFragment.findViewById(R.id.goToGroupCreationButton);
         emptyTemplateMessage = (TextView) loadedFragment.findViewById(R.id.emptyTemplateMessage);
 
-        if(!Contextualizer.getInstance().isUserPartOfAGroup())
+        if(!GlobalValuesManager.getInstance(getContext()).isUserPartOfAGroup())
         {
             // Change message
             emptyTemplateMessage.setText(getString(R.string.no_template_no_group_message));
@@ -62,16 +59,8 @@ public class EmptyTemplateFragment extends Fragment
             goToGroupCreationButton.setVisibility(View.VISIBLE);
 
             // If the group creation button is clicked, go to to the group creation section of the app
-            goToGroupCreationButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    BottomNavigationViewEx homeBottomNavigationView = (BottomNavigationViewEx) getActivity().findViewById(R.id.home_bottom_navigation);
-                    homeBottomNavigationView.getMenu().getItem(3).setChecked(true);
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.home_main_content, new CreateGroupFragment());
-                    transaction.commit();
-                }
-            });
+            setupCreateGroupButtonListener();
+
         }
     }
 
@@ -81,15 +70,37 @@ public class EmptyTemplateFragment extends Fragment
             @Override
             public void onClick(View v) {
                 GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(true);
-                changeFragment();
+                showCreateTemplateFragment();
             }
         });
     }
 
-    private void changeFragment()
+    private void showCreateTemplateFragment()
     {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateTemplateFragment());
+        transaction.commit();
+    }
+
+    private void setupCreateGroupButtonListener()
+    {
+        goToGroupCreationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingGroup(true);
+                showCreateGroupFragment();
+            }
+        });
+    }
+
+    private void showCreateGroupFragment()
+    {
+        // Change bottom navigation selected tab
+        BottomNavigationViewEx homeBottomNavigationView = (BottomNavigationViewEx) getActivity().findViewById(R.id.home_bottom_navigation);
+        homeBottomNavigationView.getMenu().getItem(3).setChecked(true);
+
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateGroupFragment());
         transaction.commit();
     }
 

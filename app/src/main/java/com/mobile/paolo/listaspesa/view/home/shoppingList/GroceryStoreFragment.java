@@ -22,23 +22,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.local.ProductsLocalDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
+import com.mobile.paolo.listaspesa.database.remote.SupermarketDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.Supermarket;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,6 +48,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+/**
+ * -- GroceryStoreFragment --
+ * This fragment is shown when a user takes the list in charge and goes to the supermarket.
+ * It shows the list of products to buy with the quantity.
+ * Each product has a checkbox: when the user find a product in the store and puts it in the
+ * cart, it checks it and taps the 'Add to cart' button. When all the products have been taken,
+ * the shopping mode end automatically.
+ * The user can end this mode at any moment, pressing the 'End shopping' button. Products not
+ * in cart will be saved and put in the next shopping list.
+ * It is required to select the supermarket in which the shopping is done (the selection can be
+ * performed in the MarketMapActivity called with the map button); the app will take note of which
+ * products can be found in which supermarket.
+ */
 
 public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
@@ -56,7 +72,6 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
     // Widgets
     private LinearLayout imageLayout;
-    private ImageView listImage;
     private Button finishButton;
     private Toolbar groceryToolbar;
     private Spinner supermarketSpinner;
@@ -75,14 +90,16 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
     // Complete list response handler
     private NetworkResponseHandler completeShoppingListResponseHandler;
     private NetworkResponseHandler newListCheckerResponseHandler;
+    private NetworkResponseHandler saveSupermarketProductsResponseHandler;
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         // Load fragment.
         View loadedFragment = inflater.inflate(R.layout.fragment_grocery_store, container, false);
 
@@ -125,7 +142,10 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         putInCartMenuAction.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                putProductsInShoppingCart();
+                if(supermarketSelected())
+                {
+                    putProductsInShoppingCart();
+                }
                 return false;
             }
         });
@@ -135,7 +155,10 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         endShoppingMenuAction.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                showEndShoppingWithProductsAlertDialog();
+                if(supermarketSelected())
+                {
+                    showEndShoppingWithProductsAlertDialog();
+                }
                 return false;
             }
         });
@@ -145,7 +168,6 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
     {
         groceryToolbar = (Toolbar) loadedFragment.findViewById(R.id.groceryToolbar);
         imageLayout = (LinearLayout) loadedFragment.findViewById(R.id.imageLayout);
-        listImage = (ImageView) loadedFragment.findViewById(R.id.listImage);
         finishButton = (Button) loadedFragment.findViewById(R.id.finishButton);
         supermarketSpinner = (Spinner) loadedFragment.findViewById(R.id.supermarketSpinner);
     }
@@ -162,7 +184,7 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
     private void setupSupermarketSpinner()
     {
-        // Define the ArrayAdapter overriding methods in order to show a hint
+        // Define the ArrayAdapter overriding methods in order to show a non-selectable hint
         ArrayAdapter<Supermarket> supermarketArrayAdapter = new ArrayAdapter<Supermarket>(getContext(), R.layout.spinner_item){
             @Override
             public boolean isEnabled(int position){
@@ -194,7 +216,6 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
         // Set the adapter
         supermarketSpinner.setAdapter(supermarketArrayAdapter);
-
     }
 
     private void setupRecyclerView(View loadedFragment)
@@ -216,6 +237,14 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
         adapter.replaceAll(groceryList);
 
+    }
+
+    private void readProductsFromLocalDatabase()
+    {
+        ProductsLocalDatabaseHelper localDatabaseHelper = ProductsLocalDatabaseHelper.getInstance(getContext());
+        localDatabaseHelper.open();
+        groceryList = localDatabaseHelper.getAllProducts();
+        localDatabaseHelper.close();
     }
 
     private void setupFinishButtonListener()
@@ -261,7 +290,6 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
             }
         }
     }
-
     private void showCreateListFragment()
     {
         // Change fragment: show CreateShoppingList
@@ -272,6 +300,7 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         // Update state
         GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingShoppingList(true);
     }
+
     private void showEmptyListFragment()
     {
         // Change fragment: show EmptyShoppingList
@@ -288,113 +317,69 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         transaction.commit();
     }
 
-    private void readProductsFromLocalDatabase()
-    {
-        ProductsLocalDatabaseHelper localDatabaseHelper = ProductsLocalDatabaseHelper.getInstance(getContext());
-        localDatabaseHelper.open();
-        groceryList = localDatabaseHelper.getAllProducts();
-        localDatabaseHelper.close();
-    }
-
     private void putProductsInShoppingCart()
     {
-        // Remove from database
-        ProductsLocalDatabaseHelper.getInstance(getContext()).open();
-        ProductsLocalDatabaseHelper.getInstance(getContext()).deleteProducts(adapter.getCheckedProducts());
-        ProductsLocalDatabaseHelper.getInstance(getContext()).close();
-
-        // Remove from adapter
-        adapter.remove(adapter.getCheckedProducts());
-
-        // If the user has taken all products
-        if(adapter.getItemCount() == 0)
+        if(adapter.getCheckedProducts().size() > 0)
         {
-            // Hide menu actions
-            showMarketMapMenuAction.setVisible(false);
-            putInCartMenuAction.setVisible(false);
-            endShoppingMenuAction.setVisible(false);
+            // Remove from database
+            ProductsLocalDatabaseHelper.getInstance(getContext()).open();
+            ProductsLocalDatabaseHelper.getInstance(getContext()).deleteProducts(adapter.getCheckedProducts());
+            ProductsLocalDatabaseHelper.getInstance(getContext()).close();
 
-            // Show end button
-            animateOnListCompletion();
+            // Remove from adapter
+            adapter.remove(adapter.getCheckedProducts());
 
-            // Delete user charge from database
-            sendCompleteShoppingListRequest(NO_PRODUCTS_LEFT);
+            // If the user has taken all products
+            if(adapter.getItemCount() == 0)
+            {
+                // Hide menu actions
+                showMarketMapMenuAction.setVisible(false);
+                putInCartMenuAction.setVisible(false);
+                endShoppingMenuAction.setVisible(false);
+
+                // Show end button
+                animateOnListCompletion();
+
+                // Delete user charge from database
+                sendCompleteShoppingListRequest(NO_PRODUCTS_LEFT);
+            }
         }
+
+        else
+        {
+            Toast.makeText(getContext(), "Seleziona i prodotti per poterli mettere nel carrello.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void animateOnListCompletion()
+    {
+        supermarketSpinner.setVisibility(View.GONE);
+        imageLayout.setVisibility(View.VISIBLE);
+
+        int duration = 1000;
+
+        ValueAnimator opacityAnimator = ValueAnimator.ofFloat(0f, 1f);
+        opacityAnimator.setDuration(duration);
+        opacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                imageLayout.setAlpha(((float) animation.getAnimatedValue()));
+            }
+        });
+        opacityAnimator.start();
     }
 
     private void endShopping()
     {
-        // Save remaining products on the remote db
+        // Save remaining products on the remote db or in the new list if the group has one
         sendCompleteShoppingListRequest(PRODUCTS_LEFT);
 
         // Save remaining products in the cache
         GlobalValuesManager.getInstance(getContext()).saveAreThereProductsNotFound(true);
         GlobalValuesManager.getInstance(getContext()).saveProductsNotFound(Product.asJSONProductList(adapter.getModelAsCollection()));
 
-        // Update state
-        setupCheckNewListResponseHandler();
-
-        Integer groupID = -1;
-
-        if(GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup() != null)
-        {
-            groupID = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID();
-        }
-        // The POST parameters
-        Map<String, String> params = new HashMap<>();
-        params.put("groupID", groupID.toString());
-
-        // Encapsulate in JSON
-        JSONObject jsonPostParameters = new JSONObject(params);
-        ShoppingListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getContext(), newListCheckerResponseHandler);
-    }
-
-
-    private void setupCheckNewListResponseHandler()
-    {
-        this.newListCheckerResponseHandler = new NetworkResponseHandler() {
-            @Override
-            public void onSuccess(JSONObject response) {
-                Log.d("CHECK_NEW_LIST_RESP", response.toString());
-                try {
-                    if(response.getInt("success") == 1)
-                    {
-                        // -- Success --
-                        // Update state
-                        JSONObject jsonShoppingList = response.getJSONObject("list");
-                        ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
-                        if(shoppingList.getProductList().size() == 0)
-                        {
-                            // List is empty
-                            GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
-                            GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
-                            showEmptyListFragment();
-                        }
-                        else
-                        {
-                            // List is not empty
-                            GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(true);
-                            GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
-                            GlobalValuesManager.getInstance(getContext()).saveUserShoppingList(shoppingList.toJSON());
-                            showManagementFragment();
-                        }
-                    }
-                    else
-                    {
-                        // -- Error --
-                        Log.e("CHECK_LIST_ERR", response.getString("message"));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            @Override
-            public void onError(VolleyError error) {
-                error.printStackTrace();
-            }
-        };
+        // Check if the group has already defined another list
+        sendGetNewListRequest();
     }
 
     private void showEndShoppingWithProductsAlertDialog()
@@ -428,21 +413,78 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getActivity().getColor(R.color.materialGrey600));
     }
 
-    private void animateOnListCompletion()
+    private void setupCheckNewListResponseHandler()
     {
-        imageLayout.setVisibility(View.VISIBLE);
-
-        int duration = 1000;
-
-        ValueAnimator opacityAnimator = ValueAnimator.ofFloat(0f, 1f);
-        opacityAnimator.setDuration(duration);
-        opacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        this.newListCheckerResponseHandler = new NetworkResponseHandler() {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                imageLayout.setAlpha(((float) animation.getAnimatedValue()));
+            public void onSuccess(JSONObject response) {
+                Log.d("GET_NEW_LIST_RESP", response.toString());
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+                        // -- Success --
+                        // Update state
+                        JSONObject jsonShoppingList = response.getJSONObject("list");
+                        ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
+                        if(shoppingList.getProductList().size() == 0)
+                        {
+                            // List is empty
+                            GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
+                            GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
+                            showEmptyListFragment();
+                        }
+                        else
+                        {
+                            // List is not empty
+                            GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(true);
+                            GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
+                            GlobalValuesManager.getInstance(getContext()).saveUserShoppingList(shoppingList.toJSON());
+                            GlobalValuesManager.getInstance(getContext()).saveAreThereProductsNotFound(false);
+                            GlobalValuesManager.getInstance(getContext()).saveProductsNotFound(new JSONArray());
+                            showManagementFragment();
+                        }
+                    }
+                    else
+                    {
+                        // -- Error --
+                        Log.e("CHECK_LIST_ERR", response.getString("message"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
-        });
-        opacityAnimator.start();
+
+            @Override
+            public void onError(VolleyError error) {
+                error.printStackTrace();
+            }
+        };
+    }
+
+    private void sendGetNewListRequest()
+    {
+        Integer groupID = -1;
+
+        if(GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup() != null)
+        {
+            groupID = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID();
+        }
+
+        // The POST parameters
+        Map<String, String> params = new HashMap<>();
+        params.put("groupID", groupID.toString());
+
+        // Encapsulate in JSON
+        JSONObject jsonPostParameters = new JSONObject(params);
+
+        // Debug
+        Log.d("GET_NEW_LIST_REQ", jsonPostParameters.toString());
+
+        // Define what to do on response
+        setupCheckNewListResponseHandler();
+
+        ShoppingListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getContext(), newListCheckerResponseHandler);
     }
 
     private void setupCompleteShoppingListResponseHandler()
@@ -458,6 +500,9 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
                         // Update state
                         GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
                         GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
+
+                        // Save products found in that supermarket on the remote database
+                        sendSaveSupermarketProductsRequest();
                     }
                     else
                     {
@@ -504,6 +549,70 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
         // Send request
         ShoppingListDatabaseHelper.sendCompleteShoppingListRequest(jsonParams, getContext(), completeShoppingListResponseHandler);
+    }
+
+    private void setupSaveSupermarketProductsResponseHandler()
+    {
+        this.saveSupermarketProductsResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("SAVE_MARKET_PROD_RESP", response.toString());
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                error.printStackTrace();
+            }
+        };
+    }
+
+    private void sendSaveSupermarketProductsRequest()
+    {
+        // Get selected supermarket ID
+        int supermarketID = ((Supermarket) supermarketSpinner.getSelectedItem()).getID();
+
+        // Get products found as groceryList \ productsNotFound
+        List<Product> productsNotFound = adapter.getModelAsCollection();
+        groceryList.removeAll(productsNotFound);
+
+        // JSON params
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("supermarketID", supermarketID);
+            jsonParams.put("products", Product.asJSONProductList(groceryList));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Debug
+        Log.d("SAVE_MARKET_PROD_REQ", jsonParams.toString());
+
+        // Define what to do on response
+        setupSaveSupermarketProductsResponseHandler();
+
+        // Send request
+        SupermarketDatabaseHelper.sendSaveSupermarketProductsRequest(jsonParams, getContext(), saveSupermarketProductsResponseHandler);
+
+    }
+
+    private boolean supermarketSelected()
+    {
+        Supermarket selectedSpinnerItem = ((Supermarket) supermarketSpinner.getSelectedItem());
+        if(selectedSpinnerItem.getID() == -1)
+        {
+            // The hint is selected
+            Toast.makeText(getContext(), getString(R.string.no_supermarket_selected_toast), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
 

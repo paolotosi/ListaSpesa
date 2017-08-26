@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -39,16 +40,22 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity {
 
     // Widgets
-    private Button btnRegister;
+    private FloatingActionButton btnRegister;
     private EditText usernameField, passwordField, addressField;
     private TextInputLayout usernameInputLayout, passwordInputLayout, addressInputLayout;
     private ImageView logo;
 
     // The NetworkResponseHandler
-    NetworkResponseHandler networkResponseHandler;
+    private NetworkResponseHandler networkResponseHandler;
 
     // A boolean to show if there were problems during the insertion
-    private boolean insertionOK;
+    private boolean insertionOK = false;
+
+    // A boolean to show if the inserted username is already present in the db
+    private boolean isUsernameInUse = false;
+
+    // Used to avoid multiple animations
+    private boolean animationStarted = false;
 
     // JSON Node names
     private static final String TAG_SUCCESS = "success";
@@ -69,7 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isInsertionValid())
+                if(isInsertionValid() && !animationStarted)
                 {
                     sendRegistrationRequest();
                 }
@@ -133,6 +140,8 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         motionAnimator.start();
+
+        animationStarted = true;
     }
 
     private void goHome()
@@ -146,7 +155,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void initializeWidgets()
     {
-        btnRegister = (Button) findViewById(R.id.btnRegister);
+        btnRegister = (FloatingActionButton) findViewById(R.id.btnRegister);
 
         usernameField = (EditText) findViewById(R.id.usernameField);
         usernameInputLayout = (TextInputLayout) findViewById(R.id.usernameInputLayout);
@@ -201,14 +210,30 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onSuccess(JSONObject response)
             {
+                // Log response
+                Log.d("REGISTRATION_RESP", response.toString());
+
                 try {
-                    if (response.getInt(TAG_SUCCESS) == 1) {
+                    if(response.getInt(TAG_SUCCESS) == 1)
+                    {
+                        // Insertion ok
                         insertionOK = true;
                         showFeedback();
-                        User user = new User(response.getInt("userId"), response.getString("userName"), null, response.getString("userAddress"));
-                        //saveLoggedUserInSharedPreferences(user);
+                        // User user = new User(response.getInt("userId"), response.getString("userName"), null, response.getString("userAddress"));
+                        User user = new User(response.getJSONObject("registeredUser"));
                         GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUser(user);
                         transitionToNextActivity();
+                    }
+                    else if(response.getInt(TAG_SUCCESS) == 2)
+                    {
+                        // Username already in use
+                        isUsernameInUse = true;
+                        showFeedback();
+                    }
+                    else
+                    {
+                        // Error
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -226,6 +251,10 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void sendRegistrationRequest()
     {
+        // Reset state
+        insertionOK = false;
+        isUsernameInUse = false;
+
         // The POST parameters.
         Map<String, String> params = new HashMap<>();
         params.put(getResources().getString(R.string.USER_KEY), usernameField.getText().toString());
@@ -236,29 +265,11 @@ public class RegisterActivity extends AppCompatActivity {
         JSONObject jsonPostParameters = new JSONObject(params);
 
         // Print parameters to console for debug purposes.
-        Log.d("JSON_REGISTER_PARAM", jsonPostParameters.toString());
+        Log.d("REGISTRATION_REQ", jsonPostParameters.toString());
 
         // Send request.
         UsersDatabaseHelper.sendRegistrationRequest(jsonPostParameters, getApplicationContext(), networkResponseHandler);
     }
-
-//    private void saveLoggedUserInSharedPreferences(User loggedUser)
-//    {
-//        // Get shared preferences file
-//        SharedPreferences sharedPref = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE);
-//
-//        // Get the editor
-//        SharedPreferences.Editor editor = sharedPref.edit();
-//
-//        // Save logged user as JSON String
-//        editor.putString(getResources().getString(R.string.LOGGED_USER), loggedUser.toJSON().toString());
-//
-//        // Debug
-//        Log.d("SHARED_PREF", loggedUser.toJSON().toString());
-//
-//        // Commit changes
-//        editor.commit();
-//    }
 
     private void showFeedback()
     {
@@ -266,6 +277,10 @@ public class RegisterActivity extends AppCompatActivity {
         if(insertionOK)
         {
             snackShowStatus = Snackbar.make(findViewById(R.id.registerLayout), R.string.insertion_OK, Snackbar.LENGTH_LONG);
+        }
+        else if(isUsernameInUse)
+        {
+            snackShowStatus = Snackbar.make(findViewById(R.id.registerLayout), R.string.username_in_use, Snackbar.LENGTH_LONG);
         }
         else
         {

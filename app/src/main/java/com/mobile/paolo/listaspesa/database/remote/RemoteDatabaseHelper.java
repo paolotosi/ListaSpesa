@@ -22,6 +22,7 @@ public class RemoteDatabaseHelper
     private static final int EMULATOR_MODE = 1;
     private static final int REAL_DEVICE_MODE = 2;
 
+    // Mode selection
     private int mode = EMULATOR_MODE;
 
     public static synchronized RemoteDatabaseHelper getInstance()

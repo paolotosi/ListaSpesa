@@ -38,11 +38,12 @@
     <string name="empty_username_error">Inserisci un nome utente</string>
     <string name="empty_password_error">Inserisci una password</string>
     <string name="empty_address_error">Inserisci un indirizzo</string>
-    <string name="USER_KEY">name</string>
-    <string name="PASS_KEY">pass</string>
-    <string name="ADDR_KEY">addr</string>
+    <string name="USER_KEY">username</string>
+    <string name="PASS_KEY">password</string>
+    <string name="ADDR_KEY">address</string>
     <string name="insertion_OK">Utente aggiunto con successo!</string>
     <string name="insertion_KO">Si sono verificati problemi in fase di aggiunta.</string>
+    <string name="username_in_use">Il nome utente inserito è già in uso. Scegline un altro.</string>
 
     <!-- HomeActivity strings. -->
     <string name="title_activity_home">HomeActivity</string>
@@ -86,7 +87,6 @@
     <!-- EmptyTemplateFragment strings. -->
     <string name="no_templates_message">Il tuo gruppo non ha ancora definito dei template.\nI template ti aiutano a creare più velocemente la lista della spesa.</string>
     <string name="no_template_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter definire dei template.</string>
-    <string name="no_list_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter definire dei template e la tua lista della spesa.</string>
     <string name="go_to_group_creation">Crea gruppo</string>
     <string name="create_new_template_button">Crea nuovo template</string>
 
@@ -127,6 +127,8 @@
 
     <!-- EmptyListFragment strings. -->
     <string name="no_list_message">Il tuo gruppo non ha ancora nessuna lista della spesa in preparazione.</string>
+    <string name="no_list_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter definire dei template e la tua lista della spesa.</string>
+    <string name="no_list_no_template_message">Il tuo gruppo non ha ancora definito dei template.\nCrea un template per utilizzare la lista della spesa.</string>
     <string name="create_new_list_button">Crea nuova lista della spesa</string>
     <string name="create_new_list_button_alt">Sembra che uno dei tuoi compagni di gruppo abbia già preso in carico la vostra lista della spesa! Crea una nuova lista della spesa. Attenzione: i prodotti non trovati dal tuo compagno verranno inseriti automaticamente.</string>
 
@@ -148,6 +150,7 @@
     <string name="end_shopping_title">Concludere gli acquisti?</string>
     <string name="end_shopping_dialog">Alcuni prodotti della lista non sono presenti nel tuo carrello. Questi prodotti saranno aggiunti in automatico alla prossima lista della spesa.</string>
     <string name="end_shopping_action">Concludi</string>
+    <string name="no_supermarket_selected_toast">Seleziona un supermercato.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

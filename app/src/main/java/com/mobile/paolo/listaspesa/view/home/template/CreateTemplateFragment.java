@@ -33,7 +33,7 @@ import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -224,7 +224,7 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
                         GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(false);
                         GlobalValuesManager.getInstance(getContext()).saveHasUserTemplates(true);
                         GlobalValuesManager.getInstance(getContext()).addTemplate(createdTemplate);
-                        changeFragment();
+                        showManageTemplateFragment();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -347,14 +347,9 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
 
     }
 
-    private void changeFragment()
+    private void showManageTemplateFragment()
     {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        if(HomeFragmentContainer.getInstance().getManageTemplateFragment() == null)
-        {
-            ManageTemplateFragment manageTemplateFragment = new ManageTemplateFragment();
-            HomeFragmentContainer.getInstance().setManageTemplateFragment(manageTemplateFragment);
-        }
         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageTemplateFragment());
         transaction.commit();
     }

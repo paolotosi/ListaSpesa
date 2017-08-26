@@ -9,7 +9,9 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -58,6 +60,9 @@ public class LoginActivity extends AppCompatActivity {
     private static final int LOGIN_KO_WRONG_PASSWORD = 3;
     private static final int CONNECTION_ERROR =        4;
 
+    // Used to avoid multiple animations
+    private boolean animationStarted = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isInsertionValid())
+                if(isInsertionValid() && !animationStarted)
                 {
                     setupNetworkResponseHandler();
                     sendLoginRequest();
@@ -85,8 +90,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onBackPressed();
         overridePendingTransition(R.anim.back_slide_in, R.anim.back_slide_out);
     }
-
-
 
     private void enteringAnimation()
     {
@@ -138,6 +141,8 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         motionAnimator.start();
+
+        animationStarted = true;
     }
 
     private void initializeWidgets()

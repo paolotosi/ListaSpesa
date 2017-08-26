@@ -43,8 +43,7 @@
 
         <!-- The register activity. -->
         <activity
-            android:name=".view.auth.RegisterActivity"
-            android:windowSoftInputMode="adjustPan" />
+            android:name=".view.auth.RegisterActivity" />
 
         <!-- The edit group activity. -->
         <activity android:name=".view.home.group.EditGroupActivity" />

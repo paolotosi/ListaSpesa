@@ -21,7 +21,7 @@ import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.view.home.HomeActivity;
 import com.mobile.paolo.listaspesa.view.home.template.EditTemplateActivity;
 

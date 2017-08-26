@@ -18,9 +18,8 @@ import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.utility.SharedPreferencesManager;
-import com.mobile.paolo.listaspesa.view.home.template.AddProductsActivity;
 import com.mobile.paolo.listaspesa.view.init.WelcomeActivity;
 
 import java.util.ArrayList;
@@ -150,11 +149,11 @@ public class ManageGroupFragment extends Fragment {
             @Override
             public void onClick(View v) {
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    if(HomeFragmentContainer.getInstance().getAddMemberFragment() == null)
-                    {
-                        AddMemberFragment addMemberFragment = new AddMemberFragment();
-                        HomeFragmentContainer.getInstance().setAddMemberFragment(addMemberFragment);
-                    }
+//                    if(HomeFragmentContainer.getInstance().getAddMemberFragment() == null)
+//                    {
+//                        AddMemberFragment addMemberFragment = new AddMemberFragment();
+//                        HomeFragmentContainer.getInstance().setAddMemberFragment(addMemberFragment);
+//                    }
                     transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getAddMemberFragment());
                     transaction.commit();
             }

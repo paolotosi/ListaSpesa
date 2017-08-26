@@ -25,8 +25,8 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
 
     // visualizationMode determines how to display single elements
     private int visualizationMode;
-    private static final int CREATION_MODE = 1;
-    private static final int MANAGEMENT_MODE = 2;
+    public static final int CREATION_MODE = 1;
+    public static final int MANAGEMENT_MODE = 2;
 
     public UserCardViewDataAdapter(List<User> users, int visualizationMode)
     {

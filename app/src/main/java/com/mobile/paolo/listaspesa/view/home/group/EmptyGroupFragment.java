@@ -11,7 +11,7 @@ import android.widget.Button;
 
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.utility.HomeFragmentContainer;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 
 /**
  * -- EmptyGroupFragment --
