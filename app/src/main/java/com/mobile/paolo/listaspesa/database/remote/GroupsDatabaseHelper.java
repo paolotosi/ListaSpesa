@@ -21,6 +21,7 @@ public class GroupsDatabaseHelper
     private static final String URL_MODIFY_GROUP_NAME = "http://" + host + "listaspesa/android_connect/groups/modify_group_name.php";
     private static final String URL_UPDATE_GROUP = "http://" + host + "/listaspesa/android_connect/groups/update_group_members.php";
     private static final String URL_UPDATE_PRODUCT_TABLE = "http://" + host + "/listaspesa/android_connect/groups/update_product_table.php";
+    private static final String URL_DELETE_PRODUCT = "http://" + host + "/listaspesa/android_connect/groups/delete_product.php";
 
     public static void sendCreateGroupRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
@@ -45,6 +46,11 @@ public class GroupsDatabaseHelper
     public static void updateProductTable(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
         NetworkMessageSender.sendHTTPRequest(URL_UPDATE_PRODUCT_TABLE, jsonPostData, context, networkResponseHandler);
+    }
+
+    public static void sendDeleteProductRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
+    {
+        NetworkMessageSender.sendHTTPRequest(URL_DELETE_PRODUCT, jsonPostData, context, networkResponseHandler);
     }
 
 

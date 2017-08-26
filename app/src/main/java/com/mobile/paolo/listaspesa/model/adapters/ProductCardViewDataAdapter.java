@@ -14,7 +14,9 @@ import com.mobile.paolo.listaspesa.databinding.CardProductLayoutBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutEditBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutGroceryBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutShoppingListBinding;
+import com.mobile.paolo.listaspesa.databinding.CardProductLayoutManageBinding;
 import com.mobile.paolo.listaspesa.model.objects.Product;
+import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.shawnlin.numberpicker.NumberPicker;
 
@@ -36,6 +38,9 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
 
     // Used in edit mode to store the products to delete
     private List<Product> deleteList = new ArrayList<>();
+    private List<Product> productList = new ArrayList<>();
+
+    public Boolean visibility;
 
     // Mode: add or edit
     private int mode;
@@ -43,6 +48,7 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
     public static final int EDIT_MODE = 2;
     public static final int LIST_MODE = 3;
     public static final int GROCERY_MODE = 4;
+    public static final int MANAGE_MODE = 5;
 
     // ClickListener (received from the outside)
     ViewHolder.ClickListener clickListener;
@@ -74,6 +80,7 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
             case LIST_MODE: productBinding = CardProductLayoutShoppingListBinding.inflate(layoutInflater, parent, false);
                                              return new ViewHolder(productBinding, clickListener);
             case GROCERY_MODE: productBinding = CardProductLayoutGroceryBinding.inflate(layoutInflater, parent, false); break;
+            case MANAGE_MODE: productBinding = CardProductLayoutManageBinding.inflate(layoutInflater, parent, false); break;
         }
         return new ViewHolder(productBinding);
     }
@@ -91,6 +98,7 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
             case EDIT_MODE: setupEditMode(viewHolder, position); break;
             case LIST_MODE: setupListMode(viewHolder, position); break;
             case GROCERY_MODE: setupGroceryMode(viewHolder, position); break;
+            case MANAGE_MODE: setupManageMode(viewHolder, position); break;
         }
     }
 
@@ -217,6 +225,40 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
             }
         });
     }
+
+    private void setupManageMode(final ViewHolder viewHolder, final int position)
+    {
+        // Cast superclass binding to edit mode binding
+        CardProductLayoutManageBinding binding = (CardProductLayoutManageBinding) viewHolder.binding;
+
+        // Custom logic for product description
+        if(sortedList.get(position).getDescription() != null)
+        {
+            if(sortedList.get(position).getDescription().equals("null"))
+            {
+                String noDescriptionText = binding.productDescription.getContext().getString(R.string.no_description_message);
+                binding.productDescription.setText(noDescriptionText);
+            }
+        }
+
+        binding.deleteProdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteList.add(sortedList.get(viewHolder.getAdapterPosition()));
+                sortedList.remove(sortedList.get(viewHolder.getAdapterPosition()));
+                //TODO query di eliminazione
+            }
+        });
+
+        binding.editProductButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO modifica prodotti.
+            }
+        });
+    }
+
+
 
     private void setupSortedList()
     {
@@ -479,10 +521,15 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
                 ((CardProductLayoutShoppingListBinding) binding).cardProduct.setOnLongClickListener(this);
                 bindingType = LIST_MODE;
             }
-            else
+            else if(binding instanceof  CardProductLayoutGroceryBinding)
             {
                 ((CardProductLayoutGroceryBinding) binding).setProduct(product);
                 bindingType = GROCERY_MODE;
+            }
+            else
+            {
+                ((CardProductLayoutManageBinding) binding).setProduct(product);
+                bindingType = MANAGE_MODE;
             }
             binding.executePendingBindings();
             return bindingType;

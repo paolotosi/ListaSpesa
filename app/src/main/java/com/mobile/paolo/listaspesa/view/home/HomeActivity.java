@@ -63,6 +63,7 @@ public class HomeActivity extends AppCompatActivity
     private NetworkResponseHandler shoppingListResponseHandler;
     private NetworkResponseHandler getProductsNotFoundResponseHandler;
     private NetworkResponseHandler supermarketsResponseHandler;
+    private NetworkResponseHandler groupProductsResponseHandler;
 
     // Response codes
     private static final int NETWORK_ERROR = 0;
@@ -200,6 +201,57 @@ public class HomeActivity extends AppCompatActivity
         GroupsDatabaseHelper.sendGetGroupDetailsRequest(jsonPostParameters, getApplicationContext(), groupResponseHandler);
     }
 
+    private void sendGroupProductsRequest()
+    {
+        setupGroupProductsResponseHandler();
+
+        JSONObject jsonPost = new JSONObject();
+        String groupID = String.valueOf(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID());
+
+        try {
+            jsonPost.put("id",groupID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        //GroupsDatabaseHelper.sendGetGroupProductsRequest(jsonPost, getApplicationContext(), groupProductsResponseHandler);
+    }
+
+    private void setupGroupProductsResponseHandler()
+    {
+        this.groupProductsResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("GET_PRODUCTS_RESP", response.toString());
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+                        // Determine if the group has templates and update the SharedPreferences accordingly
+                        JSONArray products = response.getJSONArray("products");
+                        if(products.length() == 0)
+                        {
+
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+
+            }
+        };
+    }
 
     private void setupTemplateResponseHandler()
     {

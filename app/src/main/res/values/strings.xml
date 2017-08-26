@@ -17,6 +17,8 @@
     <string name="are_there_products_not_found">ARE_THERE_PRODUCTS_NOT_FOUND</string>
     <string name="products_not_found">PRODUCTS_NOT_FOUND</string>
     <string name="supermarket_list">SUPERMARKET_LIST</string>
+    <string name="group_products">GROUP_PRODUCTS</string>
+
 
     <!-- WelcomeActivity strings. -->
     <string name="login_button">Accedi</string>
@@ -100,6 +102,9 @@
 
     <!-- ManageTemplateFragment strings. -->
     <string name="manage_fragment_toolbar">I tuoi template</string>
+
+    <!-- ManageGroupProductsFragment strings. -->
+    <string name="manage_products_toolbar">I tuoi prodotti</string>
 
     <!-- EditTemplateActivity strings. -->
     <string name="edit_ok">Modifica avvenuta con successo!</string>

@@ -67,7 +67,7 @@ public class ManageGroupFragment extends Fragment {
 
         setupAddMemberButtonListener(this.getView());
 
-        setupAddProductsButtonListener(this.getView());
+        setupProductHandlerButton((this.getView()));
 
         setupRecyclerView(this.getView());
     }
@@ -117,14 +117,19 @@ public class ManageGroupFragment extends Fragment {
         });
     }
 
-    private void setupAddProductsButtonListener(View loadedFragment)
+    private void setupProductHandlerButton(View loadedFragment)
     {
-        loadedFragment.findViewById(R.id.addProducts).setOnClickListener(new View.OnClickListener() {
+        loadedFragment.findViewById(R.id.manageProduct).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), InsertProductsActivity.class);
-                intent.putExtra("groupName", groupName);
-                startActivity(intent);
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                if(HomeFragmentContainer.getInstance().getManageGroupProductsFragment() == null)
+                {
+                    ManageGroupProductsFragment manageGroupProductsFragment = new ManageGroupProductsFragment();
+                    HomeFragmentContainer.getInstance().setManageGroupProductsFragment(manageGroupProductsFragment);
+                }
+                transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageGroupProductsFragment());
+                transaction.commit();
             }
         });
     }

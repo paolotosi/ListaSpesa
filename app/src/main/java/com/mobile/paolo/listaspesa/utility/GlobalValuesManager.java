@@ -418,4 +418,46 @@ public class GlobalValuesManager
     }
 
 
+    /*
+        ------------------
+        PRODUCTS MANAGEMENT METHODS
+        ------------------
+     */
+
+    public void saveGroupProducts(JSONArray jsonProducts)
+    {
+        sharedPreferencesManager.writeString(context.getString(R.string.group_products) ,jsonProducts.toString());
+    }
+
+
+
+    public List<Product> getGroupProducts()
+    {
+        List<Product> products = new ArrayList<>();
+
+        try {
+            products = Product.parseJSONProductList(new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.group_products))));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return products;
+    }
+
+    public void removeProduct(Integer productID)
+    {
+        List<Product> productList = getGroupProducts();
+        for(int i = productList.size()-1; i >= 0; i--)
+        {
+            if(productList.get(i).getID() + 1 == productID)
+            {
+                productList.remove(productList.get(i));
+            }
+        }
+
+        JSONArray products = Product.asJSONProductList(productList);
+        saveGroupProducts(products);
+    }
+
+
 }

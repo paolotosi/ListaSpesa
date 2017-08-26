@@ -4,6 +4,7 @@ import com.mobile.paolo.listaspesa.view.home.group.AddMemberFragment;
 import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.EmptyGroupFragment;
 import com.mobile.paolo.listaspesa.view.home.group.ManageGroupFragment;
+import com.mobile.paolo.listaspesa.view.home.group.ManageGroupProductsFragment;
 import com.mobile.paolo.listaspesa.view.home.shoppingList.CreateShoppingListFragment;
 import com.mobile.paolo.listaspesa.view.home.shoppingList.EmptyShoppingListFragment;
 import com.mobile.paolo.listaspesa.view.home.shoppingList.GroceryStoreFragment;
@@ -35,6 +36,8 @@ public class HomeFragmentContainer
     private GroceryStoreFragment groceryStoreFragment;
 
     private AddMemberFragment addMemberFragment;
+
+    private ManageGroupProductsFragment manageGroupProductsFragment;
 
     public static synchronized HomeFragmentContainer getInstance()
     {
@@ -73,6 +76,19 @@ public class HomeFragmentContainer
     public void setManageGroupFragment(ManageGroupFragment manageGroupFragment) {
         this.manageGroupFragment = manageGroupFragment;
     }
+
+    public ManageGroupProductsFragment getManageGroupProductsFragment() {
+        if(this.manageGroupProductsFragment == null)
+        {
+            this.manageGroupProductsFragment = new ManageGroupProductsFragment();
+        }
+        return manageGroupProductsFragment;
+    }
+
+    public void setManageGroupProductsFragment(ManageGroupProductsFragment manageGroupProductsFragment) {
+        this.manageGroupProductsFragment = manageGroupProductsFragment;
+    }
+
 
     public CreateGroupFragment getCreateGroupFragment() {
         if(this.createGroupFragment == null)
