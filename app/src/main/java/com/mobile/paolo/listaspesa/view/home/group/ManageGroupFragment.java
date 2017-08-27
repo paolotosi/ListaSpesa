@@ -14,12 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
-import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.utility.SharedPreferencesManager;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.view.init.WelcomeActivity;
 
 import java.util.ArrayList;
@@ -193,7 +193,7 @@ public class ManageGroupFragment extends Fragment {
     {
         // Flush SharedPreferences and reset fragments
         SharedPreferencesManager.getInstance(getContext()).flush();
-        HomeFragmentContainer.getInstance().destroy();
+        HomeFragmentContainer.getInstance().reset();
 
         Intent intent = new Intent(getContext(), WelcomeActivity.class);
         startActivity(intent);

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -73,6 +74,12 @@ public class HomeActivity extends AppCompatActivity
     // GlobalValuesManager
     GlobalValuesManager contextualizer;
 
+    private boolean groupRequestFinished = false;
+    private boolean templateRequestFinished = false;
+    private boolean shoppingListRequestFinished = false;
+    private boolean productsNotFoundRequestFinished = true;
+    private boolean supermarketRequestFinished = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -103,6 +110,7 @@ public class HomeActivity extends AppCompatActivity
         // These requests have to be sent only after the first one is finished, because we don't know
         // the groupID beforehand
         sendGetGroupDetailsRequest();
+
     }
 
     private void setupBottomNavigationView()
@@ -115,7 +123,14 @@ public class HomeActivity extends AppCompatActivity
                 (new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem selectedTab) {
+                        // Select the fragment to load
                         Fragment selectedFragment = selectCorrectFragment(selectedTab);
+
+                        // If there's a fragment in the stack (e.g. state in which is shown the 'Up'
+                        // button require to save the previous fragment), pop it
+                        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                        // Replace main view with correct fragment
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.home_main_content, selectedFragment);
                         transaction.commit();
@@ -123,11 +138,10 @@ public class HomeActivity extends AppCompatActivity
                     }
                 });
 
-        // Manually displaying the first fragment - one time only
+        // Manually displaying the loading fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_main_content, ItemOneFragment.newInstance());
+        transaction.replace(R.id.home_main_content, new ProgressBarFragment());
         transaction.commit();
-
 
         //Used to select an item programmatically
         //bottomNavigationView.getMenu().getItem(2).setChecked(true);
@@ -140,7 +154,7 @@ public class HomeActivity extends AppCompatActivity
             public void onSuccess(JSONObject response) {
                 // Debug
                 Log.d("GET_GROUP_RESP", response.toString());
-
+                groupRequestFinished = true;
                 try {
                     int responseCode = response.getInt("success");
                     switch (responseCode)
@@ -162,6 +176,7 @@ public class HomeActivity extends AppCompatActivity
                             break;
                         case USER_DOESNT_HAVE_GROUP:
                             GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(false);
+                            switchToFirstFragment();
                             break;
                     }
                 } catch (JSONException e) {
@@ -258,6 +273,7 @@ public class HomeActivity extends AppCompatActivity
                     Log.d("GET_TEMPLATES_RESP", response.toString());
                     if(response.getInt("success") == 1)
                     {
+                        templateRequestFinished = true;
                         // Determine if the group has templates and update the SharedPreferences accordingly
                         JSONArray templates = response.getJSONArray("templates");
                         if(templates.length() == 0)
@@ -268,6 +284,10 @@ public class HomeActivity extends AppCompatActivity
                         {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserTemplates(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveUserTemplates(templates);
+                        }
+                        if(initializationDone())
+                        {
+                            switchToFirstFragment();
                         }
                     }
                     else
@@ -326,6 +346,7 @@ public class HomeActivity extends AppCompatActivity
             public void onSuccess(JSONObject response) {
                 try {
                     Log.d("GET_LIST_RESP", response.toString());
+                    shoppingListRequestFinished = true;
                     if(response.getInt("success") == 1)
                     {
                         // List is not taken
@@ -380,6 +401,10 @@ public class HomeActivity extends AppCompatActivity
                         GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(false);
                         GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
                     }
+                    if(initializationDone())
+                    {
+                        switchToFirstFragment();
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -425,10 +450,12 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onSuccess(JSONObject response) {
                 Log.d("GET_PROD_NOT_FOUND_RESP", response.toString());
+                productsNotFoundRequestFinished = true;
                 try {
                     if(response.getInt("success") == 1)
                     {
                         // -- Success --
+
                         // Get the products
                         JSONArray jsonProductsNotFound = response.getJSONArray("products_not_found");
 
@@ -441,6 +468,10 @@ public class HomeActivity extends AppCompatActivity
                         else
                         {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveAreThereProductsNotFound(false);
+                        }
+                        if(initializationDone())
+                        {
+                            switchToFirstFragment();
                         }
                     }
                     else
@@ -490,10 +521,15 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onSuccess(JSONObject response) {
                 Log.d("GET_ALL_SUPERMARKET_RES", response.toString());
+                supermarketRequestFinished = true;
                 try {
                     if(response.getInt("success") == 1)
                     {
                         GlobalValuesManager.getInstance(getApplicationContext()).saveSupermarkets(response.getJSONArray("supermarkets"));
+                    }
+                    if(initializationDone())
+                    {
+                        switchToFirstFragment();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -509,8 +545,6 @@ public class HomeActivity extends AppCompatActivity
 
     private void sendGetAllSupermarketsRequest()
     {
-        // No need for parameters
-
         // Debug
         Log.d("GET_ALL_SUPERMARKET_REQ", "Request sent");
 
@@ -535,7 +569,7 @@ public class HomeActivity extends AppCompatActivity
         Fragment selectedFragment = null;
         switch (selectedTab.getItemId()) {
             case R.id.tab_supermarket:
-                selectedFragment = new ItemOneFragment();
+                selectedFragment = selectSupermarketFragment();
                 break;
             case R.id.tab_templates:
                 selectedFragment = selectTemplateFragment();
@@ -652,6 +686,11 @@ public class HomeActivity extends AppCompatActivity
         return userInCharge;
     }
 
+    private Fragment selectSupermarketFragment()
+    {
+        return HomeFragmentContainer.getInstance().getEmptySupermarketFragment();
+    }
+
     private Fragment selectFirstFragment()
     {
         Fragment firstFragment;
@@ -685,6 +724,17 @@ public class HomeActivity extends AppCompatActivity
         return selectListFragment();
     }
 
+    private boolean initializationDone()
+    {
+        return groupRequestFinished && templateRequestFinished && shoppingListRequestFinished && supermarketRequestFinished && productsNotFoundRequestFinished;
+    }
+
+    private void switchToFirstFragment()
+    {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, selectFirstFragment());
+        transaction.commit();
+    }
 
 
 

@@ -414,7 +414,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         GlobalValuesManager.getInstance(getContext()).saveShoppingListTaken(true);
                         GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER);
 
-                        // Change fragment: show GroceryStoreFragment
+                        // Change fragment: show GroceryStoreFragment after resetting it
+                        HomeFragmentContainer.getInstance().resetGroceryStoreFragment();
                         FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getGroceryStoreFragment());
                         transaction.commit();

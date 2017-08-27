@@ -8,17 +8,17 @@
     <ImageView
         android:layout_width="128dp"
         android:layout_height="128dp"
-        android:src="@drawable/ic_collections_bookmark_blue_24dp"/>
+        android:src="@drawable/ic_store_mall_directory_blue_24dp"/>
 
     <Space
         android:layout_width="0dp"
         android:layout_height="24dp" />
 
     <TextView
-        android:id="@+id/emptyTemplateMessage"
+        android:id="@+id/emptySupermarketMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no_templates_message"
+        android:text="@string/no_supermarket_message"
         android:textColor="@color/blackText"
         android:textAlignment="center"
         android:textSize="16sp"/>
@@ -28,12 +28,11 @@
         android:layout_height="24dp" />
 
     <Button
-        android:id="@+id/createNewTemplateButton"
+        android:id="@+id/createNewSupermarketButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:elevation="@dimen/button_elevation"
-        android:text="@string/create_new_template_button"
-        android:backgroundTint="@color/button_background_tint"/>
+        android:text="@string/create_new_supermarket_button"/>
 
     <Button
         android:id="@+id/goToGroupCreationButton"

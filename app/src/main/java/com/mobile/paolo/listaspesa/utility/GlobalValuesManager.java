@@ -236,6 +236,10 @@ public class GlobalValuesManager
     public List<Template> getUserTemplates()
     {
         List<Template> templateList = new ArrayList<>();
+        if(!hasUserTemplates())
+        {
+            return templateList;
+        }
         try {
             JSONArray jsonTemplateList = new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.logged_user_templates)));
             for(int i = 0; i < jsonTemplateList.length(); i++)
@@ -400,6 +404,16 @@ public class GlobalValuesManager
         SUPERMARKET METHODS
         ------------------
      */
+
+    public void saveHasUserSupermarkets(boolean hasUserSupermarkets)
+    {
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_supermarkets), hasUserSupermarkets);
+    }
+
+    public boolean hasUserSupermarkets()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_supermarkets));
+    }
 
     public void saveSupermarkets(JSONArray supermarketList)
     {

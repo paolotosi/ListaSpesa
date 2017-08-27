@@ -3,6 +3,7 @@ package com.mobile.paolo.listaspesa.view.home.template;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -96,7 +97,6 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
 
     }
 
-
     private void setupRecyclerView()
     {
         recyclerView.setHasFixedSize(false);
@@ -141,10 +141,11 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
     private void showCreateTemplateFragment()
     {
         // Reset create template fragment (get rid of old insertion)
-        HomeFragmentContainer.getInstance().destroyCreateTemplateFragment();
+        HomeFragmentContainer.getInstance().resetCreateTemplateFragment();
 
+        // Save this fragment in the stack and change fragment
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateTemplateFragment());
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateTemplateFragment()).addToBackStack("ManageTemplate");
         transaction.commit();
     }
 
@@ -157,12 +158,19 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
                 try {
                     if(response.getInt("success") == 1)
                     {
-                        Toast.makeText(getContext(), "Sembra funzionare", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), getString(R.string.template_deletion_ok), Toast.LENGTH_LONG).show();
 
                         // Update cached template
                         GlobalValuesManager.getInstance(getContext()).removeTemplates(selectedIDs);
 
                         adapter.removeItems(selectedListItems);
+
+                        // If all templates have been deleted
+                        if(adapter.getItemCount() == 0)
+                        {
+                            GlobalValuesManager.getInstance(getContext()).saveHasUserTemplates(false);
+                            showEmptyTemplateFragment();
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -189,6 +197,7 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
         JSONObject jsonParams = new JSONObject();
         try {
             jsonParams.put("templateIDs", new JSONArray(selectedIDs));
+            jsonParams.put("groupID", GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -201,6 +210,13 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
 
         // Send request
         TemplatesDatabaseHelper.sendDeleteTemplatesRequest(jsonParams, getContext(), deleteTemplateResponseHandler);
+    }
+
+    private void showEmptyTemplateFragment()
+    {
+        FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getEmptyTemplateFragment());
+        transaction.commit();
     }
 
     @Override

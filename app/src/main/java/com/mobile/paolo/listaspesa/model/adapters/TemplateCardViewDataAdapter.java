@@ -21,8 +21,8 @@ import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.view.home.HomeActivity;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 import com.mobile.paolo.listaspesa.view.home.template.EditTemplateActivity;
 
 import org.json.JSONArray;
@@ -75,11 +75,11 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
         viewHolder.cardTemplateName.setText(templateList.get(position).getName());
 
         // Snippet = first 3 products. The first one:
-        String productsSnippet =  templateList.get(position).getProductList().get(0).getName();
+        String productsSnippet =  templateList.get(position).getProductList().get(0).toString();
 
         for(int i = 1; i < Math.min(3, templateList.get(position).getProductList().size()); i++)
         {
-            productsSnippet += ", " + templateList.get(position).getProductList().get(i).getName();
+            productsSnippet += ", " + templateList.get(position).getProductList().get(i).toString();
         }
         if(templateList.get(position).getProductList().size() > 3)
         {
@@ -88,10 +88,10 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
         viewHolder.cardProductsSnippet.setText(productsSnippet);
 
         // Set full list
-        viewHolder.cardTemplateDetails.setText(templateList.get(position).getProductList().get(0).getName());
+        viewHolder.cardTemplateDetails.setText(templateList.get(position).getProductList().get(0).toString());
         for(int i = 1; i < templateList.get(position).getProductList().size(); i++)
         {
-            viewHolder.cardTemplateDetails.append("\n" + templateList.get(position).getProductList().get(i).getName());
+            viewHolder.cardTemplateDetails.append("\n" + templateList.get(position).getProductList().get(i).toString());
         }
 
         // Set the template

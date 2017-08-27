@@ -18,6 +18,7 @@
     <string name="products_not_found">PRODUCTS_NOT_FOUND</string>
     <string name="supermarket_list">SUPERMARKET_LIST</string>
     <string name="group_products">GROUP_PRODUCTS</string>
+    <string name="has_user_supermarkets">HAS_USER_SUPERMARKETS</string>
 
 
     <!-- WelcomeActivity strings. -->
@@ -96,12 +97,14 @@
     <string name="template_creation_OK">Template creato con successo!</string>
     <string name="template_creation_KO_no_name">Il nome del template non può essere vuoto.</string>
     <string name="template_creation_KO_no_products">Seleziona almeno un prodotto.</string>
+    <string name="template_creation_KO_same_name">Il nome inserito è già usato da un altro template.</string>
     <string name="no_description_message">Nessuna descrizione fornita.</string>
     <string name="action_search">Cerca</string>
     <string name="action_search_hint">Filtra prodotti…</string>
 
     <!-- ManageTemplateFragment strings. -->
     <string name="manage_fragment_toolbar">I tuoi template</string>
+    <string name="template_deletion_ok">Eliminazione avvenuta correttamente.</string>
 
     <!-- ManageGroupProductsFragment strings. -->
     <string name="manage_products_toolbar">I tuoi prodotti</string>
@@ -112,7 +115,7 @@
     <string name="exit_action">Esci</string>
     <string name="cancel_action">Annulla</string>
 
-    <!-- EditTemplateActivity strings. -->
+    <!-- TemplateCardViewDataAdapter strings. -->
     <string name="toast_list_with_old_products">Sono stati aggiunti automaticamente i prodotti non trovati nell\'ultima spesa.</string>
 
     <!-- AddProductsActivity strings. -->
@@ -150,7 +153,13 @@
     <string name="end_shopping_title">Concludere gli acquisti?</string>
     <string name="end_shopping_dialog">Alcuni prodotti della lista non sono presenti nel tuo carrello. Questi prodotti saranno aggiunti in automatico alla prossima lista della spesa.</string>
     <string name="end_shopping_action">Concludi</string>
+    <string name="list_completed_new_list">Il tuo gruppo ha già iniziato una nuova lista!</string>
     <string name="no_supermarket_selected_toast">Seleziona un supermercato.</string>
+
+    <!-- EmptySupermarketFragment strings. -->
+    <string name="no_supermarket_message">Il tuo gruppo non ha definito dei supermercati.\nAggiungine uno!</string>
+    <string name="no_supermarket_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter aggiungere supermercati.</string>
+    <string name="create_new_supermarket_button">Aggiungi un supermercato</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

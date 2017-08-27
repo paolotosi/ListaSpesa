@@ -1,4 +1,4 @@
-package com.mobile.paolo.listaspesa.utility;
+package com.mobile.paolo.listaspesa.view.home;
 
 import com.mobile.paolo.listaspesa.view.home.group.AddMemberFragment;
 import com.mobile.paolo.listaspesa.view.home.group.CreateGroupFragment;
@@ -9,6 +9,9 @@ import com.mobile.paolo.listaspesa.view.home.shoppingList.CreateShoppingListFrag
 import com.mobile.paolo.listaspesa.view.home.shoppingList.EmptyShoppingListFragment;
 import com.mobile.paolo.listaspesa.view.home.shoppingList.GroceryStoreFragment;
 import com.mobile.paolo.listaspesa.view.home.shoppingList.ManageShoppingListFragment;
+import com.mobile.paolo.listaspesa.view.home.supermarket.CreateSupermarketFragment;
+import com.mobile.paolo.listaspesa.view.home.supermarket.EmptySupermarketFragment;
+import com.mobile.paolo.listaspesa.view.home.supermarket.ManageSupermarketFragment;
 import com.mobile.paolo.listaspesa.view.home.template.CreateTemplateFragment;
 import com.mobile.paolo.listaspesa.view.home.template.EmptyTemplateFragment;
 import com.mobile.paolo.listaspesa.view.home.template.ManageTemplateFragment;
@@ -22,22 +25,28 @@ public class HomeFragmentContainer
 {
     private static HomeFragmentContainer instance;
 
+    // Group
     private EmptyGroupFragment emptyGroupFragment;
     private ManageGroupFragment manageGroupFragment;
     private CreateGroupFragment createGroupFragment;
+    private AddMemberFragment addMemberFragment;
+    private ManageGroupProductsFragment manageGroupProductsFragment;
 
+    // Template
     private EmptyTemplateFragment emptyTemplateFragment;
     private ManageTemplateFragment manageTemplateFragment;
     private CreateTemplateFragment createTemplateFragment;
 
+    // Shopping list
     private EmptyShoppingListFragment emptyShoppingListFragment;
     private CreateShoppingListFragment createShoppingListFragment;
     private ManageShoppingListFragment manageShoppingListFragment;
     private GroceryStoreFragment groceryStoreFragment;
 
-    private AddMemberFragment addMemberFragment;
-
-    private ManageGroupProductsFragment manageGroupProductsFragment;
+    // Supermarket
+    private EmptySupermarketFragment emptySupermarketFragment;
+    private CreateSupermarketFragment createSupermarketFragment;
+    private ManageSupermarketFragment manageSupermarketFragment;
 
     public static synchronized HomeFragmentContainer getInstance()
     {
@@ -48,7 +57,7 @@ public class HomeFragmentContainer
         return instance;
     }
 
-    public void destroy()
+    public void reset()
     {
         instance = null;
     }
@@ -61,20 +70,12 @@ public class HomeFragmentContainer
         return emptyGroupFragment;
     }
 
-    public void setEmptyGroupFragment(EmptyGroupFragment emptyGroupFragment) {
-        this.emptyGroupFragment = emptyGroupFragment;
-    }
-
     public ManageGroupFragment getManageGroupFragment() {
         if(this.manageGroupFragment == null)
         {
             this.manageGroupFragment = new ManageGroupFragment();
         }
         return manageGroupFragment;
-    }
-
-    public void setManageGroupFragment(ManageGroupFragment manageGroupFragment) {
-        this.manageGroupFragment = manageGroupFragment;
     }
 
     public ManageGroupProductsFragment getManageGroupProductsFragment() {
@@ -116,10 +117,6 @@ public class HomeFragmentContainer
         return manageTemplateFragment;
     }
 
-    public void setManageTemplateFragment(ManageTemplateFragment manageTemplateFragment) {
-        this.manageTemplateFragment = manageTemplateFragment;
-    }
-
     public CreateTemplateFragment getCreateTemplateFragment() {
         if(this.createTemplateFragment == null)
         {
@@ -128,8 +125,9 @@ public class HomeFragmentContainer
         return createTemplateFragment;
     }
 
-    public void setCreateTemplateFragment(CreateTemplateFragment createTemplateFragment) {
-        this.createTemplateFragment = createTemplateFragment;
+    public void resetCreateTemplateFragment()
+    {
+        this.createTemplateFragment = null;
     }
 
     public EmptyShoppingListFragment getEmptyShoppingListFragment() {
@@ -164,6 +162,11 @@ public class HomeFragmentContainer
         return groceryStoreFragment;
     }
 
+    public void resetGroceryStoreFragment()
+    {
+        this.groceryStoreFragment = null;
+    }
+
     public AddMemberFragment getAddMemberFragment() {
         if(this.addMemberFragment == null)
         {
@@ -172,8 +175,27 @@ public class HomeFragmentContainer
         return addMemberFragment;
     }
 
-    public void setAddMemberFragment(AddMemberFragment addMemberFragment) {
+    public EmptySupermarketFragment getEmptySupermarketFragment() {
+        if(this.emptySupermarketFragment == null)
+        {
+            this.emptySupermarketFragment = new EmptySupermarketFragment();
+        }
+        return emptySupermarketFragment;
+    }
 
-            this.addMemberFragment = addMemberFragment;
+    public CreateSupermarketFragment getCreateSupermarketFragment() {
+        if(this.createSupermarketFragment == null)
+        {
+            this.createSupermarketFragment = new CreateSupermarketFragment();
+        }
+        return createSupermarketFragment;
+    }
+
+    public ManageSupermarketFragment getManageSupermarketFragment() {
+        if(this.manageSupermarketFragment == null)
+        {
+            this.manageSupermarketFragment = new ManageSupermarketFragment();
+        }
+        return manageSupermarketFragment;
     }
 }

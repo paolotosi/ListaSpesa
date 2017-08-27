@@ -1,7 +1,5 @@
 package com.mobile.paolo.listaspesa.model.objects;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -92,7 +90,7 @@ public class Product
             if(jsonProduct.has("matrix"))
             {
                 int matrix = 0;
-                if(jsonProduct.getString("matrix") != null) {
+                if(!jsonProduct.getString("matrix").equalsIgnoreCase("null")) {
                     matrix = jsonProduct.getInt("matrix");
                 }
                 product.setMatrix(matrix);

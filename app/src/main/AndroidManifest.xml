@@ -27,30 +27,39 @@
 
         <!-- The splash activity. -->
         <!-- It's the first activity loaded. -->
-        <activity android:name=".view.init.SplashActivity">
+        <activity
+            android:name=".view.init.SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <!-- The welcome activity. -->
-        <activity android:name=".view.init.WelcomeActivity" />
+        <activity
+            android:name=".view.init.WelcomeActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- The login activity. -->
-        <activity android:name=".view.auth.LoginActivity" />
+        <activity
+            android:name=".view.auth.LoginActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- The register activity. -->
         <activity
-            android:name=".view.auth.RegisterActivity" />
+            android:name=".view.auth.RegisterActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- The edit group activity. -->
-        <activity android:name=".view.home.group.EditGroupActivity" />
+        <activity
+            android:name=".view.home.group.EditGroupActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- The home activity. -->
         <activity
             android:name=".view.home.HomeActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_home"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".view.home.template.EditTemplateActivity" />
@@ -61,7 +70,10 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyAXPTQ4YGGtXUK3DEAwWKEypxOIafzocHA" />
 
-        <activity android:name=".view.home.group.InsertProductsActivity"></activity>
+        <activity
+            android:name=".view.home.group.InsertProductsActivity"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

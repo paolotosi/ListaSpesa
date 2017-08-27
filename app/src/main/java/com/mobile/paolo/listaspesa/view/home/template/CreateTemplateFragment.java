@@ -7,7 +7,6 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.util.SortedList;
@@ -33,7 +32,6 @@ import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -112,12 +110,25 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home)
+        {
+            showManageTemplateFragment();
+        }
+        return true;
+    }
+
+
     private void setupToolbar(View loadedFragment)
     {
         Toolbar toolbar = (Toolbar) loadedFragment.findViewById(R.id.createTemplateToolbar);
         toolbar.setTitle(getString(R.string.create_template_toolbar));
         toolbar.setTitleTextColor(0xFFFFFFFF);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     private void setupFetchProductsResponseHandler()
@@ -222,8 +233,8 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
                         int templateID = response.getInt("templateID");
                         createdTemplate.setID(templateID);
                         GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(false);
-                        GlobalValuesManager.getInstance(getContext()).saveHasUserTemplates(true);
                         GlobalValuesManager.getInstance(getContext()).addTemplate(createdTemplate);
+                        GlobalValuesManager.getInstance(getContext()).saveHasUserTemplates(true);
                         showManageTemplateFragment();
                     }
                 } catch (JSONException e) {
@@ -305,11 +316,33 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
             isValid = false;
             templateNameInputLayout.setError(getString(R.string.template_creation_KO_no_name));
         }
+        else if(isTemplateNameAlreadyInUse())
+        {
+            isValid = false;
+            templateNameInputLayout.setError(getString(R.string.template_creation_KO_same_name));
+        }
         else
         {
             templateNameInputLayout.setErrorEnabled(false);
         }
         return isValid;
+    }
+
+    private boolean isTemplateNameAlreadyInUse()
+    {
+        if(!GlobalValuesManager.getInstance(getContext()).hasUserTemplates())
+        {
+            return false;
+        }
+        String insertedName = templateNameField.getText().toString();
+        for(Template template : GlobalValuesManager.getInstance(getContext()).getUserTemplates())
+        {
+            if(template.getName().equalsIgnoreCase(insertedName))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void sendCreateTemplateRequest(String templateName, List<Product> checkedProducts)
@@ -349,10 +382,7 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
 
     private void showManageTemplateFragment()
     {
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageTemplateFragment());
-        transaction.commit();
+        // The previous fragment is saved in the stack
+        getActivity().onBackPressed();
     }
-
-
 }

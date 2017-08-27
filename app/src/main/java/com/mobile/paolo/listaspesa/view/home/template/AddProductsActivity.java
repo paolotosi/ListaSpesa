@@ -2,10 +2,10 @@ package com.mobile.paolo.listaspesa.view.home.template;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -21,6 +21,7 @@ import com.mobile.paolo.listaspesa.database.remote.ProductsDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,9 +74,7 @@ public class AddProductsActivity extends AppCompatActivity implements SearchView
 
         setupConfirmAddProductButtonListener();
 
-        setupFetchProductsResponseHandler();
-
-        ProductsDatabaseHelper.sendGetAllProductsRequest(null, getApplicationContext(), fetchProductsResponseHandler);
+        sendFetchProductsRequest();
 
     }
 
@@ -176,6 +175,30 @@ public class AddProductsActivity extends AppCompatActivity implements SearchView
             }
 
         };
+    }
+
+    private void sendFetchProductsRequest()
+    {
+        // Group ID
+        int groupID = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID();
+
+        // JSON POST
+        JSONObject jsonParam = new JSONObject();
+
+        try {
+            jsonParam.put("id", groupID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Debug
+        Log.d("GET_ALL_PRODUCTS_REQ", jsonParam.toString());
+
+        // Define what to to on response
+        setupFetchProductsResponseHandler();
+
+        // Send
+        ProductsDatabaseHelper.sendGetAllProductsRequest(jsonParam, getApplicationContext(), fetchProductsResponseHandler);
     }
 
     private void setupRecyclerView()

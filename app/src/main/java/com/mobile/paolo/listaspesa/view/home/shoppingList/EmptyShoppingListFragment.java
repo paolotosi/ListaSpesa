@@ -135,6 +135,9 @@ public class EmptyShoppingListFragment extends Fragment {
         BottomNavigationViewEx homeBottomNavigationView = (BottomNavigationViewEx) getActivity().findViewById(R.id.home_bottom_navigation);
         homeBottomNavigationView.getMenu().getItem(1).setChecked(true);
 
+        // Reset template creation fragment
+        HomeFragmentContainer.getInstance().resetCreateTemplateFragment();
+
         // Change fragment
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateTemplateFragment());

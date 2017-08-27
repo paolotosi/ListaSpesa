@@ -92,6 +92,9 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
     private NetworkResponseHandler newListCheckerResponseHandler;
     private NetworkResponseHandler saveSupermarketProductsResponseHandler;
 
+    // A boolean to inform the user that products not found have been added to the new list
+    private boolean productsLeft = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -371,15 +374,15 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
     private void endShopping()
     {
+        // User couldn't find all products
+        productsLeft = true;
+
         // Save remaining products on the remote db or in the new list if the group has one
         sendCompleteShoppingListRequest(PRODUCTS_LEFT);
 
         // Save remaining products in the cache
         GlobalValuesManager.getInstance(getContext()).saveAreThereProductsNotFound(true);
         GlobalValuesManager.getInstance(getContext()).saveProductsNotFound(Product.asJSONProductList(adapter.getModelAsCollection()));
-
-        // Check if the group has already defined another list
-        sendGetNewListRequest();
     }
 
     private void showEndShoppingWithProductsAlertDialog()
@@ -436,6 +439,11 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
                         else
                         {
                             // List is not empty
+                            Toast.makeText(getContext(), getString(R.string.list_completed_new_list), Toast.LENGTH_LONG).show();
+                            if(productsLeft)
+                            {
+                                Toast.makeText(getContext(), getString(R.string.toast_list_with_old_products), Toast.LENGTH_LONG).show();
+                            }
                             GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(true);
                             GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
                             GlobalValuesManager.getInstance(getContext()).saveUserShoppingList(shoppingList.toJSON());
@@ -503,6 +511,9 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
 
                         // Save products found in that supermarket on the remote database
                         sendSaveSupermarketProductsRequest();
+
+                        // Check if the group has already defined another list
+                        sendGetNewListRequest();
                     }
                     else
                     {
@@ -586,6 +597,7 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         // JSON params
         JSONObject jsonParams = new JSONObject();
         try {
+            jsonParams.put("groupID", GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID());
             jsonParams.put("supermarketID", supermarketID);
             jsonParams.put("products", Product.asJSONProductList(groceryList));
         } catch (JSONException e) {
