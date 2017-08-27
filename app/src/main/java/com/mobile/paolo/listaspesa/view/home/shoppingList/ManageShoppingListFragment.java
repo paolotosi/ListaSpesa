@@ -159,6 +159,10 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         {
             sendShoppingListCreationRequest(SHOW_SAVE_FEEDBACK);
         }
+        if(this.actionMode != null)
+        {
+            actionMode.finish();
+        }
         super.onPause();
     }
 
@@ -664,4 +668,6 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
             }
         };
     }
+
+
 }

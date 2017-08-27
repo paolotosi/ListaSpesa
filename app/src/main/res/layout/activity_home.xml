@@ -9,14 +9,14 @@
     android:orientation="vertical"
     tools:context="com.mobile.paolo.listaspesa.view.home.HomeActivity">
 
-    <android.support.design.widget.CoordinatorLayout
+    <FrameLayout
         android:id="@+id/home_main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/home_bottom_navigation"
         android:animateLayoutChanges="true">
 
-    </android.support.design.widget.CoordinatorLayout>
+    </FrameLayout>
 
 <!--    <android.support.design.widget.BottomNavigationView
         android:id="@+id/home_bottom_navigation"

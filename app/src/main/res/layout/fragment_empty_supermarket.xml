@@ -31,6 +31,7 @@
         android:id="@+id/createNewSupermarketButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/button_background_tint"
         android:elevation="@dimen/button_elevation"
         android:text="@string/create_new_supermarket_button"/>
 

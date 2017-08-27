@@ -19,6 +19,7 @@
     <string name="supermarket_list">SUPERMARKET_LIST</string>
     <string name="group_products">GROUP_PRODUCTS</string>
     <string name="has_user_supermarkets">HAS_USER_SUPERMARKETS</string>
+    <string name="is_user_creating_supermarkets">IS_USER_CREATING_SUPERMARKETS</string>
 
 
     <!-- WelcomeActivity strings. -->
@@ -161,8 +162,17 @@
     <string name="no_supermarket_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter aggiungere supermercati.</string>
     <string name="create_new_supermarket_button">Aggiungi un supermercato</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- CreateSupermarketFragment strings. -->
+    <string name="supermarket_name_hint">Nome supermercato</string>
+    <string name="supermarket_address_hint">Indirizzo supermercato</string>
+    <string name="add_supermarket_toolbar">Aggiungi supermercato</string>
+    <string name="empty_supermarket_name">Inserisci il nome del supermercato</string>
+    <string name="same_supermarket_name">Il tuo gruppo ha già un supermercato con questo nome</string>
+    <string name="empty_supermarket_address">Inserisci l\'indirizzo del supermercato</string>
+    <string name="location_resolution_error">Errore nella risoluzione dell\'indirizzo</string>
+    <string name="supermarket_added">Supermercato aggiunto con successo!</string>
 
+    <!-- ManageSupermarketFragment strings. -->
+    <string name="manage_supermarket_toolbat">I tuoi supermercati</string>
 
 </resources>

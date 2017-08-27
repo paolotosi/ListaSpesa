@@ -7,6 +7,8 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.util.SortedList;
@@ -32,6 +34,7 @@ import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -114,7 +117,7 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home)
         {
-            showManageTemplateFragment();
+            returnBack();
         }
         return true;
     }
@@ -381,6 +384,23 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
     }
 
     private void showManageTemplateFragment()
+    {
+        if(HomeFragmentContainer.getInstance().isStackEmpty())
+        {
+            // I arrived here from the EmptyTemplate, no fragment is in the stack
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageTemplateFragment());
+            transaction.commit();
+        }
+        else
+        {
+            // If I arrived here from ManageTemplateFragment, pop the fragment from the stack
+            getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            HomeFragmentContainer.getInstance().setStackEmpty(true);
+        }
+    }
+
+    private void returnBack()
     {
         // The previous fragment is saved in the stack
         getActivity().onBackPressed();

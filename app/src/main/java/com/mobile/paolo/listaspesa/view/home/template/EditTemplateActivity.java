@@ -447,6 +447,12 @@ public class EditTemplateActivity extends AppCompatActivity {
                         // Update cached selectedTemplate
                         GlobalValuesManager.getInstance(getApplicationContext()).removeTemplates(selectedIDs);
 
+                        // Check if it was the only template
+                        if(GlobalValuesManager.getInstance(getApplicationContext()).getUserTemplates().size() == 0)
+                        {
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserTemplates(false);
+                        }
+
                         // Close activity
                         finish();
 
@@ -472,6 +478,7 @@ public class EditTemplateActivity extends AppCompatActivity {
         JSONObject jsonParams = new JSONObject();
         try {
             jsonParams.put("templateIDs", new JSONArray(selectedIDs));
+            jsonParams.put("groupID", GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID());
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -415,6 +415,44 @@ public class GlobalValuesManager
         return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_supermarkets));
     }
 
+    public void saveIsUserCreatingSupermarket(boolean isUserCreatingSupermarket)
+    {
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.is_user_creating_supermarkets), isUserCreatingSupermarket);
+    }
+
+    public boolean isUserCreatingSupermarket()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_creating_supermarkets));
+    }
+
+    public void addSupermarket(Supermarket supermarket)
+    {
+        List<Supermarket> supermarketList = getSupermarkets();
+        supermarketList.add(supermarket);
+        saveSupermarkets(Supermarket.asJSONSupermarketList(supermarketList));
+    }
+
+    public void deleteSupermarket(int supermarketID)
+    {
+        List<Supermarket> supermarketList = getSupermarkets();
+        for(int i = supermarketList.size() - 1; i >= 0; i--)
+        {
+            if(supermarketList.get(i).getID() == supermarketID)
+            {
+                supermarketList.remove(supermarketList.get(i));
+            }
+        }
+        saveSupermarkets(Supermarket.asJSONSupermarketList(supermarketList));
+    }
+
+    public void deleteSupermarkets(List<Integer> supermarketIDs)
+    {
+        for(int i = 0; i < supermarketIDs.size(); i++)
+        {
+            deleteSupermarket(supermarketIDs.get(i));
+        }
+    }
+
     public void saveSupermarkets(JSONArray supermarketList)
     {
         sharedPreferencesManager.writeString(context.getString(R.string.supermarket_list), supermarketList.toString());

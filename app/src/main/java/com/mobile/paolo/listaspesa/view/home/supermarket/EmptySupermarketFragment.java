@@ -54,6 +54,8 @@ public class EmptySupermarketFragment extends Fragment
             setupCreateGroupButtonListener();
 
         }
+
+        setupCreateNewSupermarketButton();
     }
 
     private void setupCreateGroupButtonListener()
@@ -75,6 +77,23 @@ public class EmptySupermarketFragment extends Fragment
 
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateGroupFragment());
+        transaction.commit();
+    }
+
+    private void setupCreateNewSupermarketButton()
+    {
+        this.createNewSupermarketButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCreateSupermarketFragment();
+            }
+        });
+    }
+
+    private void showCreateSupermarketFragment()
+    {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateSupermarketFragment());
         transaction.commit();
     }
 

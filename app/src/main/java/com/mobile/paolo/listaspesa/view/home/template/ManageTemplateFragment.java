@@ -92,6 +92,10 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
 
         // Update adapter list
         List<Template> updatedTemplateList = GlobalValuesManager.getInstance(getContext()).getUserTemplates();
+        if(updatedTemplateList.size() == 0)
+        {
+            showEmptyTemplateFragment();
+        }
         adapter.replaceAll(updatedTemplateList);
         adapter.notifyDataSetChanged();
 
@@ -147,6 +151,9 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateTemplateFragment()).addToBackStack("ManageTemplate");
         transaction.commit();
+
+        // Signal that the stack is not empty
+        HomeFragmentContainer.getInstance().setStackEmpty(false);
     }
 
     private void setupDeleteTemplatesResponseHandler()
@@ -162,6 +169,9 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
 
                         // Update cached template
                         GlobalValuesManager.getInstance(getContext()).removeTemplates(selectedIDs);
+
+                        // Clear list of IDs to delete
+                        selectedIDs.clear();
 
                         adapter.removeItems(selectedListItems);
 
@@ -179,7 +189,7 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
         };
     }
@@ -288,5 +298,14 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
                 actionMode = null;
             }
         };
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(actionMode != null)
+        {
+            actionMode.finish();
+        }
     }
 }

@@ -48,6 +48,9 @@ public class HomeFragmentContainer
     private CreateSupermarketFragment createSupermarketFragment;
     private ManageSupermarketFragment manageSupermarketFragment;
 
+    // Info on fragment stack
+    private boolean stackEmpty = true;
+
     public static synchronized HomeFragmentContainer getInstance()
     {
         if(instance == null)
@@ -60,6 +63,16 @@ public class HomeFragmentContainer
     public void reset()
     {
         instance = null;
+    }
+
+    public void setStackEmpty(boolean stackEmpty)
+    {
+        this.stackEmpty = stackEmpty;
+    }
+
+    public boolean isStackEmpty()
+    {
+        return stackEmpty;
     }
 
     public EmptyGroupFragment getEmptyGroupFragment() {
@@ -189,6 +202,11 @@ public class HomeFragmentContainer
             this.createSupermarketFragment = new CreateSupermarketFragment();
         }
         return createSupermarketFragment;
+    }
+
+    public void resetCreateSupermarketFragment()
+    {
+        this.createSupermarketFragment = null;
     }
 
     public ManageSupermarketFragment getManageSupermarketFragment() {

@@ -100,10 +100,6 @@ public class HomeActivity extends AppCompatActivity
 
     private void contextualize()
     {
-        /* TODO: make a single request to get all details: template, list and supermarket all require
-           TODO: only the groupID to be sent. This way we can simplify the logic and select the correct
-           TODO: fragment at startup (now we can't because we don't know which response arrives first)
-         */
         // Determine if logged user is already part of a group.
         // NOTE: it also contains the request to verify if the group has already defined some templates,
         // a shopping list or has some products left from previous lists.
@@ -526,6 +522,10 @@ public class HomeActivity extends AppCompatActivity
                     if(response.getInt("success") == 1)
                     {
                         GlobalValuesManager.getInstance(getApplicationContext()).saveSupermarkets(response.getJSONArray("supermarkets"));
+                        if(GlobalValuesManager.getInstance(getApplicationContext()).getSupermarkets().size() > 0)
+                        {
+                            GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserSupermarkets(true);
+                        }
                     }
                     if(initializationDone())
                     {
@@ -688,7 +688,20 @@ public class HomeActivity extends AppCompatActivity
 
     private Fragment selectSupermarketFragment()
     {
-        return HomeFragmentContainer.getInstance().getEmptySupermarketFragment();
+        Fragment selectedFragment;
+        if(!contextualizer.hasUserSupermarkets())
+        {
+            selectedFragment = HomeFragmentContainer.getInstance().getEmptySupermarketFragment();
+        }
+        else if(contextualizer.isUserCreatingSupermarket())
+        {
+            selectedFragment = HomeFragmentContainer.getInstance().getCreateSupermarketFragment();
+        }
+        else
+        {
+            selectedFragment = HomeFragmentContainer.getInstance().getManageSupermarketFragment();
+        }
+        return selectedFragment;
     }
 
     private Fragment selectFirstFragment()
