@@ -571,7 +571,11 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
                 try {
                     if(response.getInt("success") == 1)
                     {
+                        // Get selected supermarket ID
+                        int supermarketID = ((Supermarket) supermarketSpinner.getSelectedItem()).getID();
 
+                        // Grocery list was updated before sending request
+                        GlobalValuesManager.getInstance(getContext()).updateSupermarketsProducts(groceryList, supermarketID);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

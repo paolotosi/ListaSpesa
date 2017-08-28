@@ -58,6 +58,11 @@ public class Supermarket
         this.address = address;
     }
 
+    public void setCachedAbsolutePosition(LatLng position)
+    {
+        this.cachedAbsolutePosition = position;
+    }
+
     public LatLng getLocationOnMap(Context context)
     {
         if(this.cachedAbsolutePosition == null)

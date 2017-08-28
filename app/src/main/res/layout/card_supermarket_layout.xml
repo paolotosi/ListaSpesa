@@ -39,14 +39,14 @@
                 android:layout_height="wrap_content">
 
                 <Button
-                    android:id="@+id/editSupermarketButton"
+                    android:id="@+id/showProductsButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
 
                     android:textColor="@color/colorPrimary"
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:text="Modifica" />
+                    android:text="Visualizza Prodotti disponibili" />
                 <android.support.v4.widget.Space
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

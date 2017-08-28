@@ -6,6 +6,7 @@
     <string name="logged_user_group">LOGGED_USER_GROUP</string>
     <string name="logged_user_templates">LOGGED_USER_TEMPLATES</string>
     <string name="logged_user_list">LOGGED_USER_LIST</string>
+    <string name="is_user_logged">IS_USER_LOGGED</string>
     <string name="is_user_part_of_a_group">IS_USER_PART_OF_A_GROUP</string>
     <string name="is_user_creating_group">IS_USER_CREATING_GROUP</string>
     <string name="is_user_creating_template">IS_USER_CREATING_TEMPLATE</string>
@@ -21,6 +22,8 @@
     <string name="has_user_supermarkets">HAS_USER_SUPERMARKETS</string>
     <string name="is_user_creating_supermarkets">IS_USER_CREATING_SUPERMARKETS</string>
 
+    <!-- WelcomeActivity strings. -->
+    <string name="welcome_back_user">Bentornato, </string>
 
     <!-- WelcomeActivity strings. -->
     <string name="login_button">Accedi</string>

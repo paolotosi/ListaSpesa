@@ -656,6 +656,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         sendShoppingListCreationRequest(SHOW_SAVE_FEEDBACK);
                     }
                     mode.finish();
+                    adapter.notifyDataSetChanged();
                     return true;
                 }
                 return false;

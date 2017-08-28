@@ -121,7 +121,8 @@ public class CreateSupermarketFragment extends Fragment
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home)
         {
-            returnBack();
+            GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingSupermarket(false);
+            showManageSupermarketFragment();
         }
         return true;
     }

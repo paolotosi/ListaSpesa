@@ -73,6 +73,7 @@ public class SupermarketCardViewDataAdapter extends SelectableAdapter<Supermarke
         else
         {
             viewHolder.cardExpandSupermarketProducts.setVisibility(View.GONE);
+            viewHolder.cardShowProductsButton.setVisibility(View.GONE);
         }
 
         // Set the supermarket
@@ -80,7 +81,7 @@ public class SupermarketCardViewDataAdapter extends SelectableAdapter<Supermarke
 
         // If the card is selected show a colored transparent overlay
         viewHolder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
-        viewHolder.cardEditSupermarketButton.setEnabled(!isSelected(position));
+        viewHolder.cardShowProductsButton.setEnabled(!isSelected(position));
     }
 
     @Override
@@ -156,7 +157,7 @@ public class SupermarketCardViewDataAdapter extends SelectableAdapter<Supermarke
         private CardView cardSupermarket;
         private TextView cardSupermarketName;
         private TextView cardSupermarketAddress;
-        private Button cardEditSupermarketButton;
+        private Button cardShowProductsButton;
         private ImageView cardExpandSupermarketProducts;
         private TextView cardSupermarketProducts;
         private View selectedOverlay;
@@ -205,7 +206,7 @@ public class SupermarketCardViewDataAdapter extends SelectableAdapter<Supermarke
             cardSupermarket = (CardView) itemLayoutView.findViewById(R.id.cardSupermarket);
             cardSupermarketName = (TextView) itemLayoutView.findViewById(R.id.supermarketName);
             cardSupermarketAddress = (TextView) itemLayoutView.findViewById(R.id.supermarketAddress);
-            cardEditSupermarketButton = (Button) itemLayoutView.findViewById(R.id.editSupermarketButton);
+            cardShowProductsButton = (Button) itemLayoutView.findViewById(R.id.showProductsButton);
             selectedOverlay = itemLayoutView.findViewById(R.id.selectedOverlay);
             cardExpandSupermarketProducts = (ImageView) itemLayoutView.findViewById(R.id.expandSupermarketProducts);
             cardSupermarketProducts = (TextView) itemLayoutView.findViewById(R.id.supermarketProducts);
@@ -222,33 +223,34 @@ public class SupermarketCardViewDataAdapter extends SelectableAdapter<Supermarke
             cardExpandSupermarketProducts.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(cardSupermarketProducts.getVisibility() == View.GONE)
-                    {
-                        // Show details
-                        TransitionManager.beginDelayedTransition(cardSupermarket);
-                        cardSupermarketProducts.setVisibility(View.VISIBLE);
-                        cardExpandSupermarketProducts.setImageDrawable(v.getContext().getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp));
-
-                    }
-                    else
-                    {
-                        // Hide details
-                        cardSupermarketProducts.setVisibility(View.GONE);
-                        cardExpandSupermarketProducts.setImageDrawable(v.getContext().getDrawable(R.drawable.ic_keyboard_arrow_down_black_24dp));
-                    }
+                    expandDetails(v);
                 }
             });
 
-
-            // Edit button
-            cardEditSupermarketButton.setOnClickListener(new View.OnClickListener() {
+            cardShowProductsButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View clickedView) {
-//                    Intent intent = new Intent(clickedView.getContext(), EditTemplateActivity.class);
-//                    intent.putExtra("TEMPLATE", selectedSupermarket.toJSON().toString());
-//                    clickedView.getContext().startActivity(intent);
+                    expandDetails(clickedView);
                 }
             });
+        }
+
+        private void expandDetails(View v)
+        {
+            if(cardSupermarketProducts.getVisibility() == View.GONE)
+            {
+                // Show details
+                TransitionManager.beginDelayedTransition(cardSupermarket);
+                cardSupermarketProducts.setVisibility(View.VISIBLE);
+                cardExpandSupermarketProducts.setImageDrawable(v.getContext().getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp));
+
+            }
+            else
+            {
+                // Hide details
+                cardSupermarketProducts.setVisibility(View.GONE);
+                cardExpandSupermarketProducts.setImageDrawable(v.getContext().getDrawable(R.drawable.ic_keyboard_arrow_down_black_24dp));
+            }
         }
 
 

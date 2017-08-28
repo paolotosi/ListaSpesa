@@ -9,9 +9,12 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.utility.SharedPreferencesManager;
+import com.mobile.paolo.listaspesa.view.home.HomeActivity;
 
 /**
  * -- SplashActivity --
@@ -31,8 +34,20 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // Delete SharedPreferences content
-        flushSharedPreferences();
+        if(checkLoggedUser())
+        {
+            String username = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser().getUsername();
+            Toast.makeText(getApplicationContext(), getString(R.string.welcome_back_user) + " " + username + "!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
+            // Remove this activity from stack after loading the new one
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+        else
+        {
+            // Delete SharedPreferences content
+            flushSharedPreferences();
+        }
 
         // Retrieve components by id
         logoBlue = (ImageView) findViewById(R.id.logo_blue);
@@ -48,6 +63,12 @@ public class SplashActivity extends Activity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     private void rotateLogoAndColorBackground()
@@ -112,5 +133,10 @@ public class SplashActivity extends Activity {
     private void flushSharedPreferences()
     {
         SharedPreferencesManager.getInstance(getApplicationContext()).flush();
+    }
+
+    private boolean checkLoggedUser()
+    {
+        return GlobalValuesManager.getInstance(getApplicationContext()).isUserLogged();
     }
 }

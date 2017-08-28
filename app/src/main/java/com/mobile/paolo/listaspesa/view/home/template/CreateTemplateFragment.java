@@ -117,7 +117,8 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home)
         {
-            returnBack();
+            GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(false);
+            showManageTemplateFragment();
         }
         return true;
     }

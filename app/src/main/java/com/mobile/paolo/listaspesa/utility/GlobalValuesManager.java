@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -54,6 +55,17 @@ public class GlobalValuesManager
         USER METHODS
         ------------------
      */
+
+    public void saveIsUserLogged(boolean isUserLogged)
+    {
+        sharedPreferencesManager.writeBoolean(context.getString(R.string.is_user_logged), isUserLogged);
+    }
+
+    public boolean isUserLogged()
+    {
+        return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_logged));
+    }
+
 
     public void saveLoggedUser(User loggedUser)
     {
@@ -467,6 +479,23 @@ public class GlobalValuesManager
             e.printStackTrace();
         }
         return supermarketList;
+    }
+
+    public void updateSupermarketsProducts(List<Product> productList, int supermarketID)
+    {
+        List<Supermarket> supermarketList = getSupermarkets();
+        for(Supermarket supermarket : supermarketList)
+        {
+            // Using sets to avoid duplicates
+            Collection<Product> supermarketProductSet = new HashSet<>(supermarket.getProductList());
+
+            if(supermarket.getID() == supermarketID)
+            {
+                supermarketProductSet.addAll(productList);
+                supermarket.setProductList(new ArrayList<>(supermarketProductSet));
+            }
+        }
+        saveSupermarkets(Supermarket.asJSONSupermarketList(supermarketList));
     }
 
 

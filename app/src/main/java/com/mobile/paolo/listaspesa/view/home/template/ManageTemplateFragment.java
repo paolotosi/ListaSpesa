@@ -154,6 +154,9 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
 
         // Signal that the stack is not empty
         HomeFragmentContainer.getInstance().setStackEmpty(false);
+
+        // Take note that the user is creating a template
+        GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(true);
     }
 
     private void setupDeleteTemplatesResponseHandler()

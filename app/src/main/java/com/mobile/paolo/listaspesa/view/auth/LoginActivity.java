@@ -4,14 +4,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -191,6 +189,7 @@ public class LoginActivity extends AppCompatActivity {
             if(jsonServerResponse.getInt(TAG_SUCCESS) == 1)
             {
                 showFeedback(LOGIN_OK);
+                GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserLogged(true);
                 GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUser(user);
                 transitionToNextActivity();
             }

@@ -6,10 +6,34 @@
     android:layout_height="match_parent"
     tools:context="com.mobile.paolo.listaspesa.view.home.shoppingList.SupermarketMapActivity">
 
-    <fragment
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/supermarketMapToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </android.support.v7.widget.Toolbar>
+
+        <fragment
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:name="com.google.android.gms.maps.MapFragment"
+            android:id="@+id/map" />
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/zoomOutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:name="com.google.android.gms.maps.MapFragment"
-        android:id="@+id/map" />
+        android:layout_gravity="bottom|center"
+        android:layout_margin="@dimen/fab_margin"
+        android:elevation="@dimen/button_elevation"
+        android:src="@drawable/ic_zoom_out_map_white_24dp"
+        app:fabSize="normal"/>
+
 
 </android.support.design.widget.CoordinatorLayout>

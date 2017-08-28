@@ -11,7 +11,6 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -22,7 +21,6 @@ import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.view.home.HomeActivity;
-
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -221,6 +219,7 @@ public class RegisterActivity extends AppCompatActivity {
                         showFeedback();
                         // User user = new User(response.getInt("userId"), response.getString("userName"), null, response.getString("userAddress"));
                         User user = new User(response.getJSONObject("registeredUser"));
+                        GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserLogged(true);
                         GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUser(user);
                         transitionToNextActivity();
                     }

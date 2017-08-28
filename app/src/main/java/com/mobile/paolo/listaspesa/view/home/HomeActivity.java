@@ -125,6 +125,7 @@ public class HomeActivity extends AppCompatActivity
                         // If there's a fragment in the stack (e.g. state in which is shown the 'Up'
                         // button require to save the previous fragment), pop it
                         getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        HomeFragmentContainer.getInstance().setStackEmpty(true);
 
                         // Replace main view with correct fragment
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -587,7 +588,7 @@ public class HomeActivity extends AppCompatActivity
     private Fragment selectTemplateFragment()
     {
         Fragment selectedFragment;
-        if(contextualizer.hasUserTemplates())
+        if(contextualizer.hasUserTemplates() && !contextualizer.isUserCreatingTemplate())
         {
             // ManageTemplate
             selectedFragment = HomeFragmentContainer.getInstance().getManageTemplateFragment();
