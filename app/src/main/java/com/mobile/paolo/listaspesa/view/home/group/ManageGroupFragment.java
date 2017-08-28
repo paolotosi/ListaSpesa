@@ -149,11 +149,6 @@ public class ManageGroupFragment extends Fragment {
             @Override
             public void onClick(View v) {
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-//                    if(HomeFragmentContainer.getInstance().getAddMemberFragment() == null)
-//                    {
-//                        AddMemberFragment addMemberFragment = new AddMemberFragment();
-//                        HomeFragmentContainer.getInstance().setAddMemberFragment(addMemberFragment);
-//                    }
                     transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getAddMemberFragment());
                     transaction.commit();
             }

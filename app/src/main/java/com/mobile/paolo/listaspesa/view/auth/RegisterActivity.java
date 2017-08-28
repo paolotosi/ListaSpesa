@@ -148,6 +148,8 @@ public class RegisterActivity extends AppCompatActivity {
         // Remove this activity from stack after loading the new one
         // This way we can avoid returning to this page after the registration with the back button
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        // Tell the home activity that the user doesn't have a group
+        intent.putExtra("GROUP_ID", String.valueOf(-1));
         startActivity(intent);
     }
 

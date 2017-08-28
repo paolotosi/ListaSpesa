@@ -16,9 +16,9 @@ import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.remote.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.UsersDatabaseHelper;
+import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
-import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
@@ -143,19 +143,17 @@ public class AddMemberFragment extends Fragment {
         fragment.findViewById(R.id.confirmAddButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendUpdateGroupRequest(fragment);
+                sendUpdateGroupRequest();
             }
         });
     }
 
-    private void sendUpdateGroupRequest(View fragment)
+    private void sendUpdateGroupRequest()
     {
-        boolean okToSend = true;
         JSONObject jsonRequest = new JSONObject();
         try {
             // selectedIDs will contain the IDs of every member
             JSONArray selectedIDs = new JSONArray();
-
 
             // Get the user list
             List<User> userList = ((UserCardViewDataAdapter) adapter).getUserList();
@@ -185,10 +183,8 @@ public class AddMemberFragment extends Fragment {
         // Define what to do on server response
         setupUpdateGroupResponseHandler();
 
-        if(okToSend)
-        {
-            GroupsDatabaseHelper.sendUpdateGroupRequest(jsonRequest, getContext(), modifyGroupResponseHandler);
-        }
+        GroupsDatabaseHelper.sendUpdateGroupRequest(jsonRequest, getContext(), modifyGroupResponseHandler);
+
 
     }
 

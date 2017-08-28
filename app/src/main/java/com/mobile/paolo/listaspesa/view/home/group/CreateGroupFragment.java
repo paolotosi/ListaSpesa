@@ -17,9 +17,9 @@ import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.remote.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.UsersDatabaseHelper;
+import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.User;
-import com.mobile.paolo.listaspesa.model.adapters.UserCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
@@ -307,9 +307,18 @@ public class CreateGroupFragment extends Fragment
                     int responseCode = response.getInt("success");
                     if(responseCode == 1)
                     {
+                        // Cache group
                         GlobalValuesManager.getInstance(getContext()).saveIsUserPartOfAGroup(true);
                         Group group = new Group(response.getInt("groupID"), response.getString("groupName"), response.getJSONArray("members"));
                         GlobalValuesManager.getInstance(getContext()).saveLoggedUserGroup(group);
+
+                        // Get default supermarkets
+                        GlobalValuesManager.getInstance(getContext()).saveSupermarkets(response.getJSONArray("supermarkets"));
+                        if(GlobalValuesManager.getInstance(getContext()).getSupermarkets().size() > 0)
+                        {
+                            GlobalValuesManager.getInstance(getContext()).saveHasUserSupermarkets(true);
+                        }
+
                         showManageGroupFragment();
                     }
                 } catch (JSONException e) {

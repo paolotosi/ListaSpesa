@@ -89,24 +89,58 @@ public class HomeActivity extends AppCompatActivity
 
         overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 
-        // Determine the context: logged user, group, templates...
-        contextualize();
-
+        // Only to shorten lines
         contextualizer = GlobalValuesManager.getInstance(getApplicationContext());
 
         // From here on out, everything is handled by the bottom navigation listener
         setupBottomNavigationView();
+
+        // Determine the context: logged user, group, templates...
+        contextualize();
+
     }
 
     private void contextualize()
     {
-        // Determine if logged user is already part of a group.
+        // Gets all the info about the user.
+        // The group ID is received from the login activity via extras or is loaded from
+        // the SharedPreferences (if the user re-opened the app after exiting it without logging out).
         // NOTE: it also contains the request to verify if the group has already defined some templates,
         // a shopping list or has some products left from previous lists.
         // These requests have to be sent only after the first one is finished, because we don't know
         // the groupID beforehand
-        sendGetGroupDetailsRequest();
 
+        Bundle extras = getIntent().getExtras();
+        // I came here from the login/register activity
+        if (extras != null)
+        {
+            if(extras.containsKey("GROUP_ID"))
+            {
+                // Check if the user has a group
+                if(Integer.parseInt(extras.getString("GROUP_ID")) == -1)
+                {
+                    // No group
+                    GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(false);
+                }
+                else
+                {
+                    // Get the info about the group
+                    sendGetGroupDetailsRequest(Integer.parseInt(extras.getString("GROUP_ID")));
+                }
+            }
+        }
+        // I came here because the user was already logged
+        else
+        {
+            if(contextualizer.isUserPartOfAGroup())
+            {
+                sendGetGroupDetailsRequest(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID());
+            }
+        }
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, selectFirstFragment());
+        transaction.commit();
     }
 
     private void setupBottomNavigationView()
@@ -184,21 +218,21 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
         };
     }
 
     // Determine if a user is part of a group; in that case, fetch the group details, including the templates
-    private void sendGetGroupDetailsRequest()
+    private void sendGetGroupDetailsRequest(int groupID)
     {
         setupGroupResponseHandler();
 
-        User loggedUser = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser();
+        // User loggedUser = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser();
 
         // The POST parameters.
         Map<String, String> params = new HashMap<>();
-        params.put("id", ((Integer) (loggedUser.getID())).toString());
+        params.put("id", String.valueOf(groupID)); // ((Integer) (loggedUser.getID())).toString());
 
         // Encapsulate in JSON.
         JSONObject jsonPostParameters = new JSONObject(params);
