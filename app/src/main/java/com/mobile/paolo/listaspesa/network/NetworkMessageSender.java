@@ -2,6 +2,7 @@ package com.mobile.paolo.listaspesa.network;
 
 import android.content.Context;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -39,6 +40,9 @@ public class NetworkMessageSender
                     }
 
                 });
+
+        jsonRequest.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         // Add the request to the RequestQueue.
         NetworkQueueManager.getInstance(context).addToRequestQueue(jsonRequest);

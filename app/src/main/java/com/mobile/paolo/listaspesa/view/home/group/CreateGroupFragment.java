@@ -230,6 +230,7 @@ public class CreateGroupFragment extends Fragment
                 try {
                     if(response.getInt(TAG_SUCCESS) == SUCCESS)
                     {
+                        Log.d("createGroupResponse", "Success");
                         showFeedback(GROUP_CREATION_OK);
                         GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingGroup(false);
                         int groupID = response.getInt("groupID");

@@ -92,7 +92,7 @@ public class EditGroupActivity extends AppCompatActivity
                     // The POST parameters.
                     Map<String, String> params = new HashMap<>();
                     params.put("newName", editNameField.getText().toString());
-                    params.put("groupID", ((Integer) GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID()).toString());
+                    params.put("id", (String.valueOf(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID())));
 
                     // Encapsulate in JSON.
                     JSONObject jsonPostParameters = new JSONObject(params);
