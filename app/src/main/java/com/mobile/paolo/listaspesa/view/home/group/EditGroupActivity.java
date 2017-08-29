@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -37,6 +38,7 @@ public class EditGroupActivity extends AppCompatActivity
     private static final int TAG_SUCCESS = 1;
 
     // Widgets
+    private Toolbar editGroupToolbar;
     private TextInputLayout editNameTextInputLayout;
     private TextInputEditText editNameField;
     private Button confirmButton;
@@ -55,11 +57,13 @@ public class EditGroupActivity extends AppCompatActivity
         setContentView(R.layout.activity_edit_group);
 
         initializeWidgets();
+        setupToolbar();
         initializeButtonListeners();
     }
 
     private void initializeWidgets()
     {
+        editGroupToolbar = (Toolbar) findViewById(R.id.editGroupToolbar);
         editNameTextInputLayout = (TextInputLayout) findViewById(R.id.editNameTextInputLayout);
         editNameField = (TextInputEditText) findViewById(R.id.editNameField);
         confirmButton = (Button) findViewById(R.id.confirmButton);
@@ -67,6 +71,12 @@ public class EditGroupActivity extends AppCompatActivity
 
         oldName = getIntent().getExtras().getString("groupName");
         editNameField.setText(oldName);
+    }
+
+    private void setupToolbar()
+    {
+        editGroupToolbar.setTitle(getString(R.string.edit_group_toolbar));
+        editGroupToolbar.setTitleTextColor(0xFFFFFFFF);
     }
 
     private void initializeButtonListeners()

@@ -247,10 +247,14 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
             actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(actionModeCallback);
         }
 
-        // Toggle position only if it's not the only item remaining
-        if(adapter.getItemCount() > 1)
+        // Toggle position only if it's not the only item remaining and if the item clicked is not the only one not selected
+        if(adapter.getItemCount() > 1 && !(adapter.getSelectedItems().size() == adapter.getItemCount() - 1))
         {
             toggleSelection(position);
+        }
+        else
+        {
+            Toast.makeText(getContext(), "Non è possibile eliminare tutti i supermercati", Toast.LENGTH_SHORT).show();
         }
 
         return true;

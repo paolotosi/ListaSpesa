@@ -238,7 +238,7 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
             cardTemplateName = (TextView) itemLayoutView.findViewById(R.id.templateName);
             cardProductsSnippet = (TextView) itemLayoutView.findViewById(R.id.productsSnippet);
             cardUseTemplateButton = (Button) itemLayoutView.findViewById(R.id.useTemplateButton);
-            if(GlobalValuesManager.getInstance(itemLayoutView.getContext()).hasUserShoppingList())
+            if(GlobalValuesManager.getInstance(itemLayoutView.getContext()).hasUserShoppingList() && GlobalValuesManager.getInstance(itemLayoutView.getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST))
             {
                 // Hide use button if the user already has a list
                 cardUseTemplateButton.setVisibility(View.GONE);
@@ -324,7 +324,14 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
 
             // Update state
             GlobalValuesManager.getInstance(context).saveHasUserShoppingList(true);
-            GlobalValuesManager.getInstance(context).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
+            if(GlobalValuesManager.getInstance(context).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.NO_LIST))
+            {
+                GlobalValuesManager.getInstance(context).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
+            }
+            else
+            {
+                GlobalValuesManager.getInstance(context).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST);
+            }
             GlobalValuesManager.getInstance(context).saveIsUserCreatingShoppingList(false);
             GlobalValuesManager.getInstance(context).saveProductsNotFound(new JSONArray());
             GlobalValuesManager.getInstance(context).saveUserShoppingList(shoppingList.toJSON());

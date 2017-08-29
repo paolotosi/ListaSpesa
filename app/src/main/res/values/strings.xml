@@ -83,6 +83,7 @@
     <string name="cancel">Annulla</string>
     <string name="empty_group_error">Il nome del gruppo non può essere vuoto.</string>
     <string name="same_name_warning">Il nome inserito è identico al precedente.</string>
+    <string name="edit_group_toolbar">Modifica nome del gruppo</string>
     <string name="success_feedback">Modifica avvenuta con successo!</string>
 
     <!-- InsertProductActivity strings -->
@@ -137,7 +138,7 @@
     <string name="no_list_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter definire dei template e la tua lista della spesa.</string>
     <string name="no_list_no_template_message">Il tuo gruppo non ha ancora definito dei template.\nCrea un template per utilizzare la lista della spesa.</string>
     <string name="create_new_list_button">Crea nuova lista della spesa</string>
-    <string name="create_new_list_button_alt">Sembra che uno dei tuoi compagni di gruppo abbia già preso in carico la vostra lista della spesa! Crea una nuova lista della spesa. Attenzione: i prodotti non trovati dal tuo compagno verranno inseriti automaticamente.</string>
+    <string name="create_new_list_button_alt">La lista della spesa è stata presa in carico!\n\nPuoi creare una nuova lista della spesa.\nI prodotti eventualmente non trovati dal tuo compagno verranno inseriti automaticamente.</string>
 
     <!-- ManageShoppingList strings. -->
     <string name="list_saved">La lista è stata salvata.</string>

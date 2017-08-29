@@ -96,6 +96,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserLogged(false);
         overridePendingTransition(R.anim.back_slide_in, R.anim.back_slide_out);
     }
 
@@ -409,5 +410,6 @@ public class LoginActivity extends AppCompatActivity {
         // Send request
         GroupsDatabaseHelper.sendMultipleGroupsRequest(jsonParams, getApplicationContext(), multipleGroupsResponseHandler);
     }
+
 
 }

@@ -81,7 +81,9 @@ public class SupermarketCardViewDataAdapter extends SelectableAdapter<Supermarke
 
         // If the card is selected show a colored transparent overlay
         viewHolder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
-        viewHolder.cardShowProductsButton.setEnabled(!isSelected(position));
+
+        // viewHolder.cardShowProductsButton.setEnabled(!isSelected(position));
+
     }
 
     @Override
