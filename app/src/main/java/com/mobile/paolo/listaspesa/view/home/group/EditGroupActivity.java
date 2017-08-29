@@ -92,7 +92,7 @@ public class EditGroupActivity extends AppCompatActivity
                     // The POST parameters.
                     Map<String, String> params = new HashMap<>();
                     params.put("newName", editNameField.getText().toString());
-                    params.put("id", (String.valueOf(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID())));
+                    params.put("ID", ((Integer) GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID()).toString());
 
                     // Encapsulate in JSON.
                     JSONObject jsonPostParameters = new JSONObject(params);
@@ -135,7 +135,7 @@ public class EditGroupActivity extends AppCompatActivity
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
         };
     }

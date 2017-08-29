@@ -312,11 +312,11 @@ public class AddMemberFragment extends Fragment {
     {
         setupGroupResponseHandler();
 
-        User loggedUser = GlobalValuesManager.getInstance(getContext()).getLoggedUser();
+        // User loggedUser = GlobalValuesManager.getInstance(getContext()).getLoggedUser();
 
         // The POST parameters.
         Map<String, String> params = new HashMap<>();
-        params.put("id", ((Integer) (loggedUser.getID())).toString());
+        params.put("id", String.valueOf(GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID()));
 
         // Encapsulate in JSON.
         JSONObject jsonPostParameters = new JSONObject(params);

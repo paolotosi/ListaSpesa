@@ -61,13 +61,14 @@
     <string name="no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per condividere la lista della spesa.</string>
     <string name="create_new_group_button">Crea nuovo gruppo</string>
 
-    <!-- CreateGroupActivity strings. -->
+    <!-- CreateGroupFragment strings. -->
     <string name="group_name_hint">Inserisci il nome del gruppo…</string>
     <string name="create_group_toolbar">Crea gruppo</string>
     <string name="group_creation_OK">Gruppo creato con successo!</string>
     <string name="group_creation_KO_no_name">Inserisci il nome del gruppo.</string>
     <string name="group_creation_KO_no_users">Seleziona almeno un utente.</string>
     <string name="remote_group_creation_error">Errore nella creazione del gruppo sul database.</string>
+    <string name="no_users_message">Sei l\'unico utente dell\'applicazione!\nConsigliala ai tuoi amici!</string>
 
     <!-- AddMemberFragment strings. -->
     <string name="add_toolbar">Aggiunti utenti</string>

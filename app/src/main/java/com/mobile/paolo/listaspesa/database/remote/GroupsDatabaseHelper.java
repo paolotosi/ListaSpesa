@@ -18,7 +18,7 @@ public class GroupsDatabaseHelper
     // The URLs.
     private static final String URL_CREATE_GROUP = "http://" + host + "/listaspesa/android_connect/groups/create_group.php";
     private static final String URL_GET_GROUP_DETAILS = "http://" + host + "/listaspesa/android_connect/groups/get_user_group_details.php";
-    private static final String URL_MODIFY_GROUP_NAME = "http://" + host + "listaspesa/android_connect/groups/modify_group_name.php";
+    private static final String URL_MODIFY_GROUP_NAME = "http://" + host + "/listaspesa/android_connect/groups/modify_group_name.php";
     private static final String URL_UPDATE_GROUP = "http://" + host + "/listaspesa/android_connect/groups/update_group_members.php";
     private static final String URL_MULTIPLE_GROUPS = "http://" + host + "/listaspesa/android_connect/groups/check_multiple_groups.php";
     private static final String URL_UPDATE_PRODUCT_TABLE = "http://" + host + "/listaspesa/android_connect/groups/update_product_table.php";

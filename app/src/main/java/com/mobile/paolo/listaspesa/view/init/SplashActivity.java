@@ -34,8 +34,6 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        flushSharedPreferences();
-
         if(checkLoggedUser())
         {
             String username = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser().getUsername();

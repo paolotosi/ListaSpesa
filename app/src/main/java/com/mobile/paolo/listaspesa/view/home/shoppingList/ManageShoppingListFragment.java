@@ -202,12 +202,24 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 try {
                     if(response.getInt("success") == 1)
                     {
+                        // No one has taken the list
                         JSONObject jsonShoppingList = response.getJSONObject("list");
                         ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
                         adapter.deleteAllProducts();
                         adapter.add(shoppingList.getProductList());
                         deleteListIfEmpty();
                         refreshShoppingListLayout.setRefreshing(false);
+                    }
+                    else if(response.getInt("success") == 2)
+                    {
+                        // Someone has taken the list
+                        JSONObject jsonShoppingList = response.getJSONObject("list");
+                        ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
+                        adapter.deleteAllProducts();
+                        adapter.add(shoppingList.getProductList());
+                        deleteListIfEmpty();
+                        refreshShoppingListLayout.setRefreshing(false);
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -430,6 +442,12 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getGroceryStoreFragment());
                         transaction.commit();
+                    }
+                    else
+                    {
+                        // Somebody has already taken list
+                        Toast.makeText(getContext(), "Un altro utente ha già preso in carico la lista", Toast.LENGTH_LONG).show();
+                        sendRefreshShoppingListRequest();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

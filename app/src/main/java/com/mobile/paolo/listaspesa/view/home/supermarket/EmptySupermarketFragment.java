@@ -44,7 +44,7 @@ public class EmptySupermarketFragment extends Fragment
         if(!GlobalValuesManager.getInstance(getContext()).isUserPartOfAGroup())
         {
             // Change message
-            emptySupermarketMessage.setText(getString(R.string.no_template_no_group_message));
+            emptySupermarketMessage.setText(getString(R.string.no_supermarket_no_group_message));
 
             // Disable template creation, show group creation
             createNewSupermarketButton.setEnabled(false);

@@ -129,12 +129,12 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
         newSupermarketButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showAddSupermarketButton();
+                showAddSupermarketFragment();
             }
         });
     }
 
-    private void showAddSupermarketButton()
+    private void showAddSupermarketFragment()
     {
         // Reset create template fragment (get rid of old insertion)
         HomeFragmentContainer.getInstance().resetCreateSupermarketFragment();

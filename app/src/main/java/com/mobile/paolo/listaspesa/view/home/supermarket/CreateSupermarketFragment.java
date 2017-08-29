@@ -127,12 +127,6 @@ public class CreateSupermarketFragment extends Fragment
         return true;
     }
 
-    private void returnBack()
-    {
-        // The previous fragment is saved in the stack
-        getActivity().onBackPressed();
-    }
-
     private void initializeWidgets(View loadedFragment)
     {
         this.createSupermarketToolbar = (Toolbar) loadedFragment.findViewById(R.id.createSupermarketToolbar);

@@ -4,11 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -19,6 +23,7 @@ import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,6 +78,9 @@ public class ManageGroupProductsFragment extends Fragment
 
         populateProductList();
 
+        // Otherwise the 'Up' button won't work
+        setHasOptionsMenu(true);
+
         return loadedFragment;
     }
 
@@ -82,6 +90,33 @@ public class ManageGroupProductsFragment extends Fragment
         List<Product> products = GlobalValuesManager.getInstance(getContext()).getGroupProducts();
         adapter.replaceAll(products);
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home)
+        {
+            GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingSupermarket(false);
+            showManageGroupFragment();
+        }
+        return true;
+    }
+
+    private void showManageGroupFragment()
+    {
+        if(HomeFragmentContainer.getInstance().isStackEmpty())
+        {
+            // I arrived here from the EmptySupermarket, no fragment is in the stack
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageGroupFragment());
+            transaction.commit();
+        }
+        else
+        {
+            // If I arrived here from ManageSupermarketFragment, pop the fragment from the stack
+            getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            HomeFragmentContainer.getInstance().setStackEmpty(true);
+        }
     }
 
     private void setupRecyclerView()
@@ -116,6 +151,11 @@ public class ManageGroupProductsFragment extends Fragment
     {
         toolbar.setTitle(getString(R.string.manage_products_toolbar));
         toolbar.setTitleTextColor(0xFFFFFFFF);
+
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     private void initializeWidgets(View loadedFragment)

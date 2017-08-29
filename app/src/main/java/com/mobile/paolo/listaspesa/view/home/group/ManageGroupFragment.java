@@ -127,8 +127,11 @@ public class ManageGroupFragment extends Fragment {
                     ManageGroupProductsFragment manageGroupProductsFragment = new ManageGroupProductsFragment();
                     HomeFragmentContainer.getInstance().setManageGroupProductsFragment(manageGroupProductsFragment);
                 }
-                transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageGroupProductsFragment());
+                transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageGroupProductsFragment()).addToBackStack("ManageGroup");;
                 transaction.commit();
+
+                // Signal that the stack is not empty
+                HomeFragmentContainer.getInstance().setStackEmpty(false);
             }
         });
     }

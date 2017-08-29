@@ -85,7 +85,7 @@ public class CreateGroupFragment extends Fragment
         setupRecyclerView(loadedFragment);
 
         // Define what to do when the server response to get all users is received.
-        setupFetchUsersResponseHandler();
+        setupFetchUsersResponseHandler(loadedFragment);
 
         // Send the network request to get all users.
         UsersDatabaseHelper.sendGetAllUsersRequest(getActivity().getApplicationContext(), fetchUsersResponseHandler);
@@ -96,13 +96,13 @@ public class CreateGroupFragment extends Fragment
         return loadedFragment;
     }
 
-    private void setupFetchUsersResponseHandler()
+    private void setupFetchUsersResponseHandler(final View loadedFragment)
     {
         this.fetchUsersResponseHandler = new NetworkResponseHandler() {
 
             @Override
             public void onSuccess(JSONObject jsonResponse) {
-                populateUserList(jsonResponse);
+                populateUserList(jsonResponse, loadedFragment);
             }
 
             @Override
@@ -113,7 +113,7 @@ public class CreateGroupFragment extends Fragment
     }
 
     // Populate userList with server response
-    private void populateUserList(JSONObject serverResponse)
+    private void populateUserList(JSONObject serverResponse, View loadedFragment)
     {
         if(userModelList.isEmpty())
         {
@@ -124,24 +124,39 @@ public class CreateGroupFragment extends Fragment
                 // Get logged user to exclude him from the list
                 User loggedUser = GlobalValuesManager.getInstance(getContext()).getLoggedUser();
 
-                // For each user, create a User object and add it to the list.
-                for(int i = 0; i < jsonUserList.length(); i++)
+                if(jsonUserList.length() == 1)
                 {
-                    JSONObject jsonUser = (JSONObject) jsonUserList.get(i);
-                    User toBeAdded = new User(jsonUser);
-                    if(loggedUser.getID() != toBeAdded.getID())
+                    showNoUsersMessage(loadedFragment);
+                }
+                else
+                {
+                    // For each user, create a User object and add it to the list.
+                    for(int i = 0; i < jsonUserList.length(); i++)
                     {
-                        userModelList.add(toBeAdded);
+                        JSONObject jsonUser = (JSONObject) jsonUserList.get(i);
+                        User toBeAdded = new User(jsonUser);
+                        if(loggedUser.getID() != toBeAdded.getID())
+                        {
+                            userModelList.add(toBeAdded);
+                        }
                     }
+
+                    // Tell the RecyclerView to reload elements
+                    adapter.notifyDataSetChanged();
                 }
 
-                // Tell the RecyclerView to reload elements
-                adapter.notifyDataSetChanged();
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void showNoUsersMessage(View loadedFragment)
+    {
+        loadedFragment.findViewById(R.id.groupNameInputLayout).setVisibility(View.GONE);
+        loadedFragment.findViewById(R.id.confirmButton).setVisibility(View.GONE);
+        loadedFragment.findViewById(R.id.noUsersTextView).setVisibility(View.VISIBLE);
     }
 
     private void setupConfirmButtonListener(final View fragment)
@@ -185,7 +200,7 @@ public class CreateGroupFragment extends Fragment
             selectedIDs.put(0, loggedUser.getID());
 
             // Get the user list
-            List<User> userList = ((UserCardViewDataAdapter) adapter).getUserList();
+            List<User> userList = adapter.getUserList();
 
             // For each user in the list, if he's checked add him to selectedIDs
             int pos = 1;
@@ -197,6 +212,13 @@ public class CreateGroupFragment extends Fragment
                     selectedIDs.put(pos, singleUser.getID());
                     pos++;
                 }
+            }
+
+            // No users other than me
+            if(selectedIDs.length() == 1)
+            {
+                okToSend = false;
+                showFeedback(GROUP_CREATION_KO_NO_USERS);
             }
 
             // Add all IDs in JSON
