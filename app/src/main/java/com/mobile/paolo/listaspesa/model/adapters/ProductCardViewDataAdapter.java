@@ -245,7 +245,7 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
 
         if(sortedList.get(position).getDescription() != null)
         {
-            if(sortedList.get(position).getDescription().equals("null"))
+            if(sortedList.get(position).getDescription().equals("null") || sortedList.get(position).getDescription().equalsIgnoreCase(""))
             {
                 String noDescriptionText = binding.productDescription.getContext().getString(R.string.no_description_message);
                 binding.productDescription.setText(noDescriptionText);

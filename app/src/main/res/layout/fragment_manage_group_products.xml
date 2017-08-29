@@ -18,6 +18,14 @@
             android:minHeight="?attr/actionBarSize"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
+        <TextView
+            android:padding="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/blackText"
+            android:textAlignment="center"
+            android:text="@string/info_produts_matrix"/>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewProductsHandler"
             android:layout_width="match_parent"

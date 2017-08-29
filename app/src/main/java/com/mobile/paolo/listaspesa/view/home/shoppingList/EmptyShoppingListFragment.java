@@ -90,7 +90,7 @@ public class EmptyShoppingListFragment extends Fragment {
 
         }
 
-        if(GlobalValuesManager.getInstance(getContext()).hasUserShoppingList())
+        if(GlobalValuesManager.getInstance(getContext()).hasUserShoppingList() && GlobalValuesManager.getInstance(getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER))
         {
             emptyListMessage.setText(getString(R.string.create_new_list_button_alt) + "\n\n" + GlobalValuesManager.getInstance(getContext()).getUserTookList() + " ha preso in carico la lista.");
         }

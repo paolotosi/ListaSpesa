@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -36,6 +37,8 @@ public class InsertProductsActivity extends AppCompatActivity {
     private TextInputEditText editDescriptionField;
     private Button confirmButton;
     private Button cancelButton;
+    private Toolbar insertProductToolbar;
+
     private Boolean flag;
 
     // Old product
@@ -75,6 +78,7 @@ public class InsertProductsActivity extends AppCompatActivity {
         }
 
         initializeWidgets();
+        setupToolbar();
         initializeButtonListeners();
     }
 
@@ -91,7 +95,14 @@ public class InsertProductsActivity extends AppCompatActivity {
         editDescriptionField.setText(oldDescription);
         confirmButton = (Button) findViewById(R.id.confirmButtonInsert);
         cancelButton = (Button) findViewById(R.id.cancelButtonInsert);
+        insertProductToolbar = (Toolbar) findViewById(R.id.insertProductToolbar);
 
+    }
+
+    private void setupToolbar()
+    {
+        insertProductToolbar.setTitleTextColor(getColor(R.color.white));
+        insertProductToolbar.setTitle(getString(R.string.insert_product_toolbar));
     }
 
     private void initializeButtonListeners()

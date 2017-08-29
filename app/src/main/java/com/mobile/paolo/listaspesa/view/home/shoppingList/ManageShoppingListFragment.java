@@ -32,6 +32,7 @@ import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
+import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
@@ -205,6 +206,14 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         // No one has taken the list
                         JSONObject jsonShoppingList = response.getJSONObject("list");
                         ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
+                        if(shoppingList.getProductList().size() == 0)
+                        {
+                            GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
+                        }
+                        else
+                        {
+                            GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
+                        }
                         adapter.deleteAllProducts();
                         adapter.add(shoppingList.getProductList());
                         deleteListIfEmpty();
@@ -213,12 +222,24 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                     else if(response.getInt("success") == 2)
                     {
                         // Someone has taken the list
+                        GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER);
                         JSONObject jsonShoppingList = response.getJSONObject("list");
                         ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
                         adapter.deleteAllProducts();
                         adapter.add(shoppingList.getProductList());
                         deleteListIfEmpty();
                         refreshShoppingListLayout.setRefreshing(false);
+                        int userTookListID = response.getInt("userID");
+                        String userTookList = "";
+                        for(User user : GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getMembers())
+                        {
+                            if(user.getID() == userTookListID)
+                            {
+                                userTookList = user.getUsername();
+                            }
+                        }
+                        GlobalValuesManager.getInstance(getContext()).saveUserTookList(userTookList);
+                        Toast.makeText(getContext(), userTookList + " ha già preso in carico la lista.", Toast.LENGTH_LONG).show();
 
                     }
                 } catch (JSONException e) {
@@ -446,7 +467,6 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                     else
                     {
                         // Somebody has already taken list
-                        Toast.makeText(getContext(), "Un altro utente ha già preso in carico la lista", Toast.LENGTH_LONG).show();
                         sendRefreshShoppingListRequest();
                     }
                 } catch (JSONException e) {

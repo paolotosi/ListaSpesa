@@ -238,7 +238,10 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
             cardTemplateName = (TextView) itemLayoutView.findViewById(R.id.templateName);
             cardProductsSnippet = (TextView) itemLayoutView.findViewById(R.id.productsSnippet);
             cardUseTemplateButton = (Button) itemLayoutView.findViewById(R.id.useTemplateButton);
-            if(GlobalValuesManager.getInstance(itemLayoutView.getContext()).hasUserShoppingList() && GlobalValuesManager.getInstance(itemLayoutView.getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST))
+            if((GlobalValuesManager.getInstance(itemLayoutView.getContext()).hasUserShoppingList() &&
+                GlobalValuesManager.getInstance(itemLayoutView.getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST)) ||
+                GlobalValuesManager.getInstance(itemLayoutView.getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER) ||
+                GlobalValuesManager.getInstance(itemLayoutView.getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE))
             {
                 // Hide use button if the user already has a list
                 cardUseTemplateButton.setVisibility(View.GONE);

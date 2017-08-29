@@ -119,6 +119,7 @@
 
     <!-- ManageGroupProductsFragment strings. -->
     <string name="manage_products_toolbar">I tuoi prodotti</string>
+    <string name="info_produts_matrix">Possono essere modificati o eliminati solo i prodotti definiti dal tuo gruppo.</string>
 
     <!-- EditTemplateActivity strings. -->
     <string name="edit_ok">Modifica avvenuta con successo!</string>
@@ -135,6 +136,9 @@
     <string name="product_brand_hint">Marca prodotto</string>
     <string name="product_description_hint">(Opzionale) Descrizione</string>
 
+    <!-- InsertProductsActivity strings. -->
+    <string name="insert_product_toolbar">Inserisci nuovo prodotto</string>
+
     <!-- Generic error strings. -->
     <string name="generic_error">Errore sconosciuto.</string>
     <string name="connection_error">Errore di connessione al database.</string>
@@ -144,7 +148,7 @@
     <string name="no_list_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter definire dei template e la tua lista della spesa.</string>
     <string name="no_list_no_template_message">Il tuo gruppo non ha ancora definito dei template.\nCrea un template per utilizzare la lista della spesa.</string>
     <string name="create_new_list_button">Crea nuova lista della spesa</string>
-    <string name="create_new_list_button_alt">La lista della spesa è stata presa in carico!\n\nPuoi creare una nuova lista della spesa.\nI prodotti eventualmente non trovati dal tuo compagno verranno inseriti automaticamente.</string>
+    <string name="create_new_list_button_alt">La lista della spesa è già stata presa in carico!\n\nPuoi creare una nuova lista della spesa.\nI prodotti eventualmente non trovati dal tuo compagno verranno inseriti automaticamente.</string>
 
     <!-- ManageShoppingList strings. -->
     <string name="list_saved">La lista è stata salvata.</string>
