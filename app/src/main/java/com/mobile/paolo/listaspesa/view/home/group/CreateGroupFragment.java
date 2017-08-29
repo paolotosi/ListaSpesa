@@ -65,6 +65,7 @@ public class CreateGroupFragment extends Fragment
     private NetworkResponseHandler fetchUsersResponseHandler;
     private NetworkResponseHandler createGroupResponseHandler;
     private NetworkResponseHandler groupDetailsResponseHandler;
+    private NetworkResponseHandler groupProductsResponseHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -234,6 +235,7 @@ public class CreateGroupFragment extends Fragment
                         int groupID = response.getInt("groupID");
                         GlobalValuesManager.getInstance(getContext()).saveLoggedUserGroup(new Group(groupID, "", new ArrayList<User>()));
                         sendGetGroupDetailsRequest();
+                        sendGetGroupProductsRequest();
                     }
                     else
                         showFeedback(REMOTE_ERROR);
@@ -354,6 +356,51 @@ public class CreateGroupFragment extends Fragment
         Log.d("JSON_GET_GROUP_DETAILS", jsonPostParameters.toString());
 
         GroupsDatabaseHelper.sendGetGroupDetailsRequest(jsonPostParameters, getContext(), groupDetailsResponseHandler);
+    }
+
+    private void sendGetGroupProductsRequest()
+    {
+        setupGroupProductsResponseHandler();
+
+        JSONObject jsonPost = new JSONObject();
+        String groupID = String.valueOf(GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID());
+
+        try {
+            jsonPost.put("id",groupID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        GroupsDatabaseHelper.sendGetGroupProductsRequest(jsonPost, getContext(), groupProductsResponseHandler);
+    }
+
+    private void setupGroupProductsResponseHandler()
+    {
+        this.groupProductsResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("GET_PRODUCTS_RESP", response.toString());
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+                        // Determine if the group has templates and update the SharedPreferences accordingly
+                        JSONArray products = response.getJSONArray("products");
+                        GlobalValuesManager.getInstance(getContext()).saveGroupProducts(products);
+                    }
+                    else
+                    {
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                error.printStackTrace();
+            }
+        };
     }
 
 

@@ -1,7 +1,6 @@
 package com.mobile.paolo.listaspesa.view.home;
 
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -20,7 +19,6 @@ import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.SupermarketDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
-import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
@@ -287,7 +285,7 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
         };
     }
