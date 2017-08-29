@@ -530,7 +530,7 @@ public class GlobalValuesManager
         List<Product> productList = getGroupProducts();
         for(int i = productList.size()-1; i >= 0; i--)
         {
-            if(productList.get(i).getID() + 1 == productID)
+            if(productList.get(i).getID() == productID)
             {
                 productList.remove(productList.get(i));
             }

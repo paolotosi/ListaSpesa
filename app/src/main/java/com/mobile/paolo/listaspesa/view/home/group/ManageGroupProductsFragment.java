@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
@@ -161,8 +160,6 @@ public class ManageGroupProductsFragment extends Fragment implements ProductCard
                 try {
                     if(response.getInt("success") == 1)
                     {
-                        Toast.makeText(getContext(), "Sembra funzionare", Toast.LENGTH_LONG).show();
-
                         // Update cached template
                         for(int i = 0; i < selectedIDs.size(); i++) {
                             Integer selectedID = selectedIDs.get(i);

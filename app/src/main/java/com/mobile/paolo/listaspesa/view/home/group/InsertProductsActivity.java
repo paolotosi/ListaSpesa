@@ -1,10 +1,10 @@
 package com.mobile.paolo.listaspesa.view.home.group;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,7 +13,6 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.remote.GroupsDatabaseHelper;
-import com.mobile.paolo.listaspesa.model.objects.Group;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
@@ -22,9 +21,6 @@ import com.mobile.paolo.listaspesa.view.home.HomeActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class InsertProductsActivity extends AppCompatActivity {
 
@@ -42,9 +38,9 @@ public class InsertProductsActivity extends AppCompatActivity {
     private Button cancelButton;
     private Boolean flag;
 
-    // Old group name
-    private String oldName;
+    // Old product
     private int id;
+    private String oldName;
     private String oldDescription;
     private String oldBrand;
 
@@ -164,6 +160,7 @@ public class InsertProductsActivity extends AppCompatActivity {
         this.insertProductResponseHandler = new NetworkResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
+                Log.d("INSERT/MODIFY_RESP", response.toString());
                 try {
                     if(response.getInt("success") == TAG_SUCCESS)
                     {
@@ -200,6 +197,15 @@ public class InsertProductsActivity extends AppCompatActivity {
         {
             isValid = false;
             editBrandTextInputLayout.setError(getString(R.string.empty_field_error));
+        }
+
+        for(Product product : GlobalValuesManager.getInstance(getApplicationContext()).getGroupProducts())
+        {
+            if(editNameField.getText().toString().equalsIgnoreCase(product.getName()) && editBrandField.getText().toString().equalsIgnoreCase(product.getBrand()))
+            {
+                isValid = false;
+                Toast.makeText(getApplicationContext(), "Hai già inserito un prodotto della stessa marca con questo nome", Toast.LENGTH_SHORT).show();
+            }
         }
 
         return isValid;
