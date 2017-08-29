@@ -78,6 +78,11 @@
     <string name="logout_dialog">Sei sicuro di voler uscire?</string>
     <string name="logout_action">Logout</string>
 
+    <!-- CardManageGroupProduct strings -->
+    <string name="delete_dialog">Sei sicuro di voler eliminare il prodotto?</string>
+    <string name="delete_Action">Elimina</string>
+    <string name="cancel_Action">Annulla</string>
+
     <!-- EditGroupActivity strings. -->
     <string name="confirm">Conferma</string>
     <string name="cancel">Annulla</string>

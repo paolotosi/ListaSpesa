@@ -1,6 +1,10 @@
 package com.mobile.paolo.listaspesa.model.adapters;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.databinding.ViewDataBinding;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -8,8 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
+import com.mobile.paolo.listaspesa.database.remote.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutEditBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutGroceryBinding;
@@ -17,8 +24,14 @@ import com.mobile.paolo.listaspesa.databinding.CardProductLayoutShoppingListBind
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutManageBinding;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.Template;
+import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.view.home.HomeActivity;
+import com.mobile.paolo.listaspesa.view.home.group.InsertProductsActivity;
 import com.shawnlin.numberpicker.NumberPicker;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +62,8 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
     public static final int LIST_MODE = 3;
     public static final int GROCERY_MODE = 4;
     public static final int MANAGE_MODE = 5;
+
+    private NetworkResponseHandler deleteProductResponseHandler;
 
     // ClickListener (received from the outside)
     ViewHolder.ClickListener clickListener;
@@ -226,12 +241,10 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
         });
     }
 
-    private void setupManageMode(final ViewHolder viewHolder, final int position)
-    {
+    private void setupManageMode(final ViewHolder viewHolder, final int position) {
         // Cast superclass binding to edit mode binding
         CardProductLayoutManageBinding binding = (CardProductLayoutManageBinding) viewHolder.binding;
 
-        // Custom logic for product description
         if(sortedList.get(position).getDescription() != null)
         {
             if(sortedList.get(position).getDescription().equals("null"))
@@ -241,24 +254,116 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
             }
         }
 
-        binding.deleteProdButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteList.add(sortedList.get(viewHolder.getAdapterPosition()));
-                sortedList.remove(sortedList.get(viewHolder.getAdapterPosition()));
-                //TODO query di eliminazione
+        // Custom logic for product description
+        if (sortedList.get(position).getDescription() != null) {
+            if (sortedList.get(position).getDescription().equals("null")) {
+                String noDescriptionText = binding.productDescription.getContext().getString(R.string.no_description_message);
+                binding.productDescription.setText(noDescriptionText);
             }
-        });
+        }
+
+        Log.d("Matrix", sortedList.get(position).getMatrix().toString());
+        if (!sortedList.get(position).getMatrix())
+        {
+            binding.editProductButton.setVisibility(View.VISIBLE);
+            binding.deleteProdButton.setVisibility(View.VISIBLE);
+
+            binding.deleteProdButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    showDialog(v, viewHolder);
+                }
+            });
 
         binding.editProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO modifica prodotti.
+                Intent intent = new Intent(v.getContext(), InsertProductsActivity.class);
+                intent.putExtra("flag", false);
+                intent.putExtra("product", sortedList.get(position).toJSON().toString());
+                v.getContext().startActivity(intent);
             }
         });
+        }
+        else
+        {
+            binding.editProductButton.setVisibility(View.GONE);
+            binding.deleteProdButton.setVisibility(View.GONE);
+        }
     }
 
+    private void showDialog(final View v,final ViewHolder viewHolder)
+    {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(v.getContext(), R.style.Theme_AppCompat_Light_Dialog);
 
+        dialogBuilder.setMessage(v.getContext().getString(R.string.delete_dialog));
+        dialogBuilder.setCancelable(true);
+
+        dialogBuilder.setPositiveButton(
+                v.getContext().getString(R.string.delete_action),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        sendDeleteProductRequest(sortedList.get(viewHolder.getAdapterPosition()).getID(), v.getContext(), viewHolder.getAdapterPosition());
+                    }
+                });
+
+        dialogBuilder.setNegativeButton(
+                v.getContext().getString(R.string.cancel_action),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(v.getContext().getColor(R.color.materialRed500));
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(v.getContext().getColor(R.color.materialGrey600));
+    }
+
+    private void sendDeleteProductRequest(int id, Context context, int position)
+    {
+        setupDeleteProductResponseHandler(context, position);
+
+        JSONObject jsonPost = new JSONObject();
+        try {
+
+            jsonPost.put("productID", String.valueOf(id));
+            jsonPost.put("id", String.valueOf(GlobalValuesManager.getInstance(context).getLoggedUserGroup().getID()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        GroupsDatabaseHelper.sendDeleteProductRequest(jsonPost, context, deleteProductResponseHandler);
+    }
+
+    private void setupDeleteProductResponseHandler(final Context context,final int position)
+    {
+        this.deleteProductResponseHandler = new NetworkResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    if(response.getInt("success") == 1)
+                    {
+                        Toast.makeText(context, "Eliminazione avvenuta", Toast.LENGTH_SHORT).show();
+                        deleteList.add(sortedList.get(position));
+                        sortedList.remove(sortedList.get(position));
+                    }
+                    else
+                    {
+                        Toast.makeText(context, "Problemi durante l'eliminazione", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+
+            }
+        };
+    }
 
     private void setupSortedList()
     {

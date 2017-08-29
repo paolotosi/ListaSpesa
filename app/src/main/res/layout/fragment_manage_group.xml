@@ -94,7 +94,7 @@
         android:layout_width="wrap_content"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right|end"
-        android:src="@drawable/ic_library_add_24dp"
+        android:src="@drawable/ic_shopping_basket_black_24dp"
         android:layout_marginRight="178dp"
         android:clickable="true"
         app:fabSize="mini"/>

@@ -1,6 +1,7 @@
 package com.mobile.paolo.listaspesa.view.home;
 
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import com.mobile.paolo.listaspesa.database.remote.ShoppingListDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.SupermarketDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.TemplatesDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.Group;
+import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.model.objects.ShoppingList;
 import com.mobile.paolo.listaspesa.model.objects.User;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
@@ -200,6 +202,7 @@ public class HomeActivity extends AppCompatActivity
                             GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(true);
                             // Query for templates, shopping list and products not found only if the user has a group.
                             // The request needs to be sent now, otherwise we don't know the group ID!
+                            sendGetGroupProductsRequest();
                             sendGetTemplatesRequest();
                             sendGetShoppingListRequest();
                             sendGetProductsNotFoundRequest();
@@ -241,9 +244,10 @@ public class HomeActivity extends AppCompatActivity
         Log.d("GET_GROUP_REQ", jsonPostParameters.toString());
 
         GroupsDatabaseHelper.sendGetGroupDetailsRequest(jsonPostParameters, getApplicationContext(), groupResponseHandler);
+
     }
 
-    private void sendGroupProductsRequest()
+    private void sendGetGroupProductsRequest()
     {
         setupGroupProductsResponseHandler();
 
@@ -256,7 +260,7 @@ public class HomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        //GroupsDatabaseHelper.sendGetGroupProductsRequest(jsonPost, getApplicationContext(), groupProductsResponseHandler);
+        GroupsDatabaseHelper.sendGetGroupProductsRequest(jsonPost, getApplicationContext(), groupProductsResponseHandler);
     }
 
     private void setupGroupProductsResponseHandler()
@@ -270,14 +274,7 @@ public class HomeActivity extends AppCompatActivity
                     {
                         // Determine if the group has templates and update the SharedPreferences accordingly
                         JSONArray products = response.getJSONArray("products");
-                        if(products.length() == 0)
-                        {
-
-                        }
-                        else
-                        {
-
-                        }
+                        GlobalValuesManager.getInstance(getApplicationContext()).saveGroupProducts(products);
                     }
                     else
                     {

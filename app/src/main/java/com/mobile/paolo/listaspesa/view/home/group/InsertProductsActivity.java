@@ -19,6 +19,7 @@ import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 import com.mobile.paolo.listaspesa.view.home.HomeActivity;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,9 +40,13 @@ public class InsertProductsActivity extends AppCompatActivity {
     private TextInputEditText editDescriptionField;
     private Button confirmButton;
     private Button cancelButton;
+    private Boolean flag;
 
     // Old group name
     private String oldName;
+    private int id;
+    private String oldDescription;
+    private String oldBrand;
 
     // Network response handler
     private NetworkResponseHandler insertProductResponseHandler;
@@ -52,49 +57,97 @@ public class InsertProductsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_products);
 
+        this.flag = getIntent().getExtras().getBoolean("flag");
+        if(!flag)
+        {
+        try {
+            JSONObject jsonProduct = new JSONObject(getIntent().getExtras().getString("product"));
+            Product oldProduct = Product.fromJSON(jsonProduct);
+            this.oldName = oldProduct.getName();
+            this.oldBrand = oldProduct.getBrand();
+            if(oldProduct.getDescription() != null) {
+                this.oldDescription = oldProduct.getDescription();
+            }
+            else
+            {
+                this.oldDescription = getString(R.string.no_description_message);
+            }
+            this.id = oldProduct.getID();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        }
+
         initializeWidgets();
         initializeButtonListeners();
     }
 
     private void initializeWidgets()
     {
-        editNameTextInputLayout = (TextInputLayout) findViewById(R.id.editNameTextInputLayout);
+        editNameTextInputLayout = (TextInputLayout) findViewById(R.id.editNameProdTextInputLayout);
         editNameField = (TextInputEditText) findViewById(R.id.editNameField);
+        editNameField.setText(oldName);
         editBrandTextInputLayout = (TextInputLayout) findViewById(R.id.editBrandTextInputLayout);
         editBrandField = (TextInputEditText) findViewById(R.id.editBrandField);
+        editBrandField.setText(oldBrand);
         editDescriptionTextInputLayout = (TextInputLayout) findViewById(R.id.editDescriptionTextInputLayout);
         editDescriptionField = (TextInputEditText) findViewById(R.id.editDescriptionField);
+        editDescriptionField.setText(oldDescription);
         confirmButton = (Button) findViewById(R.id.confirmButtonInsert);
         cancelButton = (Button) findViewById(R.id.cancelButtonInsert);
 
-        oldName = getIntent().getExtras().getString("groupName");
     }
 
     private void initializeButtonListeners()
     {
         // If the insertion is ok, send the update request to the database.
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isInsertionValid())
-                {
-                    setupModifyNameResponseHandler();
+        if(flag) {
+            confirmButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (isInsertionValid()) {
+                        setupInsertAndModifyResponseHandler();
 
-                    JSONObject jsonParam = new JSONObject();
-                    try {
-                        jsonParam.put("id", String.valueOf(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID()));
-                        Product toInsert = new Product(0, editNameField.getText().toString(), editBrandField.getText().toString(), editDescriptionField.getText().toString());
-                        JSONObject jsonProduct = toInsert.toJSON();
-                        jsonParam.put("productDetails", jsonProduct);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        JSONObject jsonParam = new JSONObject();
+                        try {
+                            jsonParam.put("id", String.valueOf(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID()));
+                            Product toInsert = new Product(0, editNameField.getText().toString(), editBrandField.getText().toString(), editDescriptionField.getText().toString());
+                            JSONObject jsonProduct = toInsert.toJSON();
+                            jsonParam.put("productDetails", jsonProduct);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d("UPDATE_PRODUCT_TABLE", jsonParam.toString());
+                        GroupsDatabaseHelper.updateProductTable(jsonParam, getApplicationContext(), insertProductResponseHandler);
+
                     }
-                    Log.d("UPDATE_PRODUCT_TABLE", jsonParam.toString());
-                    GroupsDatabaseHelper.updateProductTable(jsonParam, getApplicationContext(), insertProductResponseHandler);
-
                 }
-            }
-        });
+            });
+        }
+        else
+        {
+            confirmButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (isInsertionValid()) {
+                        setupInsertAndModifyResponseHandler();
+
+                        JSONObject jsonParam = new JSONObject();
+                        try {
+                            jsonParam.put("id", String.valueOf(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID()));
+                            Product toInsert = new Product(id, editNameField.getText().toString(), editBrandField.getText().toString(), editDescriptionField.getText().toString());
+                            JSONObject jsonProduct = toInsert.toJSON();
+                            jsonParam.put("productDetails", jsonProduct);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d("UPDATE_PRODUCT_TABLE", jsonParam.toString());
+                        GroupsDatabaseHelper.updateProductTable(jsonParam, getApplicationContext(), insertProductResponseHandler);
+
+                    }
+                }
+            });
+        }
 
         // If "Annulla" is clicked, return home.
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +159,7 @@ public class InsertProductsActivity extends AppCompatActivity {
     }
 
     // Define what to do after the update request has been handled by the server.
-    private void setupModifyNameResponseHandler()
+    private void setupInsertAndModifyResponseHandler()
     {
         this.insertProductResponseHandler = new NetworkResponseHandler() {
             @Override
@@ -116,6 +169,8 @@ public class InsertProductsActivity extends AppCompatActivity {
                     {
                         // Everything is ok, show a toast to inform the user
                         Toast.makeText(getApplicationContext(), getString(R.string.success_feedback_product), Toast.LENGTH_LONG).show();
+                        JSONArray products = response.getJSONArray("products");
+                        GlobalValuesManager.getInstance(getApplicationContext()).saveGroupProducts(products);
                         returnHome();
                     }
                 } catch (JSONException e) {

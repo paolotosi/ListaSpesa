@@ -86,6 +86,14 @@ public class ManageGroupProductsFragment extends Fragment implements ProductCard
         return loadedFragment;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        List<Product> products = GlobalValuesManager.getInstance(getContext()).getGroupProducts();
+        adapter.replaceAll(products);
+        adapter.notifyDataSetChanged();
+    }
+
     private void setupRecyclerView()
     {
         recyclerView.setHasFixedSize(false);
@@ -136,6 +144,7 @@ public class ManageGroupProductsFragment extends Fragment implements ProductCard
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), InsertProductsActivity.class);
+                        intent.putExtra("flag", true);
                         startActivity(intent);
                     }
                 });
