@@ -4,15 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -38,20 +34,17 @@ import java.util.List;
  * one template.
  * It shows a list of all templates with a preview of the products.
  */
-public class ManageGroupProductsFragment extends Fragment implements ProductCardViewDataAdapter.ViewHolder.ClickListener
+public class ManageGroupProductsFragment extends Fragment
 {
     // Widgets
     private Toolbar toolbar;
-    private FloatingActionButton newTemplateButton;
+    private FloatingActionButton addProductButton;
 
     // RecyclerView, adapter and model
     private RecyclerView recyclerView;
     private ProductCardViewDataAdapter adapter;
     private List<Product> initialProductList;
 
-    // Action mode
-    private ActionMode actionMode;
-    private ActionMode.Callback actionModeCallback;
 
     // Delete templates response handler
     NetworkResponseHandler deleteProductResponseHandler;
@@ -74,9 +67,7 @@ public class ManageGroupProductsFragment extends Fragment implements ProductCard
 
         setupToolbar();
 
-        setupAddProductButtonListener(loadedFragment);
-
-        setupActionModeCallback();
+        setupAddProductButtonListener();
 
         setupRecyclerView();
 
@@ -131,24 +122,21 @@ public class ManageGroupProductsFragment extends Fragment implements ProductCard
     {
         recyclerView = (RecyclerView) loadedFragment.findViewById(R.id.recyclerViewProductsHandler);
         toolbar = (Toolbar) loadedFragment.findViewById(R.id.manageProductsToolbar);
-        newTemplateButton = (FloatingActionButton) loadedFragment.findViewById(R.id.addProductButton);
+        addProductButton = (FloatingActionButton) loadedFragment.findViewById(R.id.addProductButton);
     }
 
-    private void setupAddProductButtonListener(final View loadedFragment)
+    private void setupAddProductButtonListener()
     {
-        newTemplateButton.setOnClickListener(new View.OnClickListener() {
+        addProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                        loadedFragment.findViewById(R.id.addProductButton).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+
                         Intent intent = new Intent(getActivity(), InsertProductsActivity.class);
                         intent.putExtra("flag", true);
                         startActivity(intent);
                     }
                 });
-            }
-        });
+
     }
 
     private void setupDeleteProductResponseHandler()
@@ -175,7 +163,7 @@ public class ManageGroupProductsFragment extends Fragment implements ProductCard
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
         };
     }
@@ -207,74 +195,5 @@ public class ManageGroupProductsFragment extends Fragment implements ProductCard
         GroupsDatabaseHelper.sendDeleteProductRequest(jsonParams, getContext(), deleteProductResponseHandler);
     }
 
-    @Override
-    public void onItemClicked(int position)
-    {
-        if (actionMode != null) {
-            toggleSelection(position);
-        }
-    }
 
-    @Override
-    public boolean onItemLongClicked(int position)
-    {
-        if (actionMode == null)
-        {
-            actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(actionModeCallback);
-        }
-
-        toggleSelection(position);
-
-        return true;
-    }
-
-    private void toggleSelection(int position) {
-        adapter.toggleSelection(position);
-        int count = adapter.getSelectedItemCount();
-
-        if (count == 0)
-        {
-            actionMode.finish();
-        }
-        else
-        {
-            actionMode.setTitle(String.valueOf(count));
-            actionMode.invalidate();
-        }
-    }
-
-    private void setupActionModeCallback()
-    {
-        this.actionModeCallback = new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate (R.menu.delete_action_mode, menu);
-                selectedListItems.clear();
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                if(item.getItemId() == R.id.deleteTemplate)
-                {
-                    sendDeleteProductRequest();
-                    selectedListItems.addAll(adapter.getSelectedItems());
-                    mode.finish();
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                adapter.clearSelection();
-                actionMode = null;
-            }
-        };
-    }
 }

@@ -20,13 +20,11 @@ import com.mobile.paolo.listaspesa.database.remote.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutEditBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutGroceryBinding;
-import com.mobile.paolo.listaspesa.databinding.CardProductLayoutShoppingListBinding;
 import com.mobile.paolo.listaspesa.databinding.CardProductLayoutManageBinding;
+import com.mobile.paolo.listaspesa.databinding.CardProductLayoutShoppingListBinding;
 import com.mobile.paolo.listaspesa.model.objects.Product;
-import com.mobile.paolo.listaspesa.model.objects.Template;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.view.home.HomeActivity;
 import com.mobile.paolo.listaspesa.view.home.group.InsertProductsActivity;
 import com.shawnlin.numberpicker.NumberPicker;
 
@@ -334,6 +332,8 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
             e.printStackTrace();
         }
 
+        Log.d("DELETE_PRODUCT_REQ", jsonPost.toString());
+
         GroupsDatabaseHelper.sendDeleteProductRequest(jsonPost, context, deleteProductResponseHandler);
     }
 
@@ -343,9 +343,11 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
             @Override
             public void onSuccess(JSONObject response) {
                 try {
+                    Log.d("DELETE_PRODUCT_RESP", response.toString());
                     if(response.getInt("success") == 1)
                     {
                         Toast.makeText(context, "Eliminazione avvenuta", Toast.LENGTH_SHORT).show();
+                        GlobalValuesManager.getInstance(context).removeProduct(sortedList.get(position).getID());
                         deleteList.add(sortedList.get(position));
                         sortedList.remove(sortedList.get(position));
                     }
