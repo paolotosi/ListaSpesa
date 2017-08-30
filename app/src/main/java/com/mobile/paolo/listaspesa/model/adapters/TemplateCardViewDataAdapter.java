@@ -327,7 +327,7 @@ public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardV
 
             // Update state
             GlobalValuesManager.getInstance(context).saveHasUserShoppingList(true);
-            if(GlobalValuesManager.getInstance(context).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.NO_LIST))
+            if(GlobalValuesManager.getInstance(context).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.NO_LIST) || GlobalValuesManager.getInstance(context).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.EMPTY_LIST))
             {
                 GlobalValuesManager.getInstance(context).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
             }

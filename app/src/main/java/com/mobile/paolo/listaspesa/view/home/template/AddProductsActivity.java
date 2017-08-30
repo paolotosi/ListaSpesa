@@ -22,6 +22,8 @@ import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
+import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
+import com.mobile.paolo.listaspesa.view.home.shoppingList.ManageShoppingListFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -246,6 +248,11 @@ public class AddProductsActivity extends AppCompatActivity implements SearchView
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("RESULT", Product.asJSONProductList(addList).toString());
                 setResult(Activity.RESULT_OK, returnIntent);
+                Log.d("State in add products",GlobalValuesManager.getInstance(getApplicationContext()).getShoppingListState());
+                if(GlobalValuesManager.getInstance(getApplicationContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST))
+                {
+                    GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
+                }
                 //finish();
                 onBackPressed();
             }

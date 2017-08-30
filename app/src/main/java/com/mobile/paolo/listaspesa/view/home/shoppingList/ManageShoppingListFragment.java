@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -23,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -41,7 +43,9 @@ import com.mobile.paolo.listaspesa.view.home.template.AddProductsActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -65,6 +69,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     private FloatingActionButton addProductToListButton;
     private Toolbar createListToolbar;
     private SwipeRefreshLayout refreshShoppingListLayout;
+    private TextView emptyTextView;
 
     // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
@@ -88,6 +93,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
     // Avoid saving list on exit if the list has been taken
     private boolean listTaken = false;
+
+    private MenuItem takeInCharge;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -134,7 +141,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         getActivity().getMenuInflater().inflate(R.menu.shopping_list_menu, menu);
 
         // Add listener to 'Take in charge' menu action
-        MenuItem takeInCharge = menu.findItem(R.id.takeListInCharge);
+        takeInCharge = menu.findItem(R.id.takeListInCharge);
         takeInCharge.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -142,7 +149,12 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 return false;
             }
         });
-
+        if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST)) {
+            takeInCharge.setVisible(false);
+        }
+        else {
+            takeInCharge.setVisible(true);
+        }
         // Add listener to 'Delete' menu action
         MenuItem deleteList = menu.findItem(R.id.deleteList);
         deleteList.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -182,6 +194,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         recyclerView = (RecyclerView) loadedFragment.findViewById(R.id.recyclerViewShopProducts);
         refreshShoppingListLayout = (SwipeRefreshLayout) loadedFragment.findViewById(R.id.refreshShoppingListLayout);
         addProductToListButton = (FloatingActionButton) loadedFragment.findViewById(R.id.addProductToListButton);
+        emptyTextView = (TextView) loadedFragment.findViewById(R.id.emptyList);
     }
 
     private void setupSwipeToRefresh()
@@ -206,11 +219,12 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         // No one has taken the list
                         JSONObject jsonShoppingList = response.getJSONObject("list");
                         ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
-                        if(shoppingList.getProductList().size() == 0)
+                        Log.d("State",GlobalValuesManager.getInstance(getContext()).getShoppingListState());
+                        if(shoppingList.getProductList().size() == 0 && !GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST))
                         {
                             GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
                         }
-                        else
+                        else if(!GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST))
                         {
                             GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
                         }
@@ -314,7 +328,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         {
                             // Update cache
                             GlobalValuesManager.getInstance(getContext()).deleteShoppingList();
-                            if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE))
+                            Log.d("State", GlobalValuesManager.getInstance(getContext()).getShoppingListState());
+                            if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE) || GlobalValuesManager.getInstance(getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.EMPTY_LIST))
                             {
                                 GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
                                 GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
@@ -346,7 +361,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
     private void deleteListIfEmpty()
     {
-        if(adapter.getItemCount() == 0)
+        if(adapter.getItemCount() == 0 && !GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST))
         {
             sendDeleteShoppingListRequest(NOT_TAKEN_CHARGE);
         }
@@ -404,12 +419,28 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     {
         // Get the shopping list from cache
         ShoppingList shoppingList = GlobalValuesManager.getInstance(getContext()).getUserShoppingList();
+        if(shoppingList.getProductList().size() < 1 && !GlobalValuesManager.getInstance(getContext()).areThereProductsNotFound())
+        {
+            emptyTextView.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            // Save the initial the product list
+            initialProductList = shoppingList.getProductList();
+            emptyTextView.setVisibility(View.GONE);
+            // Set the adapter model
+            if(GlobalValuesManager.getInstance(getContext()).areThereProductsNotFound())
+            {
+                for(int i = 0; i < GlobalValuesManager.getInstance(getContext()).getProductsNotFound().size(); i++)
+                {
 
-        // Save the initial the product list
-        initialProductList = shoppingList.getProductList();
+                    initialProductList.add(GlobalValuesManager.getInstance(getContext()).getProductsNotFound().get(i));
+                }
+            }
+            Log.d("Lista in populateUser", initialProductList.toString());
+            adapter.replaceAll(initialProductList);
+        }
 
-        // Set the adapter model
-        adapter.replaceAll(shoppingList.getProductList());
     }
 
     private void sendTakeListInChargeRequest()
@@ -508,7 +539,14 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         {
                             Toast.makeText(context, context.getString(R.string.list_saved), Toast.LENGTH_SHORT).show();
                         }
-                        GlobalValuesManager.getInstance(context).updateShoppingListProducts(adapter.getModelAsCollection());
+
+                        List<Product> productList =  adapter.getModelAsCollection();
+                        if(productList == null)
+                        {
+                            productList = new ArrayList<>();
+                        }
+
+                        GlobalValuesManager.getInstance(context).updateShoppingListProducts(productList);
                         GlobalValuesManager.getInstance(context).saveAreThereProductsNotFound(false);
                         GlobalValuesManager.getInstance(context).saveProductsNotFound(new JSONArray());
                     }
@@ -538,6 +576,15 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
             e.printStackTrace();
         }
 
+        Log.d("State before saving", GlobalValuesManager.getInstance(getContext()).getShoppingListState());
+        if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.LIST_NO_CHARGE))
+        {
+            emptyTextView.setVisibility(View.GONE);
+            if(takeInCharge != null) {
+                takeInCharge.setVisible(true);
+            }
+
+        }
         Log.d("CREATE_LIST_REQ", jsonParams.toString());
 
         setupCreateShoppingListRequest(getContext(), showFeedback);
@@ -692,7 +739,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 if(item.getItemId() == R.id.deleteTemplate)
                 {
                     adapter.removeItems(adapter.getSelectedItems());
-                    if(adapter.getItemCount() == 0)
+                    if(adapter.getItemCount() == 0 && !GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST))
                     {
                         deleteListIfEmpty();
                     }

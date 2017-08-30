@@ -20,6 +20,15 @@
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"/>
 
+        <TextView
+            android:id="@+id/emptyList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_list_message"
+            android:textColor="@color/blackText"
+            android:textAlignment="center"
+            android:textSize="16sp"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

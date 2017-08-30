@@ -103,6 +103,9 @@ public class HomeFragmentContainer
         this.manageGroupProductsFragment = manageGroupProductsFragment;
     }
 
+    public void setManageShoppingListFragment(ManageShoppingListFragment manageShoppingListFragment) {
+        this.manageShoppingListFragment = manageShoppingListFragment;
+    }
 
     public CreateGroupFragment getCreateGroupFragment() {
         if(this.createGroupFragment == null)

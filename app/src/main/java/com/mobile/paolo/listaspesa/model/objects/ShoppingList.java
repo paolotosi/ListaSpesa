@@ -60,6 +60,11 @@ public class ShoppingList
         this.taken = false;
     }
 
+    public ShoppingList()
+    {
+        this.productList = new ArrayList<>();
+    }
+
     public JSONObject toJSON()
     {
         JSONObject jsonList = new JSONObject();

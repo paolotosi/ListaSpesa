@@ -659,10 +659,11 @@ public class HomeActivity extends AppCompatActivity
     private Fragment selectListFragment()
     {
         Fragment selectedFragment;
+        Log.d("hasUSerShoppingList", String.valueOf(contextualizer.hasUserShoppingList()));
         if(contextualizer.hasUserShoppingList())
         {
             // -- LIST PRESENT --
-            if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE))
+            if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE) || contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.EMPTY_LIST))
             {
                 // -- NOT TAKEN --
                 // ManageShoppingList

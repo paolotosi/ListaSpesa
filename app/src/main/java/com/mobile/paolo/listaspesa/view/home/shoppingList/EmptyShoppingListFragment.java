@@ -1,6 +1,7 @@
 package com.mobile.paolo.listaspesa.view.home.shoppingList;
 
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -22,10 +23,11 @@ import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
  */
 public class EmptyShoppingListFragment extends Fragment {
 
-    private Button createNewListButton;
+    private Button createListFromTemplate;
     private TextView emptyListMessage;
     private Button goToGroupCreationButton;
     private Button goToTemplateCreationButton;
+    private Button createEmptyList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -43,10 +45,11 @@ public class EmptyShoppingListFragment extends Fragment {
 
     private void initializeWidgets(View loadedFragment)
     {
-        createNewListButton = (Button) loadedFragment.findViewById(R.id.createNewListButton);
+        createListFromTemplate = (Button) loadedFragment.findViewById(R.id.createNewListFromTemplateButton);
+        createEmptyList = (Button) loadedFragment.findViewById(R.id.createEmptyListButton);
         goToGroupCreationButton = (Button) loadedFragment.findViewById(R.id.goToGroupCreationButtonSL);
         goToTemplateCreationButton = (Button) loadedFragment.findViewById(R.id.goToTemplateCreation);
-        emptyListMessage = (TextView) loadedFragment.findViewById(R.id.emptyTemplateMessageSL);
+        emptyListMessage = (TextView) loadedFragment.findViewById(R.id.noList);
 
         if(!GlobalValuesManager.getInstance(getContext()).isUserPartOfAGroup())
         {
@@ -56,7 +59,8 @@ public class EmptyShoppingListFragment extends Fragment {
             emptyListMessage.setText(getString(R.string.no_list_no_group_message));
 
             // Disable list creation, show group creation
-            createNewListButton.setEnabled(false);
+            createListFromTemplate.setEnabled(false);
+            createEmptyList.setEnabled(false);
             goToGroupCreationButton.setVisibility(View.VISIBLE);
 
             // If the group creation button is clicked, go to to the group creation section of the app
@@ -76,7 +80,8 @@ public class EmptyShoppingListFragment extends Fragment {
             emptyListMessage.setText(getString(R.string.no_list_no_template_message));
 
             // Disable list creation, show template creation
-            createNewListButton.setEnabled(false);
+            createListFromTemplate.setEnabled(false);
+            createEmptyList.setEnabled(false);
             goToGroupCreationButton.setVisibility(View.GONE);
             goToTemplateCreationButton.setVisibility(View.VISIBLE);
 
@@ -90,6 +95,14 @@ public class EmptyShoppingListFragment extends Fragment {
 
         }
 
+        if(GlobalValuesManager.getInstance(getContext()).isUserPartOfAGroup() && GlobalValuesManager.getInstance(getContext()).areThereProductsNotFound())
+        {
+            createEmptyList.setText("Crea lista con i prodotti avanzati");
+            String message = getString(R.string.no_list_no_template_message);
+            emptyListMessage = (TextView) loadedFragment.findViewById(R.id.noList);
+            emptyListMessage.setText(message + "\nSono presenti prodotti avanzati dalla scorsa spesa, verranno aggiunti automaticamente alla prossima lista");
+        }
+
         if(GlobalValuesManager.getInstance(getContext()).hasUserShoppingList() && GlobalValuesManager.getInstance(getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER))
         {
             emptyListMessage.setText(getString(R.string.create_new_list_button_alt) + "\n\n" + GlobalValuesManager.getInstance(getContext()).getUserTookList() + " ha preso in carico la lista.");
@@ -98,11 +111,33 @@ public class EmptyShoppingListFragment extends Fragment {
 
     private void setupCreateListButtonListener()
     {
-        createNewListButton.setOnClickListener(new View.OnClickListener() {
+        createListFromTemplate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingShoppingList(true);
                 showListCreationFragment();
+            }
+        });
+
+        createEmptyList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!GlobalValuesManager.getInstance(getContext()).areThereProductsNotFound() && !GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER)) {
+                    GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.EMPTY_LIST);
+                    GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(true);
+                }
+                else if(!GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER))
+                {
+                    GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
+                    GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(true);
+                }
+                else
+                {
+                    GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST);
+                    GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(true);
+                }
+
+                showManageFragment();
             }
         });
     }
@@ -111,6 +146,13 @@ public class EmptyShoppingListFragment extends Fragment {
     {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateShoppingListFragment());
+        transaction.commit();
+    }
+
+    private void showManageFragment()
+    {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageShoppingListFragment());
         transaction.commit();
     }
 

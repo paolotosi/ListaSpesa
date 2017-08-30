@@ -147,8 +147,10 @@
     <string name="no_list_message">Il tuo gruppo non ha ancora nessuna lista della spesa in preparazione.</string>
     <string name="no_list_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter definire dei template e la tua lista della spesa.</string>
     <string name="no_list_no_template_message">Il tuo gruppo non ha ancora definito dei template.\nCrea un template per utilizzare la lista della spesa.</string>
-    <string name="create_new_list_button">Crea nuova lista della spesa</string>
+    <string name="create_new_list_button">Crea lista da Template</string>
+    <string name="create_new_list_empty_button">Crea lista vuota</string>
     <string name="create_new_list_button_alt">La lista della spesa è già stata presa in carico!\n\nPuoi creare una nuova lista della spesa.\nI prodotti eventualmente non trovati dal tuo compagno verranno inseriti automaticamente.</string>
+    <string name="empty_list">La lista della spesa corrente è vuota. Premi + per aggiungere prodotti.</string>
 
     <!-- ManageShoppingList strings. -->
     <string name="list_saved">La lista è stata salvata.</string>

@@ -29,8 +29,10 @@ public class GlobalValuesManager
     private SharedPreferencesManager sharedPreferencesManager;
     private Context context;
 
+    //ShoppingList state variables
     public static final String NO_LIST = "NO_LIST";
     public static final String LIST_NO_CHARGE = "LIST_NO_CHARGE";
+    public static final String EMPTY_LIST = "LIST_EMPTY";
     public static final String LIST_IN_CHARGE_LOGGED_USER = "LIST_IN_CHARGE_LOGGED_USER";
     public static final String LIST_IN_CHARGE_ANOTHER_USER = "LIST_IN_CHARGE_ANOTHER_USER";
     public static final String LIST_IN_CHARGE_ANOTHER_LIST = "LIST_IN_CHARGE_ANOTHER_LIST";
@@ -320,7 +322,7 @@ public class GlobalValuesManager
 
     public ShoppingList getUserShoppingList()
     {
-        ShoppingList shoppingList = null;
+        ShoppingList shoppingList = new ShoppingList();
         try {
             shoppingList = ShoppingList.fromJSON(new JSONObject(sharedPreferencesManager.readString(context.getString(R.string.logged_user_list))));
         } catch (JSONException e) {

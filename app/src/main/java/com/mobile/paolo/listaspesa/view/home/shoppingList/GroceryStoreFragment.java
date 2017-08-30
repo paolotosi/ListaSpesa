@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -383,6 +384,8 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         // Save remaining products in the cache
         GlobalValuesManager.getInstance(getContext()).saveAreThereProductsNotFound(true);
         GlobalValuesManager.getInstance(getContext()).saveProductsNotFound(Product.asJSONProductList(adapter.getModelAsCollection()));
+        ShoppingList dummyList = new ShoppingList();
+        GlobalValuesManager.getInstance(getContext()).saveUserShoppingList(dummyList.toJSON());
     }
 
     private void showEndShoppingWithProductsAlertDialog()
