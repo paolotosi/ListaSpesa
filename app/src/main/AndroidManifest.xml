@@ -66,9 +66,13 @@
         <activity android:name=".view.home.template.AddProductsActivity" />
         <activity android:name=".view.home.shoppingList.SupermarketMapActivity" />
 
+        <!--<meta-data-->
+            <!--android:name="com.google.android.maps.v2.API_KEY"-->
+            <!--android:value="AIzaSyAXPTQ4YGGtXUK3DEAwWKEypxOIafzocHA" />-->
+
         <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyAXPTQ4YGGtXUK3DEAwWKEypxOIafzocHA" />
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAXPTQ4YGGtXUK3DEAwWKEypxOIafzocHA"/>
 
         <activity
             android:name=".view.home.group.InsertProductsActivity"

@@ -71,7 +71,7 @@
                 android:id="@+id/localizeMarket"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_gps_fixed_blue_24dp"
+                android:src="@drawable/ic_place_blue_24dp"
                 android:paddingRight="24dp"/>
 
         </LinearLayout>

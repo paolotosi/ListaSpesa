@@ -1,5 +1,6 @@
 package com.mobile.paolo.listaspesa.view.home.supermarket;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +23,10 @@ import com.android.volley.VolleyError;
 import com.doctoror.geocoder.Address;
 import com.doctoror.geocoder.Geocoder;
 import com.doctoror.geocoder.GeocoderException;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,12 +49,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by paolo on 26/08/17.
  */
 
 public class CreateSupermarketFragment extends Fragment
 {
+    // Constants
+    int PLACE_PICKER_REQUEST = 1;
+
     // Widgets
     private Toolbar createSupermarketToolbar;
     private TextInputLayout nameTextInputLayout;
@@ -155,11 +165,7 @@ public class CreateSupermarketFragment extends Fragment
         this.localizeMarket.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isAddressValid())
-                {
-                    addressResolutionTask = new AddressResolutionTask(addressField.getText().toString());
-                    addressResolutionTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
+                openPlacePicker();
             }
         });
     }
@@ -324,7 +330,7 @@ public class CreateSupermarketFragment extends Fragment
 
     private void moveMap(LatLng newCoordinates)
     {
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(newCoordinates, 15);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(newCoordinates, 17);
         googleMap.animateCamera(cameraUpdate);
 
         // Add a marker
@@ -372,6 +378,38 @@ public class CreateSupermarketFragment extends Fragment
                 Toast.makeText(getContext(), getString(R.string.location_resolution_error), Toast.LENGTH_LONG).show();
             }
 
+        }
+    }
+
+    private void openPlacePicker()
+    {
+        PlacePicker.IntentBuilder builder;
+        builder = new PlacePicker.IntentBuilder();
+
+        try {
+            startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                // Get the selected place
+                Place place = PlacePicker.getPlace(getContext(), data);
+
+                // Fill fields with name and address
+                nameField.setText(place.getName());
+                addressField.setText(place.getAddress());
+
+                // Show the place on the fragment map
+                addressResolutionTask = new AddressResolutionTask(addressField.getText().toString());
+                addressResolutionTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
         }
     }
 
