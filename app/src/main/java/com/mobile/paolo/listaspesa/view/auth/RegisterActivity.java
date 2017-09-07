@@ -15,6 +15,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.android.volley.VolleyError;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.remote.UsersDatabaseHelper;
 import com.mobile.paolo.listaspesa.model.objects.User;
@@ -37,11 +41,15 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    // Constants
+    int PLACE_PICKER_REQUEST = 1;
+
     // Widgets
     private FloatingActionButton btnRegister;
     private EditText usernameField, passwordField, addressField;
     private TextInputLayout usernameInputLayout, passwordInputLayout, addressInputLayout;
     private ImageView logo;
+    private ImageView localizeAddress;
 
     // The NetworkResponseHandler
     private NetworkResponseHandler networkResponseHandler;
@@ -68,6 +76,8 @@ public class RegisterActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 
         initializeWidgets();
+
+        setupLocalizeAddressButtonListener();
 
         setupNetworkResponseHandler();
 
@@ -165,6 +175,45 @@ public class RegisterActivity extends AppCompatActivity {
 
         addressField = (EditText) findViewById(R.id.addressField);
         addressInputLayout = (TextInputLayout) findViewById(R.id.addressInputLayout);
+
+        localizeAddress = (ImageView) findViewById(R.id.localizeAddress);
+    }
+
+    private void setupLocalizeAddressButtonListener()
+    {
+        localizeAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openPlacePicker();
+            }
+        });
+    }
+
+    private void openPlacePicker()
+    {
+        PlacePicker.IntentBuilder builder;
+        builder = new PlacePicker.IntentBuilder();
+
+        try {
+            startActivityForResult(builder.build(RegisterActivity.this), PLACE_PICKER_REQUEST);
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                // Get the selected place
+                Place place = PlacePicker.getPlace(getApplicationContext(), data);
+
+                // Fill address field
+                addressField.setText(place.getAddress());
+            }
+        }
     }
 
     private boolean isInsertionValid()

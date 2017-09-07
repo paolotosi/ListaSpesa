@@ -1,5 +1,7 @@
 package com.mobile.paolo.listaspesa.view.home.group;
 
+import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -12,8 +14,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.doctoror.geocoder.Address;
+import com.doctoror.geocoder.Geocoder;
+import com.doctoror.geocoder.GeocoderException;
+import com.google.android.gms.maps.model.LatLng;
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.database.remote.GroupsDatabaseHelper;
 import com.mobile.paolo.listaspesa.database.remote.UsersDatabaseHelper;
@@ -29,8 +37,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -55,6 +66,9 @@ public class CreateGroupFragment extends Fragment
     private static final int GROUP_CREATION_KO_NO_USERS = 3;
     private static final int CONNECTION_ERROR = 4;
     private static final int REMOTE_ERROR = 5;
+
+    // Widgets
+    private ProgressBar progressBar;
 
     // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
@@ -81,6 +95,8 @@ public class CreateGroupFragment extends Fragment
         // Setup toolbar
         setupToolbar(loadedFragment);
 
+        initializeWidgets(loadedFragment);
+
         // Initialize the RecyclerView.
         setupRecyclerView(loadedFragment);
 
@@ -94,6 +110,11 @@ public class CreateGroupFragment extends Fragment
         setupConfirmButtonListener(loadedFragment);
 
         return loadedFragment;
+    }
+
+    private void initializeWidgets(View loadedFragment)
+    {
+        progressBar = (ProgressBar) loadedFragment.findViewById(R.id.progressBar);
     }
 
     private void setupFetchUsersResponseHandler(final View loadedFragment)
@@ -141,8 +162,11 @@ public class CreateGroupFragment extends Fragment
                         }
                     }
 
-                    // Tell the RecyclerView to reload elements
-                    adapter.notifyDataSetChanged();
+                    // Order user list geographically
+                    Toast.makeText(getContext(), getString(R.string.loading_list_message), Toast.LENGTH_LONG).show();
+                    AddressResolutionTask addressResolutionTask = new AddressResolutionTask();
+                    addressResolutionTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
                 }
 
 
@@ -424,6 +448,94 @@ public class CreateGroupFragment extends Fragment
                 error.printStackTrace();
             }
         };
+    }
+
+    private final class AddressResolutionTask extends AsyncTask<Void, Void, Object> {
+
+        private final Geocoder mGeocoder;
+        private LatLng loggedUserCoordinates;
+
+        private List<Address> userAddresses = new ArrayList<>();
+
+        private AddressResolutionTask() {
+            mGeocoder = new Geocoder(getContext(), Locale.getDefault());
+        }
+
+        @Override
+        protected Object doInBackground(final Void... params) {
+            try {
+                for(User user : userModelList)
+                {
+                    // Get absolute location from string address
+                    userAddresses.add(mGeocoder.getFromLocationName(user.getAddress(), 1, true).get(0));
+                }
+                Address loggedUserAddress = mGeocoder.getFromLocationName(GlobalValuesManager.getInstance(getContext()).getLoggedUser().getAddress(), 1, true).get(0);
+                loggedUserCoordinates = new LatLng(loggedUserAddress.getLocation().latitude, loggedUserAddress.getLocation().longitude);
+
+                return userAddresses;
+            } catch (GeocoderException e) {
+                return e;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Object result) {
+            if (result instanceof GeocoderException)
+            {
+                Toast.makeText(getContext(), result.toString(), Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            List<Address> resultAddressList = (List<Address>) result;
+            if(resultAddressList.size() > 0)
+            {
+                for(int i = 0; i < resultAddressList.size(); i++)
+                {
+                    // Set absolute location to each user in the list
+                    double latitude = resultAddressList.get(i).getLocation().latitude;
+                    double longitude = resultAddressList.get(i).getLocation().longitude;
+                    userModelList.get(i).setCachedAbsolutePosition(new LatLng(latitude, longitude));
+                }
+
+                Comparator<User> geographicalComparator = new Comparator<User>() {
+                    @Override
+                    public int compare(User u1, User u2) {
+                        LatLng firstUserCoordinates = u1.getCachedAbsolutePosition();
+                        LatLng secondUserCoordinates = u2.getCachedAbsolutePosition();
+
+                        Location loggedUserLocation = new Location("");
+                        loggedUserLocation.setLatitude(loggedUserCoordinates.latitude);
+                        loggedUserLocation.setLongitude(loggedUserCoordinates.longitude);
+
+                        Location l1 = new Location("");
+                        l1.setLatitude(firstUserCoordinates.latitude);
+                        l1.setLongitude(firstUserCoordinates.longitude);
+
+                        Location l2 = new Location("");
+                        l2.setLatitude(secondUserCoordinates.latitude);
+                        l2.setLongitude(secondUserCoordinates.longitude);
+
+                        float d1 = l1.distanceTo(loggedUserLocation);
+                        float d2 = l2.distanceTo(loggedUserLocation);
+
+                        return Float.compare(d1, d2);
+                    }
+                };
+
+                Collections.sort(userModelList, geographicalComparator);
+
+                // Hide progress bar
+                progressBar.setVisibility(View.GONE);
+
+                // Tell the RecyclerView to reload elements
+                adapter.notifyDataSetChanged();
+            }
+            else
+            {
+                Toast.makeText(getContext(), getString(R.string.location_resolution_error), Toast.LENGTH_LONG).show();
+            }
+
+        }
     }
 
 

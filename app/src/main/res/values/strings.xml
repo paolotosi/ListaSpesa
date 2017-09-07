@@ -69,6 +69,7 @@
     <string name="group_creation_KO_no_users">Seleziona almeno un utente.</string>
     <string name="remote_group_creation_error">Errore nella creazione del gruppo sul database.</string>
     <string name="no_users_message">Sei l\'unico utente dell\'applicazione!\nConsigliala ai tuoi amici!</string>
+    <string name="loading_list_message">Sto cercando gli utenti più vicini a te...</string>
 
     <!-- AddMemberFragment strings. -->
     <string name="add_toolbar">Aggiunti utenti</string>

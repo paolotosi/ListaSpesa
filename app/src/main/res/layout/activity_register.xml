@@ -49,12 +49,16 @@
                     android:inputType="textPassword"/>
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/addressInputLayout"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp">
-                <!--app:errorTextAppearance="@style/error_appearance"-->
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/addressInputLayout"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
 
                 <EditText
                     android:id="@+id/addressField"
@@ -62,7 +66,15 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/address"
                     android:inputType="textEmailAddress"/>
-            </android.support.design.widget.TextInputLayout>
+
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageView
+                    android:id="@+id/localizeAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_place_blue_24dp" />
+            </LinearLayout>
 
         </LinearLayout>
 

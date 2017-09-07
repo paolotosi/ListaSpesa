@@ -1,5 +1,7 @@
 package com.mobile.paolo.listaspesa.model.objects;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +20,7 @@ public class User implements Serializable
     private String username;
     private String password;
     private String address;
+    private LatLng cachedAbsolutePosition;
 
     // This attribute will be used only in lists where is required to select users
     private boolean isChecked;
@@ -94,6 +97,16 @@ public class User implements Serializable
 
     public void setChecked(boolean checked) {
         isChecked = checked;
+    }
+
+    public LatLng getCachedAbsolutePosition()
+    {
+        return cachedAbsolutePosition;
+    }
+
+    public void setCachedAbsolutePosition(LatLng absolutePosition)
+    {
+        this.cachedAbsolutePosition = absolutePosition;
     }
 
 }
