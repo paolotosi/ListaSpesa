@@ -6,7 +6,6 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,8 +22,10 @@ import com.mobile.paolo.listaspesa.view.auth.RegisterActivity;
 
 public class WelcomeActivity extends AppCompatActivity {
 
-    ImageView logo;
-    LinearLayout welcomeLayout;
+    private ImageView logo;
+    private LinearLayout welcomeLayout;
+
+    private boolean animationStarted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +38,11 @@ public class WelcomeActivity extends AppCompatActivity {
         findViewById(R.id.btnLogin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
-                animateLogoAndStartNextActivity(intent);
+                if(!animationStarted)
+                {
+                    Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
+                    animateLogoAndStartNextActivity(intent);
+                }
             }
         });
 
@@ -46,8 +50,11 @@ public class WelcomeActivity extends AppCompatActivity {
         findViewById(R.id.btnRegister).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(WelcomeActivity.this, RegisterActivity.class);
-                animateLogoAndStartNextActivity(intent);
+                if(!animationStarted)
+                {
+                    Intent intent = new Intent(WelcomeActivity.this, RegisterActivity.class);
+                    animateLogoAndStartNextActivity(intent);
+                }
             }
         });
     }
@@ -57,6 +64,9 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onResume();
         // If the user returns to this view, make the x position of the logo zero
         findViewById(R.id.logo).setTranslationX(0);
+
+        // If I came back from Login/Register
+        animationStarted = false;
     }
 
     private void enteringAnimation()
@@ -129,6 +139,8 @@ public class WelcomeActivity extends AppCompatActivity {
         });
 
         motionAnimator.start();
+
+        animationStarted = true;
     }
 
 

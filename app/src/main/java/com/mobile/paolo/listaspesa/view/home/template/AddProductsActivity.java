@@ -22,8 +22,6 @@ import com.mobile.paolo.listaspesa.model.adapters.ProductCardViewDataAdapter;
 import com.mobile.paolo.listaspesa.model.objects.Product;
 import com.mobile.paolo.listaspesa.network.NetworkResponseHandler;
 import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
-import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
-import com.mobile.paolo.listaspesa.view.home.shoppingList.ManageShoppingListFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -164,6 +162,7 @@ public class AddProductsActivity extends AppCompatActivity implements SearchView
                     if(response.getInt("success") == 1)
                     {
                         populateProductList(response.getJSONArray("products"));
+                        showMessageIfAllProductsInserted();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -268,6 +267,19 @@ public class AddProductsActivity extends AppCompatActivity implements SearchView
             {
                 addList.add(productList.get(i));
             }
+        }
+    }
+
+    private void showMessageIfAllProductsInserted()
+    {
+        if(adapter.getItemCount() == 0)
+        {
+            // Template contains all products
+            findViewById(R.id.no_more_products_message).setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            findViewById(R.id.no_more_products_message).setVisibility(View.GONE);
         }
     }
 }

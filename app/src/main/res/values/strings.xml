@@ -136,6 +136,7 @@
     <string name="product_name_hint">Nome prodotto</string>
     <string name="product_brand_hint">Marca prodotto</string>
     <string name="product_description_hint">(Opzionale) Descrizione</string>
+    <string name="no_more_products">Hai già aggiunto tutti i prodotti disponibili!</string>
 
     <!-- InsertProductsActivity strings. -->
     <string name="insert_product_toolbar">Inserisci nuovo prodotto</string>
@@ -147,11 +148,13 @@
     <!-- EmptyListFragment strings. -->
     <string name="no_list_message">Il tuo gruppo non ha ancora nessuna lista della spesa in preparazione.</string>
     <string name="no_list_no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per poter definire dei template e la tua lista della spesa.</string>
-    <string name="no_list_no_template_message">Il tuo gruppo non ha ancora definito dei template.\nCrea un template per utilizzare la lista della spesa.</string>
+    <string name="no_list_no_template_message">Il tuo gruppo non ha ancora definito dei template.\nCrea un template per velocizzare la creazione della lista della spesa.</string>
     <string name="create_new_list_button">Crea lista da Template</string>
     <string name="create_new_list_empty_button">Crea lista vuota</string>
     <string name="create_new_list_button_alt">La lista della spesa è già stata presa in carico!\n\nPuoi creare una nuova lista della spesa.\nI prodotti eventualmente non trovati dal tuo compagno verranno inseriti automaticamente.</string>
     <string name="empty_list">La lista della spesa corrente è vuota. Premi + per aggiungere prodotti.</string>
+    <string name="create_list_products_not_found">Crea lista con i prodotti non trovati</string>
+    <string name="products_not_found_present_message">Sono presenti prodotti non trovati nella scorsa spesa, verranno aggiunti automaticamente alla prossima lista.</string>
 
     <!-- ManageShoppingList strings. -->
     <string name="list_saved">La lista è stata salvata.</string>

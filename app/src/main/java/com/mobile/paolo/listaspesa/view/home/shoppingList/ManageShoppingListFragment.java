@@ -239,7 +239,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         // No one has taken the list
                         JSONObject jsonShoppingList = response.getJSONObject("list");
                         ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
-                        Log.d("State",GlobalValuesManager.getInstance(getContext()).getShoppingListState());
+                        Log.d("State refresh",GlobalValuesManager.getInstance(getContext()).getShoppingListState());
                         if(shoppingList.getProductList().size() == 0 && !GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST))
                         {
                             GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
@@ -348,15 +348,18 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         {
                             // Update cache
                             GlobalValuesManager.getInstance(getContext()).deleteShoppingList();
-                            Log.d("State", GlobalValuesManager.getInstance(getContext()).getShoppingListState());
-                            if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE) || GlobalValuesManager.getInstance(getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.EMPTY_LIST))
+                            Log.d("State delete", GlobalValuesManager.getInstance(getContext()).getShoppingListState());
+                            if(!GlobalValuesManager.getInstance(getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.NO_LIST))
                             {
-                                GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
-                                GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
-                            }
-                            else
-                            {
-                                GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER);
+                                if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE) || GlobalValuesManager.getInstance(getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.EMPTY_LIST))
+                                {
+                                    GlobalValuesManager.getInstance(getContext()).saveHasUserShoppingList(false);
+                                    GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
+                                }
+                                else
+                                {
+                                    GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER);
+                                }
                             }
 
                             // Change fragment: show EmptyShoppingListFragment
@@ -459,7 +462,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 // Delete products not found
                 GlobalValuesManager.getInstance(getContext()).saveProductsNotFound(new JSONArray());
             }
-            Log.d("Lista in populateUser", initialProductList.toString());
+            Log.d("Lista populateProdList", initialProductList.toString());
             adapter.replaceAll(initialProductList);
         }
 

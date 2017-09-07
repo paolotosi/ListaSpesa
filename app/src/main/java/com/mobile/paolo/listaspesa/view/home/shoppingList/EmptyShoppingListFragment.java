@@ -80,7 +80,6 @@ public class EmptyShoppingListFragment extends Fragment {
 
             // Disable list creation, show template creation
             createListFromTemplate.setEnabled(false);
-            createEmptyList.setEnabled(false);
             goToGroupCreationButton.setVisibility(View.GONE);
             goToTemplateCreationButton.setVisibility(View.VISIBLE);
 
@@ -96,10 +95,15 @@ public class EmptyShoppingListFragment extends Fragment {
 
         if(GlobalValuesManager.getInstance(getContext()).isUserPartOfAGroup() && GlobalValuesManager.getInstance(getContext()).areThereProductsNotFound())
         {
-            createEmptyList.setText("Crea lista con i prodotti avanzati");
-            String message = getString(R.string.no_list_no_template_message);
+            createEmptyList.setText(getString(R.string.create_list_products_not_found));
             emptyListMessage = (TextView) loadedFragment.findViewById(R.id.noList);
-            emptyListMessage.setText(message + "\nSono presenti prodotti avanzati dalla scorsa spesa, verranno aggiunti automaticamente alla prossima lista");
+            String message = "";
+            if(!GlobalValuesManager.getInstance(getContext()).hasUserTemplates())
+            {
+                message += getString(R.string.no_list_no_template_message) + "\n";
+            }
+            message += getString(R.string.products_not_found_present_message);
+            emptyListMessage.setText(message);
         }
 
         if(GlobalValuesManager.getInstance(getContext()).hasUserShoppingList() && GlobalValuesManager.getInstance(getContext()).getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER))
@@ -113,7 +117,7 @@ public class EmptyShoppingListFragment extends Fragment {
         createListFromTemplate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingShoppingList(true);
+                // GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingShoppingList(true);
                 showListCreationFragment();
             }
         });

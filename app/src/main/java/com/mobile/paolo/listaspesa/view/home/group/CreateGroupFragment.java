@@ -4,6 +4,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
@@ -69,6 +70,7 @@ public class CreateGroupFragment extends Fragment
 
     // Widgets
     private ProgressBar progressBar;
+    private TextInputLayout groupNameInputLayout;
 
     // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
@@ -112,9 +114,19 @@ public class CreateGroupFragment extends Fragment
         return loadedFragment;
     }
 
+    @Override
+    public void onResume() {
+        if(adapter.getItemCount() > 0)
+        {
+            progressBar.setVisibility(View.GONE);
+        }
+        super.onResume();
+    }
+
     private void initializeWidgets(View loadedFragment)
     {
         progressBar = (ProgressBar) loadedFragment.findViewById(R.id.progressBar);
+        groupNameInputLayout = (TextInputLayout) loadedFragment.findViewById(R.id.groupNameInputLayout);
     }
 
     private void setupFetchUsersResponseHandler(final View loadedFragment)
@@ -162,8 +174,8 @@ public class CreateGroupFragment extends Fragment
                         }
                     }
 
-                    // Order user list geographically
-                    Toast.makeText(getContext(), getString(R.string.loading_list_message), Toast.LENGTH_LONG).show();
+                    // Order user list geographically with an AsyncTask
+                    Toast.makeText(getContext(), getString(R.string.loading_list_message), Toast.LENGTH_SHORT).show();
                     AddressResolutionTask addressResolutionTask = new AddressResolutionTask();
                     addressResolutionTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -209,11 +221,13 @@ public class CreateGroupFragment extends Fragment
             if(!groupName.isEmpty())
             {
                 jsonRequest.put("groupName", groupName);
+                groupNameInputLayout.setErrorEnabled(false);
             }
             else
             {
                 okToSend = false;
-                showFeedback(GROUP_CREATION_KO_NO_NAME);
+                groupNameInputLayout.setError(getString(R.string.group_creation_KO_no_name));
+                // showFeedback(GROUP_CREATION_KO_NO_NAME);
             }
 
             // selectedIDs will contain the IDs of every member
