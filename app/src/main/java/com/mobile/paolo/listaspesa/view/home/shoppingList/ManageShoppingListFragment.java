@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -43,7 +42,6 @@ import com.mobile.paolo.listaspesa.view.home.template.AddProductsActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -149,7 +147,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 return false;
             }
         });
-        if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST)) {
+        if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST) || adapter.getItemCount() == 0) {
             takeInCharge.setVisible(false);
         }
         else {
@@ -176,7 +174,29 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         {
             actionMode.finish();
         }
+
         super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        showListControlsBasedOnState();
+        super.onResume();
+    }
+
+
+    private void showListControlsBasedOnState()
+    {
+        Log.d("State before saving", GlobalValuesManager.getInstance(getContext()).getShoppingListState());
+        if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.LIST_NO_CHARGE) || adapter.getItemCount() > 0)
+        {
+            // Hide message and show 'take in charge' action
+            emptyTextView.setVisibility(View.GONE);
+            if(takeInCharge != null) {
+                takeInCharge.setVisible(true);
+            }
+
+        }
     }
 
     private void setupToolbar()
@@ -436,6 +456,8 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
 
                     initialProductList.add(GlobalValuesManager.getInstance(getContext()).getProductsNotFound().get(i));
                 }
+                // Delete products not found
+                GlobalValuesManager.getInstance(getContext()).saveProductsNotFound(new JSONArray());
             }
             Log.d("Lista in populateUser", initialProductList.toString());
             adapter.replaceAll(initialProductList);
@@ -486,6 +508,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                         sendDeleteShoppingListRequest(TAKEN_CHARGE);
 
                         // Update cache
+                        GlobalValuesManager.getInstance(getContext()).updateShoppingListProducts(new ArrayList<Product>());
                         GlobalValuesManager.getInstance(getContext()).saveShoppingListTaken(true);
                         GlobalValuesManager.getInstance(getContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER);
 
@@ -576,15 +599,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
             e.printStackTrace();
         }
 
-        Log.d("State before saving", GlobalValuesManager.getInstance(getContext()).getShoppingListState());
-        if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.LIST_NO_CHARGE))
-        {
-            emptyTextView.setVisibility(View.GONE);
-            if(takeInCharge != null) {
-                takeInCharge.setVisible(true);
-            }
 
-        }
         Log.d("CREATE_LIST_REQ", jsonParams.toString());
 
         setupCreateShoppingListRequest(getContext(), showFeedback);

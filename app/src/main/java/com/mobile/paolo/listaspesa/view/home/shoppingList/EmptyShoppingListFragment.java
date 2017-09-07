@@ -1,7 +1,6 @@
 package com.mobile.paolo.listaspesa.view.home.shoppingList;
 
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;

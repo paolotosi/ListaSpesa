@@ -170,6 +170,10 @@ public class HomeFragmentContainer
         return manageShoppingListFragment;
     }
 
+    public void resetManageShoppingListFragment() {
+        this.manageShoppingListFragment = null;
+    }
+
     public GroceryStoreFragment getGroceryStoreFragment() {
         if(this.groceryStoreFragment == null)
         {
