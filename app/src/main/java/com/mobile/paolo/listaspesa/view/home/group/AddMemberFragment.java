@@ -101,40 +101,38 @@ public class AddMemberFragment extends Fragment {
     // Populate userList with server response
     private void populateUserList(JSONObject serverResponse)
     {
-        try {
-            // Split the response in a list.
-            JSONArray jsonUserList = serverResponse.getJSONArray("users");
+        if(userModelList.isEmpty()) {
+            try {
+                // Split the response in a list.
+                JSONArray jsonUserList = serverResponse.getJSONArray("users");
 
-            // Get logged user to exclude him from the list
-            List<User> groupUser = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getMembers();
+                // Get logged user to exclude him from the list
+                List<User> groupUser = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getMembers();
 
-            // For each user, create a User object and add it to the list.
-            for(int i = 0; i < jsonUserList.length(); i++)
-            {
-                Boolean inGroup = false;
-                User toBeAdded = null;
-                for(int j = 0; j < groupUser.size(); j++)
-                {
-                    JSONObject jsonUser = (JSONObject) jsonUserList.get(i);
-                    toBeAdded = new User(jsonUser);
-                    if(groupUser.get(j).getID() == toBeAdded.getID())
-                    {
-                        inGroup = true;
+                // For each user, create a User object and add it to the list.
+                for (int i = 0; i < jsonUserList.length(); i++) {
+                    Boolean inGroup = false;
+                    User toBeAdded = null;
+                    for (int j = 0; j < groupUser.size(); j++) {
+                        JSONObject jsonUser = (JSONObject) jsonUserList.get(i);
+                        toBeAdded = new User(jsonUser);
+                        if (groupUser.get(j).getID() == toBeAdded.getID()) {
+                            inGroup = true;
+                        }
                     }
+
+                    if (!inGroup) {
+                        userModelList.add(toBeAdded);
+                    }
+
                 }
 
-                if(!inGroup)
-                {
-                    userModelList.add(toBeAdded);
-                }
+                // Tell the RecyclerView to reload elements
+                adapter.notifyDataSetChanged();
 
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-
-            // Tell the RecyclerView to reload elements
-            adapter.notifyDataSetChanged();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 
