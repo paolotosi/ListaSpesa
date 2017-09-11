@@ -11,6 +11,12 @@ import org.json.JSONObject;
  * Created by paolo on 03/08/17.
  */
 
+/**
+ * This class handles database queries regarding templates.
+ * It simply asks the NetworkMessageSender class to perform
+ * HTTP requests specifying which URLs to connect to.
+ */
+
 public class TemplatesDatabaseHelper
 {
     private static String host = RemoteDatabaseHelper.getInstance().getHost();

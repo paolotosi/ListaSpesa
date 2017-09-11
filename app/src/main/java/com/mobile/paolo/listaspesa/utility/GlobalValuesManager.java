@@ -30,12 +30,12 @@ public class GlobalValuesManager
     private Context context;
 
     //ShoppingList state variables
-    public static final String NO_LIST = "NO_LIST";
-    public static final String LIST_NO_CHARGE = "LIST_NO_CHARGE";
-    public static final String EMPTY_LIST = "LIST_EMPTY";
-    public static final String LIST_IN_CHARGE_LOGGED_USER = "LIST_IN_CHARGE_LOGGED_USER";
-    public static final String LIST_IN_CHARGE_ANOTHER_USER = "LIST_IN_CHARGE_ANOTHER_USER";
-    public static final String LIST_IN_CHARGE_ANOTHER_LIST = "LIST_IN_CHARGE_ANOTHER_LIST";
+    public static final String NO_LIST = "NO_LIST"; //there is no shopping list for the group
+    public static final String LIST_NO_CHARGE = "LIST_NO_CHARGE"; //there is only one list for this group and no one has taken it in charge
+    public static final String EMPTY_LIST = "LIST_EMPTY"; //there is a list but it was created as an empty list (not from a template)
+    public static final String LIST_IN_CHARGE_LOGGED_USER = "LIST_IN_CHARGE_LOGGED_USER"; //Logged user has taken in charge the list; there isn't another list 'in preparazione'
+    public static final String LIST_IN_CHARGE_ANOTHER_USER = "LIST_IN_CHARGE_ANOTHER_USER"; //Group list has taken in charge by another user, as above there is no list 'in preparazione'
+    public static final String LIST_IN_CHARGE_ANOTHER_LIST = "LIST_IN_CHARGE_ANOTHER_LIST"; //List is in taken in charge by another user but logged user has initialized another list
 
     private GlobalValuesManager(Context context)
     {

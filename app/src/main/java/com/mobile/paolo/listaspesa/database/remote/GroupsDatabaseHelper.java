@@ -11,6 +11,12 @@ import org.json.JSONObject;
  * Created by paolo on 08/07/17.
  */
 
+/**
+ * This class handles database queries regarding groups.
+ * It simply asks the NetworkMessageSender class to perform
+ * HTTP requests specifying which URLs to connect to.
+ */
+
 public class GroupsDatabaseHelper
 {
     private static String host = RemoteDatabaseHelper.getInstance().getHost();

@@ -6,6 +6,11 @@ import android.provider.BaseColumns;
  * Created by paolo on 17/08/17.
  */
 
+/**
+ * Local database contains only products belonging to the taken list
+ * Structure is similar to product table in remote DB
+ */
+
 public class ListaSpesaDB
 {
     public static final String DATABASE_NAME = "ListaSpesa.db";

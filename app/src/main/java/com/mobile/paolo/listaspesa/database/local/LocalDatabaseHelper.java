@@ -13,6 +13,10 @@ import com.mobile.paolo.listaspesa.model.objects.Product;
  * Created by paolo on 17/08/17.
  */
 
+/**
+ * This class handles some local database operations.
+ */
+
 public class LocalDatabaseHelper extends SQLiteOpenHelper
 {
     // Database creation SQL statement

@@ -43,8 +43,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
+/** -- CreateTemplateFragment --
+ * Template creation where logged user can insert a name and various product.
  */
 public class CreateTemplateFragment extends Fragment implements SearchView.OnQueryTextListener {
 

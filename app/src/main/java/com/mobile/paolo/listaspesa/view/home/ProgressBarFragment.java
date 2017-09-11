@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.mobile.paolo.listaspesa.R;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple progress bar in a fragment.
  */
 public class ProgressBarFragment extends Fragment
 {

@@ -32,6 +32,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * -- AddMemberFragment --
+ * Shows user list and gives the possibility to add, in the logged user's group, some of them
+ * List is sorted by nearness with logged user
+ */
+
 public class AddMemberFragment extends Fragment {
     // JSON tags
     private static final String TAG_SUCCESS = "success";
@@ -65,7 +71,7 @@ public class AddMemberFragment extends Fragment {
         View loadedFragment = inflater.inflate(R.layout.fragment_add_member, container, false);
 
         // Setup toolbar
-        setupToolbar(loadedFragment); //TODO SET AS ACTION BAR
+        setupToolbar(loadedFragment);
 
         // Initialize the RecyclerView.
         setupRecyclerView(loadedFragment);

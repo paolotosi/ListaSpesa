@@ -35,6 +35,12 @@ import java.util.List;
  * Created by paolo on 04/08/17.
  */
 
+/**
+ * This file contains two classes: TemplateCardViewAdapter and ViewHolder
+ * First class contains methods that specifies recycler view cards behaviour, binding and operations
+ * Second class is the associated view holder
+ */
+
 public class TemplateCardViewDataAdapter extends SelectableAdapter<TemplateCardViewDataAdapter.ViewHolder>
 {
     // The data to show

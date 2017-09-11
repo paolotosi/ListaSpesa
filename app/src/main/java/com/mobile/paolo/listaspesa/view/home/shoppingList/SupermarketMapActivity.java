@@ -38,6 +38,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/** - SupermarketMapActivity -
+ * This activity shows a map with supermarket location
+ * Every supermarket has a card in which products that can be found are specified
+ * Supermarket in which user goes shopping can be selected here
+ */
+
 public class SupermarketMapActivity extends AppCompatActivity implements GoogleMap.OnInfoWindowClickListener
 {
     // Widgets

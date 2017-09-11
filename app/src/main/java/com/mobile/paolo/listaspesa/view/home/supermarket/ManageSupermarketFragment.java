@@ -37,6 +37,10 @@ import java.util.List;
  * Created by paolo on 26/08/17.
  */
 
+/** -- ManageSupermarketFragment --
+ * Management of group supermarkets, various operations like add, deletion, etc.
+ */
+
 public class ManageSupermarketFragment extends Fragment implements SupermarketCardViewDataAdapter.ViewHolder.ClickListener
 {
     // Widgets

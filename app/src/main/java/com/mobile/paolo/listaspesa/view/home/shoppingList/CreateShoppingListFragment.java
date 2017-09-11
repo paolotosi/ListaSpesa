@@ -21,6 +21,11 @@ import com.mobile.paolo.listaspesa.utility.GlobalValuesManager;
 
 import java.util.List;
 
+/**
+ * -- CreateShoppingListFragment --
+ * This fragment shows group templates, user can choose one of them to initialize the shopping list with template products
+ */
+
 public class CreateShoppingListFragment extends Fragment {
 
     // RecyclerView, adapter and model

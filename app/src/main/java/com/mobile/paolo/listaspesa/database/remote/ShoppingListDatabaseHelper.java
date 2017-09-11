@@ -11,6 +11,12 @@ import org.json.JSONObject;
  * Created by revoc on 10/08/17.
  */
 
+/**
+ * This class handles database queries regarding shopping list.
+ * It simply asks the NetworkMessageSender class to perform
+ * HTTP requests specifying which URLs to connect to.
+ */
+
 public class ShoppingListDatabaseHelper
 {
     private static String host = RemoteDatabaseHelper.getInstance().getHost();

@@ -19,6 +19,10 @@ import java.util.Locale;
  * Created by paolo on 20/08/17.
  */
 
+/**
+ * An object that represents a supermarket.
+ */
+
 public class Supermarket
 {
     private int id;

@@ -18,6 +18,12 @@ import com.mobile.paolo.listaspesa.model.objects.User;
  * Created by paolo on 04/07/17.
  */
 
+/**
+ * This file contains two classes: UserCardViewAdapter and ViewHolder
+ * First class contains methods that specifies recycler view cards behaviour, binding and operations
+ * Second class is the associated view holder
+ */
+
 public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDataAdapter.ViewHolder>
 {
     // The data to show.

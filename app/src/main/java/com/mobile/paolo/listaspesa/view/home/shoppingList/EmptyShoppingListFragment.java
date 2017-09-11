@@ -19,6 +19,7 @@ import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
  * An empty state shown when the user selects the "List" tab but his group hasn't defined
  * any list yet.
  * It has a button that guides the user to the list creation section.
+ * It has a button that creates an empty list.
  */
 public class EmptyShoppingListFragment extends Fragment {
 

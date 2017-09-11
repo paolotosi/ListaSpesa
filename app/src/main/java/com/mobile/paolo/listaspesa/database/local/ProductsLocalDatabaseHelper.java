@@ -14,6 +14,10 @@ import java.util.List;
  * Created by paolo on 17/08/17.
  */
 
+/**
+ * This class handles local database queries regarding products.
+ */
+
 public class ProductsLocalDatabaseHelper implements ProductDAO
 {
     private static ProductsLocalDatabaseHelper instance;

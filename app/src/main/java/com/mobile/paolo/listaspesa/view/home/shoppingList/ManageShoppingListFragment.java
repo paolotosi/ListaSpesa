@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
+/** - ManageShoppingList Fragment -
 Shows the shopping list of the group and provides operations to manipulate the shopping list
  or to change his state from "in preparazione" to "in acquisto"
  */

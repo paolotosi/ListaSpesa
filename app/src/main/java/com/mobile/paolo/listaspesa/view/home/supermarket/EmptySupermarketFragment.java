@@ -17,6 +17,10 @@ import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
  * Created by paolo on 26/08/17.
  */
 
+/** -- EmptySupermarketFragment --
+ * Fragment shown when group hasn't any supermarket
+ */
+
 public class EmptySupermarketFragment extends Fragment
 {
     // Widgets

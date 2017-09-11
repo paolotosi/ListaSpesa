@@ -55,6 +55,10 @@ import static android.app.Activity.RESULT_OK;
  * Created by paolo on 26/08/17.
  */
 
+/** -- CreateSupermarketFragment --
+ * Creation of supermarket for user group.
+ */
+
 public class CreateSupermarketFragment extends Fragment
 {
     // Constants

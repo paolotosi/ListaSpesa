@@ -23,6 +23,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * -- InsertProductActivity --
+ * Create a product to insert in the group private product table in remote database
+ * User must insert a valid name and brand, this fields must be different from those of the product already present
+ * Description is optional as stated in the hint
+ */
+
 public class InsertProductsActivity extends AppCompatActivity {
 
     // Network response status

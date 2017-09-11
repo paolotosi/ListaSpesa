@@ -13,6 +13,10 @@ import java.util.HashMap;
  * Created by revoc on 08/08/2017.
  */
 
+/**
+ * An object that represents a shopping list.
+ */
+
 public class ShoppingList
 {
     private int groupID;
