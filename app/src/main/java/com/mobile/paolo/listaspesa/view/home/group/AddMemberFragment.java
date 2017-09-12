@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.mobile.paolo.listaspesa.R;
@@ -59,6 +60,9 @@ public class AddMemberFragment extends Fragment {
     private NetworkResponseHandler modifyGroupResponseHandler;
     private NetworkResponseHandler groupDetailsResponseHandler;
 
+    // Widgets
+    private TextView noUsersToAdd;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +76,8 @@ public class AddMemberFragment extends Fragment {
 
         // Setup toolbar
         setupToolbar(loadedFragment);
+
+        initializeWidgets(loadedFragment);
 
         // Initialize the RecyclerView.
         setupRecyclerView(loadedFragment);
@@ -88,6 +94,11 @@ public class AddMemberFragment extends Fragment {
         return loadedFragment;
     }
 
+    private void initializeWidgets(View loadedFragment)
+    {
+        noUsersToAdd = (TextView) loadedFragment.findViewById(R.id.noUsersToAdd);
+    }
+
     private void setupFetchUsersResponseHandler()
     {
         this.fetchUsersResponseHandler = new NetworkResponseHandler() {
@@ -95,11 +106,15 @@ public class AddMemberFragment extends Fragment {
             @Override
             public void onSuccess(JSONObject jsonResponse) {
                 populateUserList(jsonResponse);
+                if(adapter.getItemCount() == 0)
+                {
+                    noUsersToAdd.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
         };
     }

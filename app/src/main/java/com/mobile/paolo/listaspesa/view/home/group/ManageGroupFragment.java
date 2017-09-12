@@ -77,10 +77,13 @@ public class ManageGroupFragment extends Fragment {
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(false);
 
         // use a linear layout manager
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+//        layoutManager.setAutoMeasureEnabled(true);
+//        recyclerView.setLayoutManager(layoutManager);
 
         // create an Object for Adapter
         adapter = new UserCardViewDataAdapter(groupMembersModelList, 2);
@@ -88,7 +91,7 @@ public class ManageGroupFragment extends Fragment {
         // set the adapter object to the RecyclerView
         recyclerView.setAdapter(adapter);
 
-        adapter.notifyDataSetChanged();
+        // adapter.notifyDataSetChanged();
     }
 
     private void loadGroupInfo()
@@ -151,9 +154,10 @@ public class ManageGroupFragment extends Fragment {
         loadedFragment.findViewById(R.id.addMembers).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getAddMemberFragment());
-                    transaction.commit();
+                HomeFragmentContainer.getInstance().resetAddMemberFragment();
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getAddMemberFragment());
+                transaction.commit();
             }
         });
     }

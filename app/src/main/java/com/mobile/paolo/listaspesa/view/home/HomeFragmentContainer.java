@@ -195,6 +195,11 @@ public class HomeFragmentContainer
         return addMemberFragment;
     }
 
+    public void resetAddMemberFragment()
+    {
+        this.addMemberFragment = null;
+    }
+
     public EmptySupermarketFragment getEmptySupermarketFragment() {
         if(this.emptySupermarketFragment == null)
         {

@@ -75,6 +75,7 @@
     <string name="add_toolbar">Aggiunti utenti</string>
     <string name="add_OK">Inserimento avvenuto con successo!</string>
     <string name="add_KO_no_users">Seleziona almeno un utente.</string>
+    <string name="no_users_to_add">Tutti gli utenti dell\'applicazione\nfanno già parte del tuo gruppo!</string>
 
     <!-- ManageGroupFragment strings. -->
     <string name="logout_dialog">Sei sicuro di voler uscire?</string>
