@@ -24,6 +24,16 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/instructions"
+                    android:textColor="@color/blackText"
+                    android:textSize="14sp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"/>
+
                 <Spinner
                     android:id="@+id/supermarketSpinner"
                     android:layout_width="match_parent"

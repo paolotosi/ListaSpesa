@@ -177,6 +177,7 @@
     <string name="end_shopping_action">Concludi</string>
     <string name="list_completed_new_list">Il tuo gruppo ha già iniziato una nuova lista!</string>
     <string name="no_supermarket_selected_toast">Seleziona un supermercato.</string>
+    <string name="instructions">Spunta i prodotti che trovi e tocca l\'icona del carrello.</string>
 
     <!-- EmptySupermarketFragment strings. -->
     <string name="no_supermarket_message">Il tuo gruppo non ha definito dei supermercati.\nAggiungine uno!</string>

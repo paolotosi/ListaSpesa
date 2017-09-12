@@ -358,8 +358,13 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
                     {
                         Toast.makeText(context, "Eliminazione avvenuta", Toast.LENGTH_SHORT).show();
                         GlobalValuesManager.getInstance(context).removeProduct(sortedList.get(position).getID());
+                        GlobalValuesManager.getInstance(context).removeProductFromShoppingList(sortedList.get(position).getID());
                         deleteList.add(sortedList.get(position));
                         sortedList.remove(sortedList.get(position));
+                        if(GlobalValuesManager.getInstance(context).getUserShoppingList().getProductList().size() == 0)
+                        {
+                            GlobalValuesManager.getInstance(context).saveShoppingListState(GlobalValuesManager.EMPTY_LIST);
+                        }
                     }
                     else
                     {
@@ -372,7 +377,7 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
 
             @Override
             public void onError(VolleyError error) {
-
+                error.printStackTrace();
             }
         };
     }

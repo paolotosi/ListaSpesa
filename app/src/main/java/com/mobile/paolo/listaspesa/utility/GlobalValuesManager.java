@@ -343,6 +343,20 @@ public class GlobalValuesManager
         saveUserShoppingList(shoppingList.toJSON());
     }
 
+    public void removeProductFromShoppingList(Integer productID)
+    {
+        List<Product> productList = getUserShoppingList().getProductList();
+        for(int i = productList.size()-1; i >= 0; i--)
+        {
+            if(productList.get(i).getID() == productID)
+            {
+                productList.remove(productList.get(i));
+            }
+        }
+
+        updateShoppingListProducts(productList);
+    }
+
     public void addProductsToShoppingList(Collection<Product> addList)
     {
         ShoppingList shoppingList = getUserShoppingList();
