@@ -22,9 +22,11 @@
 
         <TextView
             android:id="@+id/emptyList"
+            android:padding="20dp"
+            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/no_list_message"
+            android:text="@string/empty_list"
             android:textColor="@color/blackText"
             android:textAlignment="center"
             android:textSize="16sp"/>

@@ -92,7 +92,11 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
     // Avoid saving list on exit if the list has been taken
     private boolean listTaken = false;
 
+    // Avoid showing save feedback when exiting if list hasn't been modified
+    private boolean listModified = false;
+
     private MenuItem takeInCharge;
+    private MenuItem confirmList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -147,12 +151,6 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 return false;
             }
         });
-        if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST) || adapter.getItemCount() == 0) {
-            takeInCharge.setVisible(false);
-        }
-        else {
-            takeInCharge.setVisible(true);
-        }
         // Add listener to 'Delete' menu action
         MenuItem deleteList = menu.findItem(R.id.deleteList);
         deleteList.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -162,18 +160,42 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
                 return false;
             }
         });
+
+        // Add listener to 'Confirm' menu action
+        confirmList = menu.findItem(R.id.confirmList);
+        confirmList.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                sendShoppingListCreationRequest(SHOW_SAVE_FEEDBACK);
+                return false;
+            }
+        });
+
+        if(GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST) || adapter.getItemCount() == 0)
+        {
+            takeInCharge.setVisible(false);
+            confirmList.setVisible(false);
+        }
+        else
+        {
+            takeInCharge.setVisible(true);
+            confirmList.setVisible(true);
+        }
     }
 
     @Override
     public void onPause() {
         if(!listDeleted && !listTaken)
         {
-            sendShoppingListCreationRequest(SHOW_SAVE_FEEDBACK);
+            sendShoppingListCreationRequest(listModified || adapter.isListModified());
         }
         if(this.actionMode != null)
         {
             actionMode.finish();
         }
+
+        // Reset the boolean
+        listModified = false;
 
         super.onPause();
     }
@@ -192,8 +214,13 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         {
             // Hide message and show 'take in charge' action
             emptyTextView.setVisibility(View.GONE);
-            if(takeInCharge != null) {
+            if(takeInCharge != null)
+            {
                 takeInCharge.setVisible(true);
+            }
+            if(confirmList != null)
+            {
+                confirmList.setVisible(true);
             }
 
         }
@@ -677,6 +704,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
         {
             if(resultCode == Activity.RESULT_OK)
             {
+                listModified = true;
                 try {
                     // Get added products from result
                     List<Product> productsAdded = Product.parseJSONProductList(new JSONArray(data.getStringExtra("RESULT")));
@@ -756,6 +784,7 @@ public class ManageShoppingListFragment extends Fragment implements ProductCardV
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 if(item.getItemId() == R.id.deleteTemplate)
                 {
+                    listModified = true;
                     adapter.removeItems(adapter.getSelectedItems());
                     if(adapter.getItemCount() == 0 && !GlobalValuesManager.getInstance(getContext()).getShoppingListState().equals(GlobalValuesManager.EMPTY_LIST))
                     {

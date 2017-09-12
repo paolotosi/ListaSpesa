@@ -152,7 +152,7 @@
     <string name="create_new_list_button">Crea lista da Template</string>
     <string name="create_new_list_empty_button">Crea lista vuota</string>
     <string name="create_new_list_button_alt">La lista della spesa è già stata presa in carico!\n\nPuoi creare una nuova lista della spesa.\nI prodotti eventualmente non trovati dal tuo compagno verranno inseriti automaticamente.</string>
-    <string name="empty_list">La lista della spesa corrente è vuota. Premi + per aggiungere prodotti.</string>
+    <string name="empty_list">La lista della spesa corrente è vuota.\nPremi + per aggiungere prodotti.</string>
     <string name="create_list_products_not_found">Crea lista con i prodotti non trovati</string>
     <string name="products_not_found_present_message">Sono presenti prodotti non trovati nella scorsa spesa, verranno aggiunti automaticamente alla prossima lista.</string>
 

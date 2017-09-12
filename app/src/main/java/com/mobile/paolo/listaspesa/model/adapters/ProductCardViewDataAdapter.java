@@ -69,6 +69,9 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
 
     private NetworkResponseHandler deleteProductResponseHandler;
 
+    // Avoid showing save feedback when exiting if list hasn't been modified
+    private boolean listModified = false;
+
     // ClickListener (received from the outside)
     ViewHolder.ClickListener clickListener;
 
@@ -208,6 +211,7 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
         binding.quantityPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                listModified = true;
                 sortedList.get(position).setQuantity(newVal);
             }
         });
@@ -562,6 +566,16 @@ public class ProductCardViewDataAdapter extends SelectableAdapter<ProductCardVie
     public void deleteAllProducts()
     {
         sortedList.clear();
+    }
+
+    public boolean isListModified()
+    {
+        return listModified;
+    }
+
+    public void setListModified(boolean listModified)
+    {
+        this.listModified = listModified;
     }
 
     // ------------------------------------------------------------------------------------------//
