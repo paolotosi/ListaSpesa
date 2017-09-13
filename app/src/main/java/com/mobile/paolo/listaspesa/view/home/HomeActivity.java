@@ -54,7 +54,7 @@ public class HomeActivity extends AppCompatActivity
     private static final int TEMPLATE_TAB = 1;
     private static final int SHOPPING_LIST_TAB = 2;
     private static final int GROUP_TAB = 3;
-
+    
     // The networkResponseHandlers
     private NetworkResponseHandler groupResponseHandler;
     private NetworkResponseHandler templateResponseHandler;
@@ -62,44 +62,44 @@ public class HomeActivity extends AppCompatActivity
     private NetworkResponseHandler getProductsNotFoundResponseHandler;
     private NetworkResponseHandler supermarketsResponseHandler;
     private NetworkResponseHandler groupProductsResponseHandler;
-
+    
     // Response codes
     private static final int NETWORK_ERROR = 0;
     private static final int USER_HAS_GROUP = 1;
     private static final int USER_DOESNT_HAVE_GROUP = 2;
-
+    
     // The bottom navigation view
     BottomNavigationViewEx bottomNavigationView;
-
+    
     // GlobalValuesManager
     GlobalValuesManager contextualizer;
-
+    
     private boolean groupRequestFinished = false;
     private boolean templateRequestFinished = false;
     private boolean shoppingListRequestFinished = false;
     private boolean productsNotFoundRequestFinished = true;
     private boolean supermarketRequestFinished = false;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
+        
         setContentView(R.layout.activity_home);
-
+        
         overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-
+        
         // Only to shorten lines
         contextualizer = GlobalValuesManager.getInstance(getApplicationContext());
-
+        
         // From here on out, everything is handled by the bottom navigation listener
         setupBottomNavigationView();
-
+        
         // Determine the context: logged user, group, templates...
         contextualize();
-
+        
     }
-
+    
     private void contextualize()
     {
         // Gets all the info about the user.
@@ -109,20 +109,19 @@ public class HomeActivity extends AppCompatActivity
         // a shopping list or has some products left from previous lists.
         // These requests have to be sent only after the first one is finished, because we don't know
         // the groupID beforehand
-
+        
         Bundle extras = getIntent().getExtras();
         // I came here from the login/register activity
         if (extras != null)
         {
-            if(extras.containsKey("GROUP_ID"))
+            if (extras.containsKey("GROUP_ID"))
             {
                 // Check if the user has a group
-                if(Integer.parseInt(extras.getString("GROUP_ID")) == -1)
+                if (Integer.parseInt(extras.getString("GROUP_ID")) == -1)
                 {
                     // No group
                     GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(false);
-                }
-                else
+                } else
                 {
                     // Get the info about the group
                     sendGetGroupDetailsRequest(Integer.parseInt(extras.getString("GROUP_ID")));
@@ -132,35 +131,40 @@ public class HomeActivity extends AppCompatActivity
         // I came here because the user was already logged
         else
         {
-            if(contextualizer.isUserPartOfAGroup())
+            if (contextualizer.isUserPartOfAGroup())
             {
                 sendGetGroupDetailsRequest(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID());
             }
         }
-
+        
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_main_content, selectFirstFragment());
         transaction.commit();
     }
-
+    
     private void setupBottomNavigationView()
     {
+        //Get the BottomNavigationView object
         bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.home_bottom_navigation);
+        //Set various aspect of BNV
         bottomNavigationView.enableShiftingMode(false);
         bottomNavigationView.enableItemShiftingMode(false);
-
+        
+        //Associating the listener
         bottomNavigationView.setOnNavigationItemSelectedListener
-                (new BottomNavigationView.OnNavigationItemSelectedListener() {
+                (new BottomNavigationView.OnNavigationItemSelectedListener()
+                {
                     @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem selectedTab) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem selectedTab)
+                    {
                         // Select the fragment to load
                         Fragment selectedFragment = selectCorrectFragment(selectedTab);
-
+                        
                         // If there's a fragment in the stack (e.g. state in which is shown the 'Up'
                         // button require to save the previous fragment), pop it
                         getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                         HomeFragmentContainer.getInstance().setStackEmpty(true);
-
+                        
                         // Replace main view with correct fragment
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.home_main_content, selectedFragment);
@@ -168,29 +172,33 @@ public class HomeActivity extends AppCompatActivity
                         return true;
                     }
                 });
-
+        
         // Manually displaying the loading fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_main_content, new ProgressBarFragment());
         transaction.commit();
-
+        
         //Used to select an item programmatically
         //bottomNavigationView.getMenu().getItem(2).setChecked(true);
     }
-
+    
     private void setupGroupResponseHandler()
     {
-        this.groupResponseHandler = new NetworkResponseHandler() {
+        this.groupResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONObject response)
+            {
                 // Debug
                 Log.d("GET_GROUP_RESP", response.toString());
                 groupRequestFinished = true;
-                try {
+                try
+                {
                     int responseCode = response.getInt("success");
                     switch (responseCode)
                     {
-                        case NETWORK_ERROR: break;
+                        case NETWORK_ERROR:
+                            break;
                         case USER_HAS_GROUP:
                             // Create group from response and updated SharedPreferences
                             GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserPartOfAGroup(true);
@@ -211,154 +219,165 @@ public class HomeActivity extends AppCompatActivity
                             switchToFirstFragment();
                             break;
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
-
+                
             }
-
+            
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
                 error.printStackTrace();
             }
         };
     }
-
+    
     // Determine if a user is part of a group; in that case, fetch the group details, including the templates
     private void sendGetGroupDetailsRequest(int groupID)
     {
         setupGroupResponseHandler();
-
+        
         // User loggedUser = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser();
-
+        
         // The POST parameters.
         Map<String, String> params = new HashMap<>();
         params.put("id", String.valueOf(groupID)); // ((Integer) (loggedUser.getID())).toString());
-
+        
         // Encapsulate in JSON.
         JSONObject jsonPostParameters = new JSONObject(params);
-
+        
         // Print parameters to console for debug purposes.
         Log.d("GET_GROUP_REQ", jsonPostParameters.toString());
-
+        
         GroupsDatabaseHelper.sendGetGroupDetailsRequest(jsonPostParameters, getApplicationContext(), groupResponseHandler);
-
+        
     }
-
+    
     private void sendGetGroupProductsRequest()
     {
         setupGroupProductsResponseHandler();
-
+        
         JSONObject jsonPost = new JSONObject();
         String groupID = String.valueOf(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID());
-
-        try {
-            jsonPost.put("id",groupID);
-        } catch (JSONException e) {
+        
+        try
+        {
+            jsonPost.put("id", groupID);
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
-
+        
         GroupsDatabaseHelper.sendGetGroupProductsRequest(jsonPost, getApplicationContext(), groupProductsResponseHandler);
     }
-
+    
     private void setupGroupProductsResponseHandler()
     {
-        this.groupProductsResponseHandler = new NetworkResponseHandler() {
+        this.groupProductsResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONObject response)
+            {
                 Log.d("GET_PRODUCTS_RESP", response.toString());
-                try {
-                    if(response.getInt("success") == 1)
+                try
+                {
+                    if (response.getInt("success") == 1)
                     {
                         // Determine if the group has templates and update the SharedPreferences accordingly
                         JSONArray products = response.getJSONArray("products");
                         GlobalValuesManager.getInstance(getApplicationContext()).saveGroupProducts(products);
-                    }
-                    else
+                    } else
                     {
-
+                        
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
-
+            
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
                 error.printStackTrace();
             }
         };
     }
-
+    
     private void setupTemplateResponseHandler()
     {
-        this.templateResponseHandler = new NetworkResponseHandler() {
+        this.templateResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
-                try {
+            public void onSuccess(JSONObject response)
+            {
+                try
+                {
                     Log.d("GET_TEMPLATES_RESP", response.toString());
-                    if(response.getInt("success") == 1)
+                    if (response.getInt("success") == 1)
                     {
                         templateRequestFinished = true;
                         // Determine if the group has templates and update the SharedPreferences accordingly
                         JSONArray templates = response.getJSONArray("templates");
-                        if(templates.length() == 0)
+                        if (templates.length() == 0)
                         {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserTemplates(false);
-                        }
-                        else
+                        } else
                         {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserTemplates(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveUserTemplates(templates);
                         }
-                        if(initializationDone())
+                        if (initializationDone())
                         {
                             switchToFirstFragment();
                         }
-                    }
-                    else
+                    } else
                     {
                         GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserTemplates(false);
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
-
+            
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
                 error.printStackTrace();
             }
         };
     }
-
+    
     private void sendGetTemplatesRequest()
     {
         // Define what to do on response
         setupTemplateResponseHandler();
-
+        
         Integer groupID = -1;
-
-        if(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup() != null)
+        
+        if (GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup() != null)
         {
             groupID = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID();
         }
-
+        
         // The POST parameters
         Map<String, String> params = new HashMap<>();
         params.put("groupID", groupID.toString());
-
+        
         // Encapsulate in JSON
         JSONObject jsonPostParameters = new JSONObject(params);
-
+        
         // Debug
         Log.d("GET_TEMPLATES_REQ", jsonPostParameters.toString());
-
+        
         // Send request
         TemplatesDatabaseHelper.sendGetGroupTemplatesRequest(jsonPostParameters, getApplicationContext(), templateResponseHandler);
-
+        
     }
-
+    
     private void setupShoppingListResponseHandler()
     {
         /*
@@ -367,237 +386,250 @@ public class HomeActivity extends AppCompatActivity
                 - list in charge, taken by me -> show grocery store
                 - list in charge, not taken by me -> show list in creation
          */
-        this.shoppingListResponseHandler = new NetworkResponseHandler() {
+        this.shoppingListResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
-                try {
+            public void onSuccess(JSONObject response)
+            {
+                try
+                {
                     Log.d("GET_LIST_RESP", response.toString());
                     shoppingListRequestFinished = true;
-                    if(response.getInt("success") == 1)
+                    if (response.getInt("success") == 1)
                     {
                         // List is not taken
                         JSONObject jsonShoppingList = response.getJSONObject("list");
                         ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
-                        if(shoppingList.getProductList().size() == 0)
+                        if (shoppingList.getProductList().size() == 0)
                         {
-                            // List is empty
+                            // There is no list
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(false);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
-                        }
-                        else
+                        } else
                         {
-                            // List is not empty
+                            // List is present and it's not empty
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.LIST_NO_CHARGE);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveUserShoppingList(shoppingList.toJSON());
                         }
-                    }
-                    else if(response.getInt("success") == 2)
-                    //In questo caso la lista della spesa del gruppo è stata presa in carico, devo discriminare il caso in cui l'utente loggato l'ha presa in carico
-                    //e quello in cui l'utente loggato non l'ha presa in carico
+                    } else if (response.getInt("success") == 2)
+                    //In this case there is a list taken by someone, I have to evaluate which user took the list
                     {
                         // List is taken
-                        if(response.getInt("userID")== GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser().getID())
+                        if (response.getInt("userID") == GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser().getID())
                         {
                             // By me
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER);
-                        }
-                        else
+                        } else
                         {
                             // Not by me
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(true);
                             getUserTookList(response.getInt("userID"));
                             JSONObject jsonShoppingList = response.getJSONObject("list");
                             ShoppingList shoppingList = ShoppingList.fromJSON(jsonShoppingList);
-                            if(shoppingList.getProductList().size() > 0)
+                            if (shoppingList.getProductList().size() > 0)
                             {
                                 GlobalValuesManager.getInstance(getApplicationContext()).saveUserShoppingList(shoppingList.toJSON());
                                 GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_LIST);
-
-                            }
-                            else {
+                                
+                            } else
+                            {
                                 GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER);
                             }
                         }
-                    }
-                    else
+                    } else
                     {
                         // Error
                         GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserShoppingList(false);
                         GlobalValuesManager.getInstance(getApplicationContext()).saveShoppingListState(GlobalValuesManager.NO_LIST);
                     }
-                    if(initializationDone())
+                    if (initializationDone())
                     {
                         switchToFirstFragment();
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
-
+            
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
                 error.printStackTrace();
             }
         };
     }
-
+    
     private void sendGetShoppingListRequest()
     {
         // Define what to do on response
         setupShoppingListResponseHandler();
-
+        
         Integer groupID = -1;
-
-        if(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup() != null)
+        
+        if (GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup() != null)
         {
             groupID = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID();
         }
-
+        
         // The POST parameters
         Map<String, String> params = new HashMap<>();
         params.put("groupID", groupID.toString());
-
+        
         // Encapsulate in JSON
         JSONObject jsonPostParameters = new JSONObject(params);
-
+        
         // Debug
         Log.d("GET_LIST_REQ", jsonPostParameters.toString());
-
+        
         // Send request
         ShoppingListDatabaseHelper.sendGetGroupListRequest(jsonPostParameters, getApplicationContext(), shoppingListResponseHandler);
-
+        
     }
-
+    
     private void setupGetProductsNotFoundResponseHandler()
     {
-        this.getProductsNotFoundResponseHandler = new NetworkResponseHandler() {
+        this.getProductsNotFoundResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONObject response)
+            {
                 Log.d("GET_PROD_NOT_FOUND_RESP", response.toString());
                 productsNotFoundRequestFinished = true;
-                try {
-                    if(response.getInt("success") == 1)
+                try
+                {
+                    if (response.getInt("success") == 1)
                     {
                         // -- Success --
-
+                        
                         // Get the products
                         JSONArray jsonProductsNotFound = response.getJSONArray("products_not_found");
-
-                        if(jsonProductsNotFound.length() > 0)
+                        
+                        if (jsonProductsNotFound.length() > 0)
                         {
                             // Save them in cache
                             GlobalValuesManager.getInstance(getApplicationContext()).saveAreThereProductsNotFound(true);
                             GlobalValuesManager.getInstance(getApplicationContext()).saveProductsNotFound(jsonProductsNotFound);
-                        }
-                        else
+                        } else
                         {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveAreThereProductsNotFound(false);
                         }
-                        if(initializationDone())
+                        if (initializationDone())
                         {
                             switchToFirstFragment();
                         }
-                    }
-                    else
+                    } else
                     {
                         // -- Error --
                         Log.e("GET_PROD_NOT_FOUND_ERR", response.getString("message"));
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
-
+            
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
                 error.printStackTrace();
             }
         };
     }
-
+    
     private void sendGetProductsNotFoundRequest()
     {
         // Parameters
         int groupID = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID();
-
+        
         // Encapsulate in JSON
         JSONObject jsonParams = new JSONObject();
-        try {
+        try
+        {
             jsonParams.put("groupID", groupID);
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
-
+        
         // Debug
         Log.d("GET_PROD_NOT_FOUND_REQ", jsonParams.toString());
-
+        
         // Define what to do on response
         setupGetProductsNotFoundResponseHandler();
-
+        
         // Send request
         ProductsDatabaseHelper.sendGetProductsNotFoundRequest(jsonParams, getApplicationContext(), getProductsNotFoundResponseHandler);
-
+        
     }
-
+    
     private void setupSupermarketResponseHandler()
     {
-        this.supermarketsResponseHandler = new NetworkResponseHandler() {
+        this.supermarketsResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONObject response)
+            {
                 Log.d("GET_ALL_SUPERMARKET_RES", response.toString());
                 supermarketRequestFinished = true;
-                try {
-                    if(response.getInt("success") == 1)
+                try
+                {
+                    if (response.getInt("success") == 1)
                     {
                         GlobalValuesManager.getInstance(getApplicationContext()).saveSupermarkets(response.getJSONArray("supermarkets"));
-                        if(GlobalValuesManager.getInstance(getApplicationContext()).getSupermarkets().size() > 0)
+                        if (GlobalValuesManager.getInstance(getApplicationContext()).getSupermarkets().size() > 0)
                         {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserSupermarkets(true);
                         }
                     }
-                    if(initializationDone())
+                    if (initializationDone())
                     {
                         switchToFirstFragment();
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
-
+            
             @Override
-            public void onError(VolleyError error) {
-
+            public void onError(VolleyError error)
+            {
+                
             }
         };
     }
-
+    
     private void sendGetAllSupermarketsRequest()
     {
         // Debug
         Log.d("GET_ALL_SUPERMARKET_REQ", "Request sent");
-
+        
         // Define what to do on response
         setupSupermarketResponseHandler();
-
+        
         JSONObject toSend = new JSONObject();
-        try {
+        try
+        {
             toSend.put("id", String.valueOf(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID()));
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
-
+        
         // Send request
         SupermarketDatabaseHelper.sendGetAllSupermarketsRequest(toSend, getApplicationContext(), supermarketsResponseHandler);
-
+        
     }
-
+    
     // Define which fragment to load based on context
     private Fragment selectCorrectFragment(MenuItem selectedTab)
     {
         Fragment selectedFragment = null;
-        switch (selectedTab.getItemId()) {
+        switch (selectedTab.getItemId())
+        {
             case R.id.tab_supermarket:
                 selectedFragment = selectSupermarketFragment();
                 break;
@@ -613,87 +645,80 @@ public class HomeActivity extends AppCompatActivity
         }
         return selectedFragment;
     }
-
+    
+    // --- Following methods establish for every fragment set which fragment has to be shown in the app.
+    
     private Fragment selectTemplateFragment()
     {
         Fragment selectedFragment;
-        if(contextualizer.hasUserTemplates() && !contextualizer.isUserCreatingTemplate())
+        if (contextualizer.hasUserTemplates() && !contextualizer.isUserCreatingTemplate())
         {
             // ManageTemplate
             selectedFragment = HomeFragmentContainer.getInstance().getManageTemplateFragment();
-        }
-        else if(contextualizer.isUserCreatingTemplate())
+        } else if (contextualizer.isUserCreatingTemplate())
         {
             // CreateTemplate
             selectedFragment = HomeFragmentContainer.getInstance().getCreateTemplateFragment();
-        }
-        else
+        } else
         {
             // EmptyTemplate
             selectedFragment = HomeFragmentContainer.getInstance().getEmptyTemplateFragment();
         }
         return selectedFragment;
     }
-
+    
     private Fragment selectGroupFragment()
     {
         Fragment selectedFragment;
-        if(contextualizer.isUserPartOfAGroup())
+        if (contextualizer.isUserPartOfAGroup())
         {
             // ManageGroup
             selectedFragment = HomeFragmentContainer.getInstance().getManageGroupFragment();
-        }
-        else if(contextualizer.isUserCreatingGroup())
+        } else if (contextualizer.isUserCreatingGroup())
         {
             // CreateGroup
             selectedFragment = HomeFragmentContainer.getInstance().getCreateGroupFragment();
-        }
-        else
+        } else
         {
             // EmptyGroup
             selectedFragment = HomeFragmentContainer.getInstance().getEmptyGroupFragment();
         }
         return selectedFragment;
     }
-
+    
     private Fragment selectListFragment()
     {
         Fragment selectedFragment;
         Log.d("hasUSerShoppingList", String.valueOf(contextualizer.hasUserShoppingList()));
-        if(contextualizer.hasUserShoppingList())
+        if (contextualizer.hasUserShoppingList())
         {
             // -- LIST PRESENT --
-            if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE) || contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.EMPTY_LIST))
+            if (contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_NO_CHARGE) || contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.EMPTY_LIST))
             {
                 // -- NOT TAKEN --
                 // ManageShoppingList
                 selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
-            }
-            else if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER))
+            } else if (contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_LOGGED_USER))
             {
                 // -- TAKEN BY ME --
                 // GroceryStoreFragment
                 selectedFragment = HomeFragmentContainer.getInstance().getGroceryStoreFragment();
-            }
-            else if(contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER))
+            } else if (contextualizer.getShoppingListState().equalsIgnoreCase(GlobalValuesManager.LIST_IN_CHARGE_ANOTHER_USER))
             {
                 // -- TAKEN BY SOMEONE ELSE, NO SECOND LIST --
                 // EmptyShoppingList: it will be different because the user has a list but it's taken in charge by someone else
                 selectedFragment = HomeFragmentContainer.getInstance().getEmptyShoppingListFragment();
-            }
-            else
+            } else
             {
                 // -- TAKEN BY SOMEONE ELSE, SECOND LIST PRESENT --
                 selectedFragment = HomeFragmentContainer.getInstance().getManageShoppingListFragment();
             }
-        }
-        else if(contextualizer.isUserCreatingShoppingList())
+        } else if (contextualizer.isUserCreatingShoppingList())
         {
             // -- LIST IN CREATION --
             // CreateShoppingList
             selectedFragment = HomeFragmentContainer.getInstance().getCreateShoppingListFragment();
-        }
-        else
+        } else
         {
             // -- NO LIST --
             // EmptyShoppingList
@@ -701,14 +726,14 @@ public class HomeActivity extends AppCompatActivity
         }
         return selectedFragment;
     }
-
+    
     private String getUserTookList(int id)
     {
         List<User> members = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers();
         String userInCharge = "";
         for (int i = 0; i < members.size(); i++)
         {
-            if(GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers().get(i).getID() == id)
+            if (GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers().get(i).getID() == id)
             {
                 userInCharge = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getMembers().get(i).getUsername();
                 GlobalValuesManager.getInstance(getApplicationContext()).saveUserTookList(userInCharge);
@@ -716,81 +741,70 @@ public class HomeActivity extends AppCompatActivity
         }
         return userInCharge;
     }
-
+    
     private Fragment selectSupermarketFragment()
     {
         Fragment selectedFragment;
-        if(!contextualizer.hasUserSupermarkets())
+        if (!contextualizer.hasUserSupermarkets())
         {
             selectedFragment = HomeFragmentContainer.getInstance().getEmptySupermarketFragment();
-        }
-        else if(contextualizer.isUserCreatingSupermarket())
+        } else if (contextualizer.isUserCreatingSupermarket())
         {
             selectedFragment = HomeFragmentContainer.getInstance().getCreateSupermarketFragment();
-        }
-        else
+        } else
         {
             selectedFragment = HomeFragmentContainer.getInstance().getManageSupermarketFragment();
         }
         return selectedFragment;
     }
-
+    
+    
+    //This method establish which fragment is shown first to the user in relation to the certain conditons
     private Fragment selectFirstFragment()
     {
         Fragment firstFragment;
-
+        
         // If the user doesn't have a group, show the empty group fragment
-        if(!contextualizer.isUserPartOfAGroup())
+        if (!contextualizer.isUserPartOfAGroup())
         {
             firstFragment = HomeFragmentContainer.getInstance().getEmptyGroupFragment();
             bottomNavigationView.getMenu().getItem(GROUP_TAB).setChecked(true);
             return firstFragment;
         }
-
+        
         // If the user has a group, but the group hasn't defined template, show the empty template fragment
-        if(!contextualizer.hasUserTemplates())
+        if (!contextualizer.hasUserTemplates())
         {
             firstFragment = HomeFragmentContainer.getInstance().getEmptyTemplateFragment();
             bottomNavigationView.getMenu().getItem(TEMPLATE_TAB).setChecked(true);
             return firstFragment;
         }
-
+        
         // If the user group has some templates, but not a list, show the empty list fragment
-        if(!contextualizer.hasUserShoppingList())
+        if (!contextualizer.hasUserShoppingList())
         {
             firstFragment = HomeFragmentContainer.getInstance().getEmptyShoppingListFragment();
             bottomNavigationView.getMenu().getItem(SHOPPING_LIST_TAB).setChecked(true);
             return firstFragment;
         }
-
+        
         // The user has a list, return the correct list fragment
         bottomNavigationView.getMenu().getItem(SHOPPING_LIST_TAB).setChecked(true);
         return selectListFragment();
     }
-
+    
+    //Needed to know if everything is inizialized
     private boolean initializationDone()
     {
         return groupRequestFinished && templateRequestFinished && shoppingListRequestFinished && supermarketRequestFinished && productsNotFoundRequestFinished;
     }
-
+    
     private void switchToFirstFragment()
     {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_main_content, selectFirstFragment());
         transaction.commit();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    
 }

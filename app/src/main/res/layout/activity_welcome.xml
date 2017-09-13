@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
-    tools:context="com.mobile.paolo.listaspesa.view.init.WelcomeActivity"
-    >
+    tools:context="com.mobile.paolo.listaspesa.view.init.WelcomeActivity">
 
     <LinearLayout
         android:id="@+id/mainWelcomeLayout"
@@ -27,13 +26,14 @@
                 android:gravity="center"
                 android:text="@string/welcome_message_top"
                 android:textSize="40sp" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/welcome_message_detail"
                 android:padding="10dp"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
         </LinearLayout>
 
@@ -50,14 +50,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="@dimen/button_elevation"
-                android:text="@string/login_button"/>
+                android:text="@string/login_button" />
 
             <Button
                 android:id="@+id/btnRegister"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="@dimen/button_elevation"
-                android:text="@string/register_button"/>
+                android:text="@string/register_button" />
 
         </LinearLayout>
 
@@ -71,6 +71,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:src="@drawable/ic_shopping_cart_white_64dp"
-        android:transitionName="logo_shared"/>
+        android:transitionName="logo_shared" />
 
 </android.widget.FrameLayout>

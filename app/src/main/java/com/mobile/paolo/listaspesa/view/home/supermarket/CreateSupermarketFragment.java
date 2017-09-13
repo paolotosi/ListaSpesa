@@ -55,7 +55,8 @@ import static android.app.Activity.RESULT_OK;
  * Created by paolo on 26/08/17.
  */
 
-/** -- CreateSupermarketFragment --
+/**
+ * -- CreateSupermarketFragment --
  * Creation of supermarket for user group.
  */
 
@@ -108,32 +109,37 @@ public class CreateSupermarketFragment extends Fragment
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         supermarketMapView.onResume();
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
         supermarketMapView.onPause();
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         super.onDestroy();
         supermarketMapView.onDestroy();
     }
 
     @Override
-    public void onLowMemory() {
+    public void onLowMemory()
+    {
         super.onLowMemory();
         supermarketMapView.onLowMemory();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home)
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        if (item.getItemId() == android.R.id.home)
         {
             GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingSupermarket(false);
             showManageSupermarketFragment();
@@ -158,17 +164,19 @@ public class CreateSupermarketFragment extends Fragment
         createSupermarketToolbar.setTitle(getString(R.string.add_supermarket_toolbar));
         createSupermarketToolbar.setTitleTextColor(0xFFFFFFFF);
 
-        ((AppCompatActivity)getActivity()).setSupportActionBar(createSupermarketToolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(createSupermarketToolbar);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     private void setupLocalizeMarketButton()
     {
-        this.localizeMarket.setOnClickListener(new View.OnClickListener() {
+        this.localizeMarket.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 openPlacePicker();
             }
         });
@@ -176,10 +184,12 @@ public class CreateSupermarketFragment extends Fragment
 
     private void setupConfirmSupermarketCreationButton()
     {
-        this.confirmSupermarketCreationButton.setOnClickListener(new View.OnClickListener() {
+        this.confirmSupermarketCreationButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
-                if(isInsertionValid())
+            public void onClick(View v)
+            {
+                if (isInsertionValid())
                 {
                     sendAddSupermarketRequest();
                 }
@@ -196,24 +206,23 @@ public class CreateSupermarketFragment extends Fragment
     {
         boolean isNameValid = true;
         List<Supermarket> supermarketList = GlobalValuesManager.getInstance(getContext()).getSupermarkets();
-        if(nameField.getText().toString().isEmpty())
+        if (nameField.getText().toString().isEmpty())
         {
             isNameValid = false;
             nameTextInputLayout.setError(getString(R.string.empty_supermarket_name));
-        }
-        else
+        } else
         {
-            for(Supermarket supermarket : supermarketList)
+            for (Supermarket supermarket : supermarketList)
             {
                 // Check if the user already has a supermarket with that name
-                if(supermarket.getName().equalsIgnoreCase(nameField.getText().toString()))
+                if (supermarket.getName().equalsIgnoreCase(nameField.getText().toString()))
                 {
                     isNameValid = false;
                     nameTextInputLayout.setError(getString(R.string.same_supermarket_name));
                 }
             }
         }
-        if(isNameValid)
+        if (isNameValid)
         {
             // If isValid here is true, the name is ok
             nameTextInputLayout.setErrorEnabled(false);
@@ -225,12 +234,11 @@ public class CreateSupermarketFragment extends Fragment
     {
         boolean isAddressValid = true;
 
-        if(addressField.getText().toString().isEmpty())
+        if (addressField.getText().toString().isEmpty())
         {
             isAddressValid = false;
             addressTextInputLayout.setError(getString(R.string.empty_supermarket_address));
-        }
-        else
+        } else
         {
             addressTextInputLayout.setErrorEnabled(false);
         }
@@ -240,12 +248,15 @@ public class CreateSupermarketFragment extends Fragment
 
     private void setupAddSupermarketResponseHandler()
     {
-        this.addSupermarketResponseHandler = new NetworkResponseHandler() {
+        this.addSupermarketResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONObject response)
+            {
                 Log.d("ADD_SUPERMARKET_RESP", response.toString());
-                try {
-                    if(response.getInt("success") == 1)
+                try
+                {
+                    if (response.getInt("success") == 1)
                     {
                         Toast.makeText(getContext(), getString(R.string.supermarket_added), Toast.LENGTH_SHORT).show();
                         GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingSupermarket(false);
@@ -260,14 +271,16 @@ public class CreateSupermarketFragment extends Fragment
                         // Go to management fragment
                         showManageSupermarketFragment();
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
 
             }
 
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
                 error.printStackTrace();
             }
         };
@@ -277,11 +290,13 @@ public class CreateSupermarketFragment extends Fragment
     {
         // JSON POST parameters
         JSONObject jsonParams = new JSONObject();
-        try {
+        try
+        {
             jsonParams.put("groupID", GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID());
             jsonParams.put("name", nameField.getText().toString());
             jsonParams.put("address", addressField.getText().toString());
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
 
@@ -298,14 +313,13 @@ public class CreateSupermarketFragment extends Fragment
 
     private void showManageSupermarketFragment()
     {
-        if(HomeFragmentContainer.getInstance().isStackEmpty())
+        if (HomeFragmentContainer.getInstance().isStackEmpty())
         {
             // I arrived here from the EmptySupermarket, no fragment is in the stack
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageSupermarketFragment());
             transaction.commit();
-        }
-        else
+        } else
         {
             // If I arrived here from ManageSupermarketFragment, pop the fragment from the stack
             getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -316,9 +330,11 @@ public class CreateSupermarketFragment extends Fragment
     private void loadMapView(Bundle savedInstanceState)
     {
         supermarketMapView.onCreate(savedInstanceState);
-        supermarketMapView.getMapAsync(new OnMapReadyCallback() {
+        supermarketMapView.getMapAsync(new OnMapReadyCallback()
+        {
             @Override
-            public void onMapReady(GoogleMap googleMap) {
+            public void onMapReady(GoogleMap googleMap)
+            {
                 CreateSupermarketFragment.this.googleMap = googleMap;
                 setupGoogleMap();
             }
@@ -342,28 +358,34 @@ public class CreateSupermarketFragment extends Fragment
         googleMap.addMarker(new MarkerOptions().position(newCoordinates));
     }
 
-    private final class AddressResolutionTask extends AsyncTask<Void, Void, Object> {
+    private final class AddressResolutionTask extends AsyncTask<Void, Void, Object>
+    {
 
         private final Geocoder mGeocoder;
 
         private final String mQuery;
 
-        private AddressResolutionTask(final String query) {
+        private AddressResolutionTask(final String query)
+        {
             mGeocoder = new Geocoder(getContext(), Locale.getDefault());
             mQuery = query;
         }
 
         @Override
-        protected Object doInBackground(final Void... params) {
-            try {
+        protected Object doInBackground(final Void... params)
+        {
+            try
+            {
                 return mGeocoder.getFromLocationName(mQuery, 20, true);
-            } catch (GeocoderException e) {
+            } catch (GeocoderException e)
+            {
                 return e;
             }
         }
 
         @Override
-        protected void onPostExecute(final Object result) {
+        protected void onPostExecute(final Object result)
+        {
             if (result instanceof GeocoderException)
             {
                 Toast.makeText(getContext(), result.toString(), Toast.LENGTH_LONG).show();
@@ -371,13 +393,12 @@ public class CreateSupermarketFragment extends Fragment
             }
 
             List<Address> resultAddressList = (List<Address>) result;
-            if(resultAddressList.size() > 0)
+            if (resultAddressList.size() > 0)
             {
                 double latitude = resultAddressList.get(0).getLocation().latitude;
                 double longitude = resultAddressList.get(0).getLocation().longitude;
                 moveMap(new LatLng(latitude, longitude));
-            }
-            else
+            } else
             {
                 Toast.makeText(getContext(), getString(R.string.location_resolution_error), Toast.LENGTH_LONG).show();
             }
@@ -390,15 +411,18 @@ public class CreateSupermarketFragment extends Fragment
         PlacePicker.IntentBuilder builder;
         builder = new PlacePicker.IntentBuilder();
 
-        try {
+        try
+        {
             startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
-        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e)
+        {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         if (requestCode == PLACE_PICKER_REQUEST)
         {
             if (resultCode == RESULT_OK)

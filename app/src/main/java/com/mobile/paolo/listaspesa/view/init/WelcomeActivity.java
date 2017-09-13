@@ -15,12 +15,13 @@ import com.mobile.paolo.listaspesa.view.auth.LoginActivity;
 import com.mobile.paolo.listaspesa.view.auth.RegisterActivity;
 
 /**
- *  -- WelcomeActivity --
- *  Welcomes the user.
- *  Simply dispatches either to LoginActivity or RegisterActivity.
+ * -- WelcomeActivity --
+ * Welcomes the user.
+ * Simply dispatches either to LoginActivity or RegisterActivity.
  */
 
-public class WelcomeActivity extends AppCompatActivity {
+public class WelcomeActivity extends AppCompatActivity
+{
 
     private ImageView logo;
     private LinearLayout welcomeLayout;
@@ -28,17 +29,20 @@ public class WelcomeActivity extends AppCompatActivity {
     private boolean animationStarted;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
         enteringAnimation();
 
         // Login
-        findViewById(R.id.btnLogin).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btnLogin).setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
-                if(!animationStarted)
+            public void onClick(View v)
+            {
+                if (!animationStarted)
                 {
                     Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
                     animateLogoAndStartNextActivity(intent);
@@ -47,10 +51,12 @@ public class WelcomeActivity extends AppCompatActivity {
         });
 
         // Register
-        findViewById(R.id.btnRegister).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btnRegister).setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
-                if(!animationStarted)
+            public void onClick(View v)
+            {
+                if (!animationStarted)
                 {
                     Intent intent = new Intent(WelcomeActivity.this, RegisterActivity.class);
                     animateLogoAndStartNextActivity(intent);
@@ -60,7 +66,8 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
         // If the user returns to this view, make the x position of the logo zero
         findViewById(R.id.logo).setTranslationX(0);
@@ -69,6 +76,7 @@ public class WelcomeActivity extends AppCompatActivity {
         animationStarted = false;
     }
 
+    //Animation specification
     private void enteringAnimation()
     {
         // Disable default android animation
@@ -85,9 +93,11 @@ public class WelcomeActivity extends AppCompatActivity {
         ValueAnimator opacityAnimator = ValueAnimator.ofFloat(startOpacity, endOpacity);
         opacityAnimator.setDuration(duration);
 
-        opacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        opacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
                 welcomeLayout.setAlpha((float) animation.getAnimatedValue());
             }
         });
@@ -99,9 +109,11 @@ public class WelcomeActivity extends AppCompatActivity {
         ValueAnimator motionAnimator = ValueAnimator.ofFloat(startPositionY, endPositionY);
         motionAnimator.setDuration(duration);
 
-        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
                 logo.setTranslationY((Float) animation.getAnimatedValue());
             }
         });
@@ -110,6 +122,7 @@ public class WelcomeActivity extends AppCompatActivity {
         motionAnimator.start();
     }
 
+    //Logo animation
     private void animateLogoAndStartNextActivity(final Intent intent)
     {
         logo = (ImageView) findViewById(R.id.logo);
@@ -122,17 +135,21 @@ public class WelcomeActivity extends AppCompatActivity {
         motionAnimator.setDuration(duration);
 
         // Update x position of logo on animator update
-        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
                 logo.setTranslationX(Float.parseFloat(animation.getAnimatedValue().toString()));
             }
         });
 
         // When the animation is over, start the next activity
-        motionAnimator.addListener(new AnimatorListenerAdapter() {
+        motionAnimator.addListener(new AnimatorListenerAdapter()
+        {
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(Animator animation)
+            {
                 super.onAnimationEnd(animation);
                 startActivity(intent);
             }
@@ -142,8 +159,6 @@ public class WelcomeActivity extends AppCompatActivity {
 
         animationStarted = true;
     }
-
-
 
 
 }

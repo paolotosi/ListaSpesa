@@ -43,194 +43,214 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/** -- CreateTemplateFragment --
+/**
+ * -- CreateTemplateFragment --
  * Template creation where logged user can insert a name and various product.
  */
-public class CreateTemplateFragment extends Fragment implements SearchView.OnQueryTextListener {
-
+public class CreateTemplateFragment extends Fragment implements SearchView.OnQueryTextListener
+{
+    
     // Widgets
     private TextInputLayout templateNameInputLayout;
     private TextInputEditText templateNameField;
     private FloatingActionButton confirmTemplateCreationButton;
-
+    
     // RecyclerView, adapter and model list
     private RecyclerView recyclerView;
     private ProductCardViewDataAdapter adapter;
     private List<Product> productList = new ArrayList<>();
-
+    
     // Network response handlers
     private NetworkResponseHandler fetchProductsResponseHandler;
     private NetworkResponseHandler createTemplateResponseHandler;
-
+    
     // The template
     private Template createdTemplate;
-
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
         View loadedFragment = inflater.inflate(R.layout.fragment_create_template, container, false);
-
+        
         setHasOptionsMenu(true);
-
+        
         setupToolbar(loadedFragment);
-
+        
         initializeWidgets(loadedFragment);
-
+        
         setupRecyclerView(loadedFragment);
-
+        
         setupConfirmTemplateCreationButtonListener();
-
+        
         setupFetchProductsResponseHandler();
-
+        
         JSONObject jsonID = new JSONObject();
-        try {
+        try
+        {
             jsonID.put("id", String.valueOf(GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID()));
             Log.d("GroupID", jsonID.toString());
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
         ProductsDatabaseHelper.sendGetAllProductsRequest(jsonID, getContext(), fetchProductsResponseHandler);
-
+        
         return loadedFragment;
     }
-
+    
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
         super.onCreateOptionsMenu(menu, inflater);
-
+        
         // Inflate menu
         getActivity().getMenuInflater().inflate(R.menu.search_action_menu, menu);
-
+        
         // Get the search bar
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-
+        
         // Setup hint, width and listener
         searchView.setQueryHint(getString(R.string.action_search_hint));
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setOnQueryTextListener(this);
-
+        
     }
-
+    
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home)
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        if (item.getItemId() == android.R.id.home)
         {
             GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(false);
             showManageTemplateFragment();
         }
         return true;
     }
-
-
+    
+    
     private void setupToolbar(View loadedFragment)
     {
         Toolbar toolbar = (Toolbar) loadedFragment.findViewById(R.id.createTemplateToolbar);
         toolbar.setTitle(getString(R.string.create_template_toolbar));
         toolbar.setTitleTextColor(0xFFFFFFFF);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
-
+    
     private void setupFetchProductsResponseHandler()
     {
         Log.d("setupFetchProducts", "Eccomi");
-        this.fetchProductsResponseHandler = new NetworkResponseHandler() {
+        this.fetchProductsResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONObject response)
+            {
                 Log.d("GET_ALL_PRODUCTS", response.toString());
-                try {
-                    if(response.getInt("success") == 1)
+                try
+                {
+                    if (response.getInt("success") == 1)
                     {
                         populateProductList(response.getJSONArray("products"));
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
-
+                
             }
-
+            
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
                 error.printStackTrace();
             }
-
+            
         };
     }
-
+    
     private void setupRecyclerView(View loadedFragment)
     {
         recyclerView = (RecyclerView) loadedFragment.findViewById(R.id.recyclerViewProducts);
-
+        
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(false);
-
+        
         // use a linear layout manager
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-
+        
         // create an Object for Adapter
         adapter = new ProductCardViewDataAdapter(ProductCardViewDataAdapter.ADD_MODE);
-
+        
         // set the adapter object to the Recyclerview
         recyclerView.setAdapter(adapter);
     }
-
+    
     private void populateProductList(JSONArray jsonProducts)
     {
-        try {
-            for(int i = 0; i < jsonProducts.length(); i++)
+        try
+        {
+            for (int i = 0; i < jsonProducts.length(); i++)
             {
                 Product product = Product.fromJSON((JSONObject) jsonProducts.get(i));
                 productList.add(product);
             }
-        }
-        catch(JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
-
+        
         adapter.replaceAll(productList);
     }
-
-
+    
+    
     @Override
-    public boolean onQueryTextSubmit(String query) {
+    public boolean onQueryTextSubmit(String query)
+    {
         return false;
     }
-
+    
     @Override
-    public boolean onQueryTextChange(String query) {
+    public boolean onQueryTextChange(String query)
+    {
         final List<Product> filteredModelList = filter(productList, query);
         adapter.replaceAll(filteredModelList);
         recyclerView.scrollToPosition(0);
         return true;
     }
-
-
-    private static List<Product> filter(List<Product> models, String query) {
+    
+    
+    private static List<Product> filter(List<Product> models, String query)
+    {
         final String lowerCaseQuery = query.toLowerCase();
-
+        
         final List<Product> filteredModelList = new ArrayList<>();
-        for (Product model : models) {
+        for (Product model : models)
+        {
             final String text = model.getName().toLowerCase();
-            if (text.contains(lowerCaseQuery)) {
+            if (text.contains(lowerCaseQuery))
+            {
                 filteredModelList.add(model);
             }
         }
         return filteredModelList;
     }
-
+    
     private void setupCreateTemplateResponseHandler()
     {
-        this.createTemplateResponseHandler = new NetworkResponseHandler() {
+        this.createTemplateResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONObject response)
+            {
                 Log.d("CREATE_TEMPLATE_RESP", response.toString());
-                try {
-                    if(response.getInt("success") == 1)
+                try
+                {
+                    if (response.getInt("success") == 1)
                     {
                         Toast.makeText(getContext(), "Template creato con successo", Toast.LENGTH_LONG).show();
                         // Save the created template
@@ -241,169 +261,165 @@ public class CreateTemplateFragment extends Fragment implements SearchView.OnQue
                         GlobalValuesManager.getInstance(getContext()).saveHasUserTemplates(true);
                         showManageTemplateFragment();
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
-
+            
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
                 error.printStackTrace();
             }
         };
     }
-
+    
     private void setupConfirmTemplateCreationButtonListener()
     {
-
-        confirmTemplateCreationButton.setOnClickListener(new View.OnClickListener() {
+        
+        confirmTemplateCreationButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
-
+            public void onClick(View v)
+            {
+                
                 boolean okToSend = true;
-
+                
                 // Add all products in case the list is filtered
                 adapter.replaceAll(productList);
-
+                
                 // Get the template name inserted
                 String templateName = "";
-                if(isInsertionValid())
+                if (isInsertionValid())
                 {
                     templateName = templateNameField.getText().toString();
-                }
-                else
+                } else
                 {
                     okToSend = false;
                 }
-
+                
                 // Get the products
                 SortedList<Product> sortedList = adapter.getModel();
                 List<Product> checkedProducts = new ArrayList<>();
-
-                for(int i = 0; i < sortedList.size(); i++)
+                
+                for (int i = 0; i < sortedList.size(); i++)
                 {
-                    if(sortedList.get(i).isChecked())
+                    if (sortedList.get(i).isChecked())
                     {
                         Log.d("Product checked", sortedList.get(i).getName());
                         checkedProducts.add(sortedList.get(i));
                     }
                 }
-
-                if(checkedProducts.size() < 1)
+                
+                if (checkedProducts.size() < 1)
                 {
                     okToSend = false;
                     Snackbar.make(getActivity().findViewById(R.id.activity_home), R.string.template_creation_KO_no_products, Snackbar.LENGTH_LONG).show();
                 }
-
+                
                 // Send the request
-                if(okToSend)
+                if (okToSend)
                 {
                     sendCreateTemplateRequest(templateName, checkedProducts);
                 }
             }
         });
     }
-
+    
     private void initializeWidgets(View loadedFragment)
     {
         templateNameInputLayout = (TextInputLayout) loadedFragment.findViewById(R.id.templateNameInputLayout);
         templateNameField = (TextInputEditText) loadedFragment.findViewById(R.id.templateNameField);
         confirmTemplateCreationButton = (FloatingActionButton) loadedFragment.findViewById(R.id.confirmTemplateCreationButton);
     }
-
+    
     private boolean isInsertionValid()
     {
         boolean isValid = true;
-
-        if(templateNameField.getText().toString().isEmpty())
+        
+        if (templateNameField.getText().toString().isEmpty())
         {
             isValid = false;
             templateNameInputLayout.setError(getString(R.string.template_creation_KO_no_name));
-        }
-        else if(isTemplateNameAlreadyInUse())
+        } else if (isTemplateNameAlreadyInUse())
         {
             isValid = false;
             templateNameInputLayout.setError(getString(R.string.template_creation_KO_same_name));
-        }
-        else
+        } else
         {
             templateNameInputLayout.setErrorEnabled(false);
         }
         return isValid;
     }
-
+    
     private boolean isTemplateNameAlreadyInUse()
     {
-        if(!GlobalValuesManager.getInstance(getContext()).hasUserTemplates())
+        if (!GlobalValuesManager.getInstance(getContext()).hasUserTemplates())
         {
             return false;
         }
         String insertedName = templateNameField.getText().toString();
-        for(Template template : GlobalValuesManager.getInstance(getContext()).getUserTemplates())
+        for (Template template : GlobalValuesManager.getInstance(getContext()).getUserTemplates())
         {
-            if(template.getName().equalsIgnoreCase(insertedName))
+            if (template.getName().equalsIgnoreCase(insertedName))
             {
                 return true;
             }
         }
         return false;
     }
-
+    
     private void sendCreateTemplateRequest(String templateName, List<Product> checkedProducts)
     {
         // Get the group ID
         int loggedUserGroupID = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID();
-
+        
         // Create JSON POST request
         JSONObject params = new JSONObject();
-        try {
+        try
+        {
             params.put("templateName", templateName);
             params.put("groupID", ((Integer) loggedUserGroupID).toString());
             JSONArray products = new JSONArray();
-
-            for(int i = 0; i < checkedProducts.size(); i++)
+            
+            for (int i = 0; i < checkedProducts.size(); i++)
             {
                 products.put(i, checkedProducts.get(i).toJSON());
             }
             params.put("products", products);
-
+            
             // Create a template object for later
             createdTemplate = new Template(templateName, loggedUserGroupID, products);
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
-
+        
         // Debug
         Log.d("TEMPLATE_CREATE", params.toString());
-
+        
         // Define what to do on server response
         setupCreateTemplateResponseHandler();
-
+        
         // Send request
         TemplatesDatabaseHelper.sendCreateTemplateRequest(params, getContext(), createTemplateResponseHandler);
-
+        
     }
-
+    
     private void showManageTemplateFragment()
     {
-        if(HomeFragmentContainer.getInstance().isStackEmpty())
+        if (HomeFragmentContainer.getInstance().isStackEmpty())
         {
             // I arrived here from the EmptyTemplate, no fragment is in the stack
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageTemplateFragment());
             transaction.commit();
-        }
-        else
+        } else
         {
             // If I arrived here from ManageTemplateFragment, pop the fragment from the stack
             getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             HomeFragmentContainer.getInstance().setStackEmpty(true);
         }
-    }
-
-    private void returnBack()
-    {
-        // The previous fragment is saved in the stack
-        getActivity().onBackPressed();
     }
 }

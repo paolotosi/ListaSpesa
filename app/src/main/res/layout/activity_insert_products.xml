@@ -9,7 +9,7 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:layout_width="0px"
-        android:layout_height="0px"/>
+        android:layout_height="0px" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
-            android:titleTextColor="@color/blackText"/>
+            android:titleTextColor="@color/blackText" />
 
         <Space
             android:layout_width="match_parent"
@@ -42,7 +42,7 @@
                 android:id="@+id/editNameField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/product_name_hint"/>
+                android:hint="@string/product_name_hint" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -55,30 +55,30 @@
             android:nextFocusUp="@id/editNameTextInputLayout"
             android:nextFocusLeft="@id/editNameTextInputLayout">
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/editBrandField"
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/editBrandField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/product_brand_hint" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/editDescriptionTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/product_brand_hint"/>
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:nextFocusUp="@id/editNameTextInputLayout"
+            android:nextFocusLeft="@id/editNameTextInputLayout">
 
-    </android.support.design.widget.TextInputLayout>
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/editDescriptionField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/product_description_hint" />
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/editDescriptionTextInputLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:nextFocusUp="@id/editNameTextInputLayout"
-        android:nextFocusLeft="@id/editNameTextInputLayout">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/editDescriptionField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/product_description_hint"/>
-
-    </android.support.design.widget.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
 

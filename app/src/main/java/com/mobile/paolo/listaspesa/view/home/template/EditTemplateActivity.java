@@ -50,7 +50,8 @@ import java.util.Set;
  * removing the product present in the delete set and adding the ones in the add set.
  */
 
-public class EditTemplateActivity extends AppCompatActivity {
+public class EditTemplateActivity extends AppCompatActivity
+{
 
     // Constants
     private static final int ADD_PRODUCTS_REQUEST = 1;
@@ -79,7 +80,8 @@ public class EditTemplateActivity extends AppCompatActivity {
     private NetworkResponseHandler deleteTemplateResponseHandler;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_template);
 
@@ -96,7 +98,8 @@ public class EditTemplateActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
 
         // Putting this here so that we can see the new products added after onActivityResult
@@ -106,7 +109,8 @@ public class EditTemplateActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         super.onCreateOptionsMenu(menu);
 
         // Load menu
@@ -114,9 +118,11 @@ public class EditTemplateActivity extends AppCompatActivity {
 
         // Add listener to menu action
         MenuItem addProductsItem = menu.findItem(R.id.add_product_action);
-        addProductsItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        addProductsItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
+        {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
+            public boolean onMenuItemClick(MenuItem item)
+            {
                 startAddProductsActivityForResult();
                 return false;
             }
@@ -126,18 +132,19 @@ public class EditTemplateActivity extends AppCompatActivity {
 
     // Make the 'Up' button work as the 'Back' button
     @Override
-    public boolean onSupportNavigateUp() {
+    public boolean onSupportNavigateUp()
+    {
         onBackPressed();
         return true;
     }
 
     @Override
     public void onBackPressed()
-    {   if(templateModified())
+    {
+        if (templateModified())
         {
             showAlertDialog();
-        }
-        else finish();
+        } else finish();
     }
 
     private void initializeWidgets()
@@ -167,17 +174,15 @@ public class EditTemplateActivity extends AppCompatActivity {
     private boolean isInsertionValid()
     {
         boolean isValid = true;
-        if(templateNameField.getText().toString().isEmpty())
+        if (templateNameField.getText().toString().isEmpty())
         {
             isValid = false;
             templateNameInputLayout.setError(getString(R.string.template_creation_KO_no_name));
-        }
-        else if(isTemplateNameAlreadyInUse())
+        } else if (isTemplateNameAlreadyInUse())
         {
             isValid = false;
             templateNameInputLayout.setError(getString(R.string.template_creation_KO_same_name));
-        }
-        else
+        } else
         {
             templateNameInputLayout.setErrorEnabled(false);
         }
@@ -187,14 +192,14 @@ public class EditTemplateActivity extends AppCompatActivity {
 
     private boolean isTemplateNameAlreadyInUse()
     {
-        if(!GlobalValuesManager.getInstance(getApplicationContext()).hasUserTemplates())
+        if (!GlobalValuesManager.getInstance(getApplicationContext()).hasUserTemplates())
         {
             return false;
         }
         String insertedName = templateNameField.getText().toString();
-        for(Template template : GlobalValuesManager.getInstance(getApplicationContext()).getUserTemplates())
+        for (Template template : GlobalValuesManager.getInstance(getApplicationContext()).getUserTemplates())
         {
-            if(template.getName().equalsIgnoreCase(insertedName) && !template.getName().equalsIgnoreCase(selectedTemplate.getName()))
+            if (template.getName().equalsIgnoreCase(insertedName) && !template.getName().equalsIgnoreCase(selectedTemplate.getName()))
             {
                 return true;
             }
@@ -206,9 +211,11 @@ public class EditTemplateActivity extends AppCompatActivity {
     {
         Bundle extras = getIntent().getExtras();
         String jsonTemplate = extras.getString("TEMPLATE");
-        try {
+        try
+        {
             selectedTemplate = Template.fromJSON(new JSONObject(jsonTemplate));
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
     }
@@ -227,10 +234,12 @@ public class EditTemplateActivity extends AppCompatActivity {
         // create an Object for Adapter
         adapter = new ProductCardViewDataAdapter(ProductCardViewDataAdapter.EDIT_MODE);
 
-        recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+        recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener()
+        {
             @Override
-            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if(adapter.getItemCount() == 0)
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY)
+            {
+                if (adapter.getItemCount() == 0)
                 {
                     sendDeleteTemplateRequest();
                 }
@@ -247,9 +256,11 @@ public class EditTemplateActivity extends AppCompatActivity {
 
     private void setupConfirmTemplateEditButton()
     {
-        confirmEditTemplateButton.setOnClickListener(new View.OnClickListener() {
+        confirmEditTemplateButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 sendUpdateTemplateDetailsRequest();
             }
         });
@@ -284,14 +295,16 @@ public class EditTemplateActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == ADD_PRODUCTS_REQUEST)
+        if (requestCode == ADD_PRODUCTS_REQUEST)
         {
-            if(resultCode == Activity.RESULT_OK)
+            if (resultCode == Activity.RESULT_OK)
             {
-                try {
+                try
+                {
                     // Get added products from result and add them to the list
                     addSet.addAll(Product.parseJSONProductList(new JSONArray(data.getStringExtra("RESULT"))));
                     adapter.add(addSet);
@@ -304,7 +317,8 @@ public class EditTemplateActivity extends AppCompatActivity {
                     adapter.getDeleteList().removeAll(addSet);
                     deleteSet.removeAll(addSet);
 
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
@@ -313,31 +327,35 @@ public class EditTemplateActivity extends AppCompatActivity {
 
     private void setupUpdateTemplateDetailsResponseHandler()
     {
-        this.updateTemplateDetailsResponseHandler = new NetworkResponseHandler() {
+        this.updateTemplateDetailsResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONObject response)
+            {
                 Log.d("UPDATE_REQUEST", response.toString());
-                try {
-                    if(response.getInt("success") == 1)
+                try
+                {
+                    if (response.getInt("success") == 1)
                     {
                         // Update cached selectedTemplate
                         GlobalValuesManager.getInstance(getApplicationContext()).changeTemplateName(selectedTemplate.getID(), templateNameField.getText().toString());
                         GlobalValuesManager.getInstance(getApplicationContext()).removeTemplateProducts(selectedTemplate.getID(), adapter.getDeleteList());
                         Toast.makeText(getApplicationContext(), getString(R.string.edit_ok), Toast.LENGTH_LONG).show();
                         finish();
-                    }
-                    else
+                    } else
                     {
                         // Get error message
                         Log.d("UPDATE_ERROR", response.getString("message"));
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
 
             }
         };
@@ -347,7 +365,8 @@ public class EditTemplateActivity extends AppCompatActivity {
     {
         // Create post request
         JSONObject jsonParams = new JSONObject();
-        try {
+        try
+        {
             // Group ID
             jsonParams.put("groupID", GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID());
 
@@ -369,7 +388,8 @@ public class EditTemplateActivity extends AppCompatActivity {
             JSONArray jsonAddProducts = Product.asJSONProductList(new ArrayList<>(addSet));
             jsonParams.put("addProducts", jsonAddProducts);
 
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
 
@@ -380,7 +400,7 @@ public class EditTemplateActivity extends AppCompatActivity {
         setupUpdateTemplateDetailsResponseHandler();
 
         // Send request
-        if(isInsertionValid())
+        if (isInsertionValid())
         {
             TemplatesDatabaseHelper.sendDeleteTemplateProductsRequest(jsonParams, getApplicationContext(), updateTemplateDetailsResponseHandler);
         }
@@ -408,8 +428,10 @@ public class EditTemplateActivity extends AppCompatActivity {
 
         dialogBuilder.setPositiveButton(
                 getString(R.string.exit_action),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
                         // Remove the products added but not committed
                         GlobalValuesManager.getInstance(getApplicationContext()).removeTemplateProducts(selectedTemplate.getID(), addSet);
                         // Add products removed but not committed
@@ -421,8 +443,10 @@ public class EditTemplateActivity extends AppCompatActivity {
 
         dialogBuilder.setNegativeButton(
                 getString(R.string.cancel_action),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
                         dialog.cancel();
                     }
                 });
@@ -435,12 +459,15 @@ public class EditTemplateActivity extends AppCompatActivity {
 
     private void setupDeleteTemplatesResponseHandler()
     {
-        this.deleteTemplateResponseHandler = new NetworkResponseHandler() {
+        this.deleteTemplateResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONObject response)
+            {
                 Log.d("DELETE_RESPONSE", response.toString());
-                try {
-                    if(response.getInt("success") == 1)
+                try
+                {
+                    if (response.getInt("success") == 1)
                     {
                         Toast.makeText(getApplicationContext(), getString(R.string.template_deletion_ok), Toast.LENGTH_LONG).show();
 
@@ -448,7 +475,7 @@ public class EditTemplateActivity extends AppCompatActivity {
                         GlobalValuesManager.getInstance(getApplicationContext()).removeTemplates(selectedIDs);
 
                         // Check if it was the only template
-                        if(GlobalValuesManager.getInstance(getApplicationContext()).getUserTemplates().size() == 0)
+                        if (GlobalValuesManager.getInstance(getApplicationContext()).getUserTemplates().size() == 0)
                         {
                             GlobalValuesManager.getInstance(getApplicationContext()).saveHasUserTemplates(false);
                         }
@@ -457,13 +484,15 @@ public class EditTemplateActivity extends AppCompatActivity {
                         finish();
 
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
 
             }
         };
@@ -476,10 +505,12 @@ public class EditTemplateActivity extends AppCompatActivity {
 
         // JSON POST request
         JSONObject jsonParams = new JSONObject();
-        try {
+        try
+        {
             jsonParams.put("templateIDs", new JSONArray(selectedIDs));
             jsonParams.put("groupID", GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUserGroup().getID());
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
 
@@ -492,7 +523,6 @@ public class EditTemplateActivity extends AppCompatActivity {
         // Send request
         TemplatesDatabaseHelper.sendDeleteTemplatesRequest(jsonParams, getApplicationContext(), deleteTemplateResponseHandler);
     }
-
 
 
 }

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-        <variable name="product" type="com.mobile.paolo.listaspesa.model.objects.Product"></variable>
+
+        <variable
+            name="product"
+            type="com.mobile.paolo.listaspesa.model.objects.Product"></variable>
     </data>
 
     <RelativeLayout
@@ -17,6 +19,7 @@
             android:clickable="true"
             android:layout_margin="8dp"
             android:elevation="2dp">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -37,6 +40,7 @@
                         android:hint="Prodotto"
                         android:textColor="#000"
                         android:textSize="18sp" />
+
                     <TextView
                         android:id="@+id/productBrand"
                         android:layout_width="match_parent"
@@ -46,7 +50,8 @@
                         android:hint="Marca"
                         android:textColor="#000"
                         android:textSize="16sp"
-                        android:textStyle="italic"/>
+                        android:textStyle="italic" />
+
                     <TextView
                         android:id="@+id/productDescription"
                         android:layout_width="match_parent"
@@ -65,7 +70,7 @@
                     android:layout_centerVertical="true"
                     android:textColor="@color/materialRed500"
                     android:text="Elimina"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored" />
 
             </RelativeLayout>
         </android.support.v7.widget.CardView>

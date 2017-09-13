@@ -1,17 +1,16 @@
 package com.mobile.paolo.listaspesa.model.adapters;
 
-import java.util.List;
-
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.mobile.paolo.listaspesa.R;
 import com.mobile.paolo.listaspesa.model.objects.User;
+
+import java.util.List;
 
 
 /**
@@ -42,15 +41,16 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
 
     // Create new views
     @Override
-    public UserCardViewDataAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public UserCardViewDataAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
 
         // Create a new view using the .xml file that defines a row
         View itemLayoutView = null;
-        if(visualizationMode == CREATION_MODE)
+        if (visualizationMode == CREATION_MODE)
         {
             itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_create_group_user_layout, null);
         }
-        if(visualizationMode == MANAGEMENT_MODE)
+        if (visualizationMode == MANAGEMENT_MODE)
         {
             itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_manage_group_user_layout, null);
         }
@@ -63,7 +63,8 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(ViewHolder viewHolder, int position)
+    {
 
         final int pos = position;
 
@@ -72,7 +73,7 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
 
         viewHolder.cardTextViewAddress.setText(userList.get(position).getAddress());
 
-        if(visualizationMode == CREATION_MODE)
+        if (visualizationMode == CREATION_MODE)
         {
             viewHolder.cardCheckbox.setChecked(userList.get(position).isChecked());
 
@@ -80,8 +81,10 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
             viewHolder.cardCheckbox.setTag(userList.get(position));
 
             // When a checkbox is clicked:
-            viewHolder.cardCheckbox.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
+            viewHolder.cardCheckbox.setOnClickListener(new View.OnClickListener()
+            {
+                public void onClick(View v)
+                {
 
                     // Retrieve the corresponding user.
                     CheckBox checkbox = (CheckBox) v;
@@ -97,17 +100,20 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
     }
 
     // method to access in activity after updating selection
-    public List<User> getUserList() {
+    public List<User> getUserList()
+    {
         return userList;
     }
 
     // Return the size of the model list.
     @Override
-    public int getItemCount() {
+    public int getItemCount()
+    {
         return userList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder
+    {
 
         private TextView cardTextViewName;
         private TextView cardTextViewAddress;
@@ -127,7 +133,7 @@ public class UserCardViewDataAdapter extends RecyclerView.Adapter<UserCardViewDa
         {
             cardTextViewName = (TextView) itemLayoutView.findViewById(R.id.cardTextViewName);
             cardTextViewAddress = (TextView) itemLayoutView.findViewById(R.id.cardTextViewAddress);
-            if(visualizationMode == CREATION_MODE)
+            if (visualizationMode == CREATION_MODE)
             {
                 cardCheckbox = (CheckBox) itemLayoutView.findViewById(R.id.cardCheckbox);
             }

@@ -8,7 +8,7 @@
     <ImageView
         android:layout_width="128dp"
         android:layout_height="128dp"
-        android:src="@drawable/ic_list_blue_24dp"/>
+        android:src="@drawable/ic_list_blue_24dp" />
 
     <Space
         android:layout_width="0dp"
@@ -21,7 +21,7 @@
         android:text="@string/no_list_message"
         android:textColor="@color/blackText"
         android:textAlignment="center"
-        android:textSize="16sp"/>
+        android:textSize="16sp" />
 
     <Space
         android:layout_width="0dp"
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:elevation="@dimen/button_elevation"
         android:text="@string/create_new_list_button"
-        android:backgroundTint="@color/button_background_tint"/>
+        android:backgroundTint="@color/button_background_tint" />
 
     <Button
         android:id="@+id/goToTemplateCreation"
@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:elevation="@dimen/button_elevation"
         android:text="@string/create_new_template_button"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/createEmptyListButton"
@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         android:elevation="@dimen/button_elevation"
         android:text="@string/create_new_list_empty_button"
-        android:backgroundTint="@color/button_background_tint"/>
+        android:backgroundTint="@color/button_background_tint" />
 
     <Button
         android:id="@+id/goToGroupCreationButtonSL"
@@ -57,8 +57,7 @@
         android:layout_height="wrap_content"
         android:elevation="@dimen/button_elevation"
         android:text="@string/go_to_group_creation"
-        android:visibility="gone"/>
-
+        android:visibility="gone" />
 
 
 </LinearLayout>

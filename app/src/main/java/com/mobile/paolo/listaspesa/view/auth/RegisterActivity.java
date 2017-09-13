@@ -39,119 +39,132 @@ import java.util.Map;
  * Upon receiving the JSON response from the server, the activity shows feedback to the user.
  */
 
-public class RegisterActivity extends AppCompatActivity {
-
+public class RegisterActivity extends AppCompatActivity
+{
+    
     // Constants
     int PLACE_PICKER_REQUEST = 1;
-
+    
     // Widgets
     private FloatingActionButton btnRegister;
     private EditText usernameField, passwordField, addressField;
     private TextInputLayout usernameInputLayout, passwordInputLayout, addressInputLayout;
     private ImageView logo;
     private ImageView localizeAddress;
-
+    
     // The NetworkResponseHandler
     private NetworkResponseHandler networkResponseHandler;
-
+    
     // A boolean to show if there were problems during the insertion
     private boolean insertionOK = false;
-
+    
     // A boolean to show if the inserted username is already present in the db
     private boolean isUsernameInUse = false;
-
+    
     // Used to avoid multiple animations
     private boolean animationStarted = false;
-
+    
     // JSON Node names
     private static final String TAG_SUCCESS = "success";
-
+    
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
+        
         enteringAnimation();
-
+        
         overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-
+        
         initializeWidgets();
-
+        
         setupLocalizeAddressButtonListener();
-
+        
         setupNetworkResponseHandler();
-
-        btnRegister.setOnClickListener(new View.OnClickListener() {
+        
+        btnRegister.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
-                if(isInsertionValid() && !animationStarted)
+            public void onClick(View v)
+            {
+                if (isInsertionValid() && !animationStarted)
                 {
                     sendRegistrationRequest();
                 }
             }
         });
     }
-
+    
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         super.onBackPressed();
         overridePendingTransition(R.anim.back_slide_in, R.anim.back_slide_out);
     }
-
+    
+    // Animation shown at activity start
     private void enteringAnimation()
     {
         overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-
+        
         logo = (ImageView) findViewById(R.id.logo);
-
+        
         float startPositionX = -750;
         float endPositionX = 0;
         int duration = 500;
-
+        
         ValueAnimator motionAnimator = ValueAnimator.ofFloat(startPositionX, endPositionX);
         motionAnimator.setDuration(duration);
-
-        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        
+        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
                 logo.setTranslationX((float) animation.getAnimatedValue());
             }
         });
-
+        
         motionAnimator.start();
     }
-
+    
     private void transitionToNextActivity()
     {
         logo = (ImageView) findViewById(R.id.logo);
-
+        
         float startPositionX = 0;
         float endPositionX = 750;
         int duration = 500;
-
+        
         ValueAnimator motionAnimator = ValueAnimator.ofFloat(startPositionX, endPositionX);
         motionAnimator.setDuration(duration);
-
-        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        
+        motionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
                 logo.setTranslationX((float) animation.getAnimatedValue());
             }
         });
-
-        motionAnimator.addListener(new AnimatorListenerAdapter() {
+        
+        motionAnimator.addListener(new AnimatorListenerAdapter()
+        {
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(Animator animation)
+            {
                 super.onAnimationEnd(animation);
                 goHome();
             }
         });
-
+        
         motionAnimator.start();
-
+        
         animationStarted = true;
     }
-
+    
+    //Activate transition to Home Activity
     private void goHome()
     {
         Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
@@ -162,108 +175,113 @@ public class RegisterActivity extends AppCompatActivity {
         intent.putExtra("GROUP_ID", String.valueOf(-1));
         startActivity(intent);
     }
-
+    
     private void initializeWidgets()
     {
         btnRegister = (FloatingActionButton) findViewById(R.id.btnRegister);
-
+        
         usernameField = (EditText) findViewById(R.id.usernameField);
         usernameInputLayout = (TextInputLayout) findViewById(R.id.usernameInputLayout);
-
+        
         passwordField = (EditText) findViewById(R.id.passwordField);
         passwordInputLayout = (TextInputLayout) findViewById(R.id.passwordInputLayout);
-
+        
         addressField = (EditText) findViewById(R.id.addressField);
         addressInputLayout = (TextInputLayout) findViewById(R.id.addressInputLayout);
-
+        
         localizeAddress = (ImageView) findViewById(R.id.localizeAddress);
     }
-
+    
     private void setupLocalizeAddressButtonListener()
     {
-        localizeAddress.setOnClickListener(new View.OnClickListener() {
+        localizeAddress.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 openPlacePicker();
             }
         });
     }
-
+    
     private void openPlacePicker()
     {
         PlacePicker.IntentBuilder builder;
         builder = new PlacePicker.IntentBuilder();
-
-        try {
+        
+        try
+        {
             startActivityForResult(builder.build(RegisterActivity.this), PLACE_PICKER_REQUEST);
-        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e)
+        {
             e.printStackTrace();
         }
     }
-
+    
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         if (requestCode == PLACE_PICKER_REQUEST)
         {
             if (resultCode == RESULT_OK)
             {
                 // Get the selected place
                 Place place = PlacePicker.getPlace(getApplicationContext(), data);
-
+                
                 // Fill address field
                 addressField.setText(place.getAddress());
             }
         }
     }
-
+    
+    //Insertions content control
     private boolean isInsertionValid()
     {
         boolean isValid = true;
-
+        
         // Check that username field is not empty
-        if(usernameField.getText().toString().isEmpty())
+        if (usernameField.getText().toString().isEmpty())
         {
             isValid = false;
             // Set the error message
             usernameInputLayout.setError(getResources().getString(R.string.empty_username_error));
-        }
-        else
+        } else
             usernameInputLayout.setErrorEnabled(false);
-
+        
         // Check that password field is not empty
-        if(passwordField.getText().toString().isEmpty())
+        if (passwordField.getText().toString().isEmpty())
         {
             isValid = false;
             // Set the error message
             passwordInputLayout.setError(getResources().getString(R.string.empty_password_error));
-        }
-        else
+        } else
             passwordInputLayout.setErrorEnabled(false);
-
+        
         // Check that address field is not empty
-        if(addressField.getText().toString().isEmpty())
+        if (addressField.getText().toString().isEmpty())
         {
             isValid = false;
             // Set the error message
             addressInputLayout.setError(getResources().getString(R.string.empty_address_error));
-        }
-        else
+        } else
             addressInputLayout.setErrorEnabled(false);
-
+        
         return isValid;
     }
-
+    
     private void setupNetworkResponseHandler()
     {
-        this.networkResponseHandler = new NetworkResponseHandler() {
+        this.networkResponseHandler = new NetworkResponseHandler()
+        {
             @Override
             public void onSuccess(JSONObject response)
             {
                 // Log response
                 Log.d("REGISTRATION_RESP", response.toString());
-
-                try {
-                    if(response.getInt(TAG_SUCCESS) == 1)
+                
+                try
+                {
+                    if (response.getInt(TAG_SUCCESS) == 1)
                     {
                         // Insertion ok
                         insertionOK = true;
@@ -273,23 +291,22 @@ public class RegisterActivity extends AppCompatActivity {
                         GlobalValuesManager.getInstance(getApplicationContext()).saveIsUserLogged(true);
                         GlobalValuesManager.getInstance(getApplicationContext()).saveLoggedUser(user);
                         transitionToNextActivity();
-                    }
-                    else if(response.getInt(TAG_SUCCESS) == 2)
+                    } else if (response.getInt(TAG_SUCCESS) == 2)
                     {
                         // Username already in use
                         isUsernameInUse = true;
                         showFeedback();
-                    }
-                    else
+                    } else
                     {
                         // Error
-
+                        
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
-
+            
             @Override
             public void onError(VolleyError error)
             {
@@ -298,46 +315,45 @@ public class RegisterActivity extends AppCompatActivity {
             }
         };
     }
-
+    
     private void sendRegistrationRequest()
     {
         // Reset state
         insertionOK = false;
         isUsernameInUse = false;
-
+        
         // The POST parameters.
         Map<String, String> params = new HashMap<>();
         params.put(getResources().getString(R.string.USER_KEY), usernameField.getText().toString());
         params.put(getResources().getString(R.string.PASS_KEY), passwordField.getText().toString());
         params.put(getResources().getString(R.string.ADDR_KEY), addressField.getText().toString());
-
+        
         // Encapsulate in JSON.
         JSONObject jsonPostParameters = new JSONObject(params);
-
+        
         // Print parameters to console for debug purposes.
         Log.d("REGISTRATION_REQ", jsonPostParameters.toString());
-
+        
         // Send request.
         UsersDatabaseHelper.sendRegistrationRequest(jsonPostParameters, getApplicationContext(), networkResponseHandler);
     }
-
+    
+    //Show feedback for user
     private void showFeedback()
     {
         Snackbar snackShowStatus;
-        if(insertionOK)
+        if (insertionOK)
         {
             snackShowStatus = Snackbar.make(findViewById(R.id.registerLayout), R.string.insertion_OK, Snackbar.LENGTH_LONG);
-        }
-        else if(isUsernameInUse)
+        } else if (isUsernameInUse)
         {
             snackShowStatus = Snackbar.make(findViewById(R.id.registerLayout), R.string.username_in_use, Snackbar.LENGTH_LONG);
-        }
-        else
+        } else
         {
             snackShowStatus = Snackbar.make(findViewById(R.id.registerLayout), R.string.insertion_KO, Snackbar.LENGTH_LONG);
         }
         snackShowStatus.show();
     }
-
-
+    
+    
 }

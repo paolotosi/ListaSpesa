@@ -25,6 +25,7 @@ import java.util.List;
 
 public class GlobalValuesManager
 {
+    //Object fields
     private static GlobalValuesManager instance;
     private SharedPreferencesManager sharedPreferencesManager;
     private Context context;
@@ -37,15 +38,17 @@ public class GlobalValuesManager
     public static final String LIST_IN_CHARGE_ANOTHER_USER = "LIST_IN_CHARGE_ANOTHER_USER"; //Group list has taken in charge by another user, as above there is no list 'in preparazione'
     public static final String LIST_IN_CHARGE_ANOTHER_LIST = "LIST_IN_CHARGE_ANOTHER_LIST"; //List is in taken in charge by another user but logged user has initialized another list
 
+    //Private constructor
     private GlobalValuesManager(Context context)
     {
         this.sharedPreferencesManager = SharedPreferencesManager.getInstance(context);
         this.context = context;
     }
 
+    //Public access to created instance
     public static synchronized GlobalValuesManager getInstance(Context context)
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = new GlobalValuesManager(context);
         }
@@ -58,6 +61,7 @@ public class GlobalValuesManager
         ------------------
      */
 
+    // ------ USER STATE
     public void saveIsUserLogged(boolean isUserLogged)
     {
         sharedPreferencesManager.writeBoolean(context.getString(R.string.is_user_logged), isUserLogged);
@@ -67,8 +71,9 @@ public class GlobalValuesManager
     {
         return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_logged));
     }
+    // --------
 
-
+    // ----- Logged User information
     public void saveLoggedUser(User loggedUser)
     {
         sharedPreferencesManager.writeString(context.getResources().getString(R.string.logged_user), loggedUser.toJSON().toString());
@@ -78,13 +83,16 @@ public class GlobalValuesManager
     {
         String jsonLoggedUser = sharedPreferencesManager.readString(context.getResources().getString(R.string.logged_user));
         User loggedUser = null;
-        try {
+        try
+        {
             loggedUser = new User(new JSONObject(jsonLoggedUser));
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
         return loggedUser;
     }
+    // ---------------
 
     /*
         ------------------
@@ -92,6 +100,7 @@ public class GlobalValuesManager
         ------------------
      */
 
+    // --- Group creation state to show correct fragment
     public void saveIsUserCreatingGroup(boolean isUserCreatingGroup)
     {
         sharedPreferencesManager.writeBoolean(context.getString(R.string.is_user_creating_group), isUserCreatingGroup);
@@ -101,7 +110,9 @@ public class GlobalValuesManager
     {
         return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_creating_group));
     }
+    // ---------
 
+    // --------- Group state of logged user
     public void saveIsUserPartOfAGroup(boolean isUserPartOfAGroup)
     {
         sharedPreferencesManager.writeBoolean(context.getResources().getString(R.string.is_user_part_of_a_group), isUserPartOfAGroup);
@@ -121,13 +132,17 @@ public class GlobalValuesManager
     {
         String jsonLoggedUserGroup = sharedPreferencesManager.readString(context.getResources().getString(R.string.logged_user_group));
         Group loggedUserGroup = null;
-        try {
+        try
+        {
             loggedUserGroup = Group.fromJSON(new JSONObject(jsonLoggedUserGroup));
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
         return loggedUserGroup;
     }
+
+    // ------------
 
     /*
         ------------------
@@ -135,6 +150,7 @@ public class GlobalValuesManager
         ------------------
      */
 
+    // --- Template creation state
     public void saveIsUserCreatingTemplate(boolean isUserCreatingTemplate)
     {
         sharedPreferencesManager.writeBoolean(context.getString(R.string.is_user_creating_template), isUserCreatingTemplate);
@@ -150,6 +166,9 @@ public class GlobalValuesManager
         sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_templates), hasUserTemplates);
     }
 
+    // ---------------
+
+    // --- Template state
     public boolean hasUserTemplates()
     {
         return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_templates));
@@ -159,11 +178,13 @@ public class GlobalValuesManager
     public void saveUserTemplates(List<Template> templateList)
     {
         JSONArray jsonTemplateList = new JSONArray();
-        for(int i = 0; i < templateList.size(); i++)
+        for (int i = 0; i < templateList.size(); i++)
         {
-            try {
+            try
+            {
                 jsonTemplateList.put(i, templateList.get(i).toJSON());
-            } catch (JSONException e) {
+            } catch (JSONException e)
+            {
                 e.printStackTrace();
             }
         }
@@ -175,6 +196,9 @@ public class GlobalValuesManager
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_templates), jsonTemplateList.toString());
     }
 
+    // -------
+
+    // ---- Utilty method
     public void addTemplate(Template template)
     {
         List<Template> userTemplates = getUserTemplates();
@@ -185,9 +209,9 @@ public class GlobalValuesManager
     public void removeTemplate(Integer templateID)
     {
         List<Template> templateList = getUserTemplates();
-        for(int i = templateList.size()-1; i >= 0; i--)
+        for (int i = templateList.size() - 1; i >= 0; i--)
         {
-            if(templateList.get(i).getID() == templateID)
+            if (templateList.get(i).getID() == templateID)
             {
                 templateList.remove(templateList.get(i));
             }
@@ -197,7 +221,7 @@ public class GlobalValuesManager
 
     public void removeTemplates(List<Integer> templateIDs)
     {
-        for(int i = 0; i < templateIDs.size(); i++)
+        for (int i = 0; i < templateIDs.size(); i++)
         {
             removeTemplate(templateIDs.get(i));
         }
@@ -206,9 +230,9 @@ public class GlobalValuesManager
     public void changeTemplateName(int templateID, String newName)
     {
         List<Template> userTemplates = getUserTemplates();
-        for(int i = 0; i < userTemplates.size(); i++)
+        for (int i = 0; i < userTemplates.size(); i++)
         {
-            if(userTemplates.get(i).getID() == templateID)
+            if (userTemplates.get(i).getID() == templateID)
             {
                 userTemplates.get(i).setName(newName);
             }
@@ -219,9 +243,9 @@ public class GlobalValuesManager
     public void addTemplateProducts(int templateID, Collection<Product> addList)
     {
         List<Template> userTemplates = getUserTemplates();
-        for(int i = 0; i < userTemplates.size(); i++)
+        for (int i = 0; i < userTemplates.size(); i++)
         {
-            if(userTemplates.get(i).getID() == templateID)
+            if (userTemplates.get(i).getID() == templateID)
             {
                 // Add only products that aren't already present
 
@@ -237,9 +261,9 @@ public class GlobalValuesManager
     public void removeTemplateProducts(int templateID, Collection<Product> deleteList)
     {
         List<Template> userTemplates = getUserTemplates();
-        for(int i = 0; i < userTemplates.size(); i++)
+        for (int i = 0; i < userTemplates.size(); i++)
         {
-            if(userTemplates.get(i).getID() == templateID)
+            if (userTemplates.get(i).getID() == templateID)
             {
                 userTemplates.get(i).getProductList().removeAll(deleteList);
             }
@@ -250,17 +274,19 @@ public class GlobalValuesManager
     public List<Template> getUserTemplates()
     {
         List<Template> templateList = new ArrayList<>();
-        if(!hasUserTemplates())
+        if (!hasUserTemplates())
         {
             return templateList;
         }
-        try {
+        try
+        {
             JSONArray jsonTemplateList = new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.logged_user_templates)));
-            for(int i = 0; i < jsonTemplateList.length(); i++)
+            for (int i = 0; i < jsonTemplateList.length(); i++)
             {
                 templateList.add(Template.fromJSON(jsonTemplateList.getJSONObject(i)));
             }
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
         return templateList;
@@ -269,15 +295,16 @@ public class GlobalValuesManager
     public Template getTemplateByID(int templateID)
     {
         List<Template> templateList = getUserTemplates();
-        for(int i = 0; i < templateList.size(); i++)
+        for (int i = 0; i < templateList.size(); i++)
         {
-            if(templateList.get(i).getID() == templateID)
+            if (templateList.get(i).getID() == templateID)
             {
                 return templateList.get(i);
             }
         }
         return null;
     }
+    // -----------
 
     /*
         ------------------
@@ -285,6 +312,7 @@ public class GlobalValuesManager
         ------------------
      */
 
+    // ---- Creation state
     public void saveIsUserCreatingShoppingList(boolean isUserCreatingList)
     {
         sharedPreferencesManager.writeBoolean(context.getString(R.string.is_user_creating_list), isUserCreatingList);
@@ -295,6 +323,9 @@ public class GlobalValuesManager
         return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_creating_list));
     }
 
+    // -------
+
+    // ----- Shopping List existence
     public void saveHasUserShoppingList(boolean hasUserList)
     {
         sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_list), hasUserList);
@@ -304,7 +335,9 @@ public class GlobalValuesManager
     {
         return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_list));
     }
+    //---
 
+    // ---- Shopping List state
     public void saveShoppingListState(String state)
     {
         sharedPreferencesManager.writeString(context.getString(R.string.shopping_list_state), state);
@@ -315,6 +348,25 @@ public class GlobalValuesManager
         return sharedPreferencesManager.readString(context.getString(R.string.shopping_list_state));
     }
 
+    public void saveShoppingListTaken(boolean newState)
+    {
+        ShoppingList shoppingList = getUserShoppingList();
+        shoppingList.setTaken(newState);
+    }
+
+    public void saveUserTookList(String userToSave)
+    {
+        sharedPreferencesManager.writeString(context.getString(R.string.user_in_charge), userToSave);
+    }
+
+    public String getUserTookList()
+    {
+        return sharedPreferencesManager.readString(context.getString(R.string.user_in_charge));
+    }
+
+    //-------
+
+    // ----- Utility methods
     public void saveUserShoppingList(JSONObject jsonShoppingList)
     {
         sharedPreferencesManager.writeString(context.getString(R.string.logged_user_list), jsonShoppingList.toString());
@@ -323,9 +375,11 @@ public class GlobalValuesManager
     public ShoppingList getUserShoppingList()
     {
         ShoppingList shoppingList = new ShoppingList();
-        try {
+        try
+        {
             shoppingList = ShoppingList.fromJSON(new JSONObject(sharedPreferencesManager.readString(context.getString(R.string.logged_user_list))));
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
         return shoppingList;
@@ -346,9 +400,9 @@ public class GlobalValuesManager
     public void removeProductFromShoppingList(Integer productID)
     {
         List<Product> productList = getUserShoppingList().getProductList();
-        for(int i = productList.size()-1; i >= 0; i--)
+        for (int i = productList.size() - 1; i >= 0; i--)
         {
-            if(productList.get(i).getID() == productID)
+            if (productList.get(i).getID() == productID)
             {
                 productList.remove(productList.get(i));
             }
@@ -357,50 +411,9 @@ public class GlobalValuesManager
         updateShoppingListProducts(productList);
     }
 
-    public void addProductsToShoppingList(Collection<Product> addList)
-    {
-        ShoppingList shoppingList = getUserShoppingList();
+    //-------
 
-        // Remove products already present from addList
-        addList.removeAll(shoppingList.getProductList());
-
-        // Add the addList to the product list
-        shoppingList.getProductList().addAll(addList);
-
-        saveUserShoppingList(shoppingList.toJSON());
-    }
-
-    public void removeProductsFromShoppingList(Collection<Product> deleteList)
-    {
-        ShoppingList shoppingList = getUserShoppingList();
-
-        shoppingList.getProductList().removeAll(deleteList);
-
-        saveUserShoppingList(shoppingList.toJSON());
-    }
-
-    public Boolean isShoppingListTaken()
-    {
-        ShoppingList shoppingList= getUserShoppingList();
-        return shoppingList.isTaken();
-    }
-
-    public void saveShoppingListTaken(boolean newState)
-    {
-        ShoppingList shoppingList = getUserShoppingList();
-        shoppingList.setTaken(newState);
-    }
-
-    public void saveUserTookList(String userToSave)
-    {
-        sharedPreferencesManager.writeString(context.getString(R.string.user_in_charge), userToSave);
-    }
-
-    public String getUserTookList()
-    {
-        return sharedPreferencesManager.readString(context.getString(R.string.user_in_charge));
-    }
-
+    // --------- Products not found handling
     public boolean areThereProductsNotFound()
     {
         return sharedPreferencesManager.readBoolean(context.getString(R.string.are_there_products_not_found));
@@ -414,9 +427,11 @@ public class GlobalValuesManager
     public List<Product> getProductsNotFound()
     {
         List<Product> productsNotFound = new ArrayList<>();
-        try {
+        try
+        {
             productsNotFound = Product.parseJSONProductList(new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.products_not_found))));
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
         return productsNotFound;
@@ -427,12 +442,15 @@ public class GlobalValuesManager
         sharedPreferencesManager.writeString(context.getString(R.string.products_not_found), jsonProductsNotFound.toString());
     }
 
+    // ------------
+
     /*
         ------------------
         SUPERMARKET METHODS
         ------------------
      */
 
+    // ---- Supermarket state
     public void saveHasUserSupermarkets(boolean hasUserSupermarkets)
     {
         sharedPreferencesManager.writeBoolean(context.getString(R.string.has_user_supermarkets), hasUserSupermarkets);
@@ -442,7 +460,9 @@ public class GlobalValuesManager
     {
         return sharedPreferencesManager.readBoolean(context.getString(R.string.has_user_supermarkets));
     }
+    // ----
 
+    // --- Supermarket creation state
     public void saveIsUserCreatingSupermarket(boolean isUserCreatingSupermarket)
     {
         sharedPreferencesManager.writeBoolean(context.getString(R.string.is_user_creating_supermarkets), isUserCreatingSupermarket);
@@ -452,7 +472,9 @@ public class GlobalValuesManager
     {
         return sharedPreferencesManager.readBoolean(context.getString(R.string.is_user_creating_supermarkets));
     }
+    // -------
 
+    // --- Utility methods
     public void addSupermarket(Supermarket supermarket)
     {
         List<Supermarket> supermarketList = getSupermarkets();
@@ -463,9 +485,9 @@ public class GlobalValuesManager
     public void deleteSupermarket(int supermarketID)
     {
         List<Supermarket> supermarketList = getSupermarkets();
-        for(int i = supermarketList.size() - 1; i >= 0; i--)
+        for (int i = supermarketList.size() - 1; i >= 0; i--)
         {
-            if(supermarketList.get(i).getID() == supermarketID)
+            if (supermarketList.get(i).getID() == supermarketID)
             {
                 supermarketList.remove(supermarketList.get(i));
             }
@@ -475,7 +497,7 @@ public class GlobalValuesManager
 
     public void deleteSupermarkets(List<Integer> supermarketIDs)
     {
-        for(int i = 0; i < supermarketIDs.size(); i++)
+        for (int i = 0; i < supermarketIDs.size(); i++)
         {
             deleteSupermarket(supermarketIDs.get(i));
         }
@@ -489,9 +511,11 @@ public class GlobalValuesManager
     public List<Supermarket> getSupermarkets()
     {
         List<Supermarket> supermarketList = new ArrayList<>();
-        try {
+        try
+        {
             supermarketList = Supermarket.parseJSONSupermarketList(new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.supermarket_list))));
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
         return supermarketList;
@@ -500,12 +524,12 @@ public class GlobalValuesManager
     public void updateSupermarketsProducts(List<Product> productList, int supermarketID)
     {
         List<Supermarket> supermarketList = getSupermarkets();
-        for(Supermarket supermarket : supermarketList)
+        for (Supermarket supermarket : supermarketList)
         {
             // Using sets to avoid duplicates
             Collection<Product> supermarketProductSet = new HashSet<>(supermarket.getProductList());
 
-            if(supermarket.getID() == supermarketID)
+            if (supermarket.getID() == supermarketID)
             {
                 supermarketProductSet.addAll(productList);
                 supermarket.setProductList(new ArrayList<>(supermarketProductSet));
@@ -514,6 +538,7 @@ public class GlobalValuesManager
         saveSupermarkets(Supermarket.asJSONSupermarketList(supermarketList));
     }
 
+    // ------------
 
     /*
         ------------------
@@ -523,18 +548,18 @@ public class GlobalValuesManager
 
     public void saveGroupProducts(JSONArray jsonProducts)
     {
-        sharedPreferencesManager.writeString(context.getString(R.string.group_products) ,jsonProducts.toString());
+        sharedPreferencesManager.writeString(context.getString(R.string.group_products), jsonProducts.toString());
     }
-
-
 
     public List<Product> getGroupProducts()
     {
         List<Product> products = new ArrayList<>();
 
-        try {
+        try
+        {
             products = Product.parseJSONProductList(new JSONArray(sharedPreferencesManager.readString(context.getString(R.string.group_products))));
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
 
@@ -544,9 +569,9 @@ public class GlobalValuesManager
     public void removeProduct(Integer productID)
     {
         List<Product> productList = getGroupProducts();
-        for(int i = productList.size()-1; i >= 0; i--)
+        for (int i = productList.size() - 1; i >= 0; i--)
         {
-            if(productList.get(i).getID() == productID)
+            if (productList.get(i).getID() == productID)
             {
                 productList.remove(productList.get(i));
             }

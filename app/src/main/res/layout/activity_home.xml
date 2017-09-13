@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/activity_home"
+<RelativeLayout android:id="@+id/activity_home"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -18,15 +17,15 @@
 
     </FrameLayout>
 
-<!--    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/home_bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimary"
-        app:itemIconTint="@color/nav_item_state_list"
-        app:itemTextColor="@color/nav_item_state_list"
-        app:menu="@menu/home_bottom_navigation_items"/>-->
+    <!--    <android.support.design.widget.BottomNavigationView
+            android:id="@+id/home_bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorPrimary"
+            app:itemIconTint="@color/nav_item_state_list"
+            app:itemTextColor="@color/nav_item_state_list"
+            app:menu="@menu/home_bottom_navigation_items"/>-->
 
     <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
         android:id="@+id/home_bottom_navigation"
@@ -36,6 +35,6 @@
         android:background="@color/colorPrimary"
         app:itemIconTint="@color/nav_item_state_list"
         app:itemTextColor="@color/nav_item_state_list"
-        app:menu="@menu/home_bottom_navigation_items"/>
+        app:menu="@menu/home_bottom_navigation_items" />
 
 </RelativeLayout>

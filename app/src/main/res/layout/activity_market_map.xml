@@ -14,8 +14,7 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/supermarketMapToolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </android.support.v7.widget.Toolbar>
+            android:layout_height="wrap_content"></android.support.v7.widget.Toolbar>
 
         <fragment
             android:layout_width="wrap_content"
@@ -33,7 +32,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:elevation="@dimen/button_elevation"
         android:src="@drawable/ic_zoom_out_map_white_24dp"
-        app:fabSize="normal"/>
+        app:fabSize="normal" />
 
 
 </android.support.design.widget.CoordinatorLayout>

@@ -31,129 +31,139 @@ import java.util.List;
  * It shows the group info (name and members) and offers an Edit button.
  */
 
-public class ManageGroupFragment extends Fragment {
-
+public class ManageGroupFragment extends Fragment
+{
+    
+    //Layout elements
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
+    
+    //Variable
     private List<User> groupMembersModelList = new ArrayList<>();
     private String groupName;
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
+        
     }
-
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         // Load fragment.
         return inflater.inflate(R.layout.fragment_manage_group, container, false);
     }
-
+    
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
-
+        
         loadGroupInfo();
-
+        
         setupToolbar(this.getView());
-
+        
         setupEditButtonListener(this.getView());
-
+        
         setupLogoutButtonListener(this.getView());
-
+        
         setupAddMemberButtonListener(this.getView());
-
+        
         setupProductHandlerButton((this.getView()));
-
+        
         setupRecyclerView(this.getView());
     }
-
+    
     private void setupRecyclerView(View loadedFragment)
     {
         recyclerView = (RecyclerView) loadedFragment.findViewById(R.id.recyclerViewGroupMembers);
-
+        
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(false);
-
+        
         // use a linear layout manager
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-//        layoutManager.setAutoMeasureEnabled(true);
-//        recyclerView.setLayoutManager(layoutManager);
-
+        
         // create an Object for Adapter
         adapter = new UserCardViewDataAdapter(groupMembersModelList, 2);
-
+        
         // set the adapter object to the RecyclerView
         recyclerView.setAdapter(adapter);
-
-        // adapter.notifyDataSetChanged();
+        
     }
-
+    
+    //Loading group info
     private void loadGroupInfo()
     {
         Group userGroup = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup();
         groupName = userGroup.getName();
         groupMembersModelList = userGroup.getMembers();
     }
-
+    
     private void setupToolbar(View loadedFragment)
     {
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) loadedFragment.findViewById(R.id.collapsingToolbarGroup);
         collapsingToolbarLayout.setTitle(groupName);
     }
-
+    
     private void setupEditButtonListener(View loadedFragment)
     {
-        loadedFragment.findViewById(R.id.editGroupFAB).setOnClickListener(new View.OnClickListener() {
+        loadedFragment.findViewById(R.id.editGroupFAB).setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 Intent intent = new Intent(getActivity(), EditGroupActivity.class);
                 intent.putExtra("groupName", groupName);
                 startActivity(intent);
             }
         });
     }
-
+    
     private void setupProductHandlerButton(View loadedFragment)
     {
-        loadedFragment.findViewById(R.id.manageProduct).setOnClickListener(new View.OnClickListener() {
+        loadedFragment.findViewById(R.id.manageProduct).setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                if(HomeFragmentContainer.getInstance().getManageGroupProductsFragment() == null)
+                if (HomeFragmentContainer.getInstance().getManageGroupProductsFragment() == null)
                 {
                     ManageGroupProductsFragment manageGroupProductsFragment = new ManageGroupProductsFragment();
                     HomeFragmentContainer.getInstance().setManageGroupProductsFragment(manageGroupProductsFragment);
                 }
-                transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageGroupProductsFragment()).addToBackStack("ManageGroup");;
+                transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageGroupProductsFragment()).addToBackStack("ManageGroup");
                 transaction.commit();
-
+                
                 // Signal that the stack is not empty
                 HomeFragmentContainer.getInstance().setStackEmpty(false);
             }
         });
     }
-
+    
     private void setupLogoutButtonListener(View loadedFragment)
     {
-        loadedFragment.findViewById(R.id.logoutFAB).setOnClickListener(new View.OnClickListener() {
+        loadedFragment.findViewById(R.id.logoutFAB).setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 showLogoutDialog();
             }
         });
     }
-
+    
     private void setupAddMemberButtonListener(View loadedFragment)
     {
-        loadedFragment.findViewById(R.id.addMembers).setOnClickListener(new View.OnClickListener() {
+        loadedFragment.findViewById(R.id.addMembers).setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 HomeFragmentContainer.getInstance().resetAddMemberFragment();
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getAddMemberFragment());
@@ -161,46 +171,50 @@ public class ManageGroupFragment extends Fragment {
             }
         });
     }
-
+    
     private void showLogoutDialog()
     {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Light_Dialog);
-
+        
         dialogBuilder.setMessage(getString(R.string.logout_dialog));
         dialogBuilder.setCancelable(true);
-
+        
         dialogBuilder.setPositiveButton(
                 getString(R.string.logout_action),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
                         logout();
                     }
                 });
-
+        
         dialogBuilder.setNegativeButton(
                 getString(R.string.cancel_action),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
                         dialog.cancel();
                     }
                 });
-
+        
         AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getActivity().getColor(R.color.materialRed500));
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getActivity().getColor(R.color.materialGrey600));
     }
-
+    
     private void logout()
     {
         // Flush SharedPreferences and reset fragments
         SharedPreferencesManager.getInstance(getContext()).flush();
         HomeFragmentContainer.getInstance().reset();
-
+        
         Intent intent = new Intent(getContext(), WelcomeActivity.class);
         // Remove this activity from stack after loading the new one
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
-
+    
 }

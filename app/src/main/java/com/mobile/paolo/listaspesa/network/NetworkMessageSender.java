@@ -27,23 +27,27 @@ public class NetworkMessageSender
             Otherwise, it'll be sent a POST request with the parameters specified in jsonPostData.
          */
         JsonObjectRequest jsonRequest = new JsonObjectRequest(url, jsonPostData,
-                new Response.Listener<JSONObject>() {
+                new Response.Listener<JSONObject>()
+                {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(JSONObject response)
+                    {
                         networkResponseHandler.onSuccess(response);
                     }
                 },
-                new Response.ErrorListener() {
+                new Response.ErrorListener()
+                {
                     @Override
-                    public void onErrorResponse(VolleyError error) {
+                    public void onErrorResponse(VolleyError error)
+                    {
                         networkResponseHandler.onError(error);
                     }
-
+                    
                 });
-
+        
         jsonRequest.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        
         // Add the request to the RequestQueue.
         NetworkQueueManager.getInstance(context).addToRequestQueue(jsonRequest);
     }

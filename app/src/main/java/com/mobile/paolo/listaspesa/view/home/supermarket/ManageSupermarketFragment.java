@@ -37,7 +37,8 @@ import java.util.List;
  * Created by paolo on 26/08/17.
  */
 
-/** -- ManageSupermarketFragment --
+/**
+ * -- ManageSupermarketFragment --
  * Management of group supermarkets, various operations like add, deletion, etc.
  */
 
@@ -87,7 +88,8 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
 
         // Update adapter list
@@ -130,9 +132,11 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
 
     private void setupNewTemplateButtonListener()
     {
-        newSupermarketButton.setOnClickListener(new View.OnClickListener() {
+        newSupermarketButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 showAddSupermarketFragment();
             }
         });
@@ -154,12 +158,15 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
 
     private void setupDeleteTemplatesResponseHandler()
     {
-        this.deleteSupermarketResponseHandler = new NetworkResponseHandler() {
+        this.deleteSupermarketResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONObject response)
+            {
                 Log.d("SUPERMARKET_DEL_RESP", response.toString());
-                try {
-                    if(response.getInt("success") == 1)
+                try
+                {
+                    if (response.getInt("success") == 1)
                     {
                         Toast.makeText(getContext(), getString(R.string.template_deletion_ok), Toast.LENGTH_LONG).show();
 
@@ -169,13 +176,15 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
                         adapter.removeItems(selectedListItems);
 
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
                 error.printStackTrace();
             }
         };
@@ -185,17 +194,19 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
     {
         // Get the selected templates IDs
         List<Supermarket> templateList = adapter.getSupermarketList();
-        for(int i = 0; i < adapter.getSelectedItemCount(); i++)
+        for (int i = 0; i < adapter.getSelectedItemCount(); i++)
         {
             selectedIDs.add(templateList.get(adapter.getSelectedItems().get(i)).getID());
         }
 
         // JSON POST request
         JSONObject jsonParams = new JSONObject();
-        try {
+        try
+        {
             jsonParams.put("supermarketIDs", new JSONArray(selectedIDs));
             jsonParams.put("groupID", GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID());
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
 
@@ -215,11 +226,11 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
         if (actionMode != null)
         {
             // If all items except one are selected
-            if(adapter.getSelectedItems().size() == adapter.getItemCount() - 1)
+            if (adapter.getSelectedItems().size() == adapter.getItemCount() - 1)
             {
                 // Determine if the item clicked is the only one not selected
                 boolean clickOnLastItem = true;
-                for(Integer i : adapter.getSelectedItems())
+                for (Integer i : adapter.getSelectedItems())
                 {
                     if (i == position)
                     {
@@ -227,7 +238,7 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
                     }
                 }
                 // It was the last item: feedback
-                if(clickOnLastItem)
+                if (clickOnLastItem)
                 {
                     Toast.makeText(getContext(), "Non è possibile eliminare tutti i supermercati", Toast.LENGTH_SHORT).show();
                 }
@@ -252,11 +263,10 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
         }
 
         // Toggle position only if it's not the only item remaining and if the item clicked is not the only one not selected
-        if(adapter.getItemCount() > 1 && !(adapter.getSelectedItems().size() == adapter.getItemCount() - 1))
+        if (adapter.getItemCount() > 1 && !(adapter.getSelectedItems().size() == adapter.getItemCount() - 1))
         {
             toggleSelection(position);
-        }
-        else
+        } else
         {
             Toast.makeText(getContext(), "Non è possibile eliminare tutti i supermercati", Toast.LENGTH_SHORT).show();
         }
@@ -264,15 +274,15 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
         return true;
     }
 
-    private void toggleSelection(int position) {
+    private void toggleSelection(int position)
+    {
         adapter.toggleSelection(position);
         int count = adapter.getSelectedItemCount();
 
         if (count == 0)
         {
             actionMode.finish();
-        }
-        else
+        } else
         {
             actionMode.setTitle(String.valueOf(count));
             actionMode.invalidate();
@@ -281,30 +291,33 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
 
     private void setupActionModeCallback()
     {
-        this.actionModeCallback = new ActionMode.Callback() {
+        this.actionModeCallback = new ActionMode.Callback()
+        {
             @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                if(adapter.getItemCount() == 1)
+            public boolean onCreateActionMode(ActionMode mode, Menu menu)
+            {
+                if (adapter.getItemCount() == 1)
                 {
                     Toast.makeText(getContext(), "Non è possibile eliminare tutti i supermercati", Toast.LENGTH_SHORT).show();
                     return false;
-                }
-                else
+                } else
                 {
-                    mode.getMenuInflater().inflate (R.menu.delete_action_mode, menu);
+                    mode.getMenuInflater().inflate(R.menu.delete_action_mode, menu);
                     selectedListItems.clear();
                     return true;
                 }
             }
 
             @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu)
+            {
                 return false;
             }
 
             @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                if(item.getItemId() == R.id.deleteTemplate)
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item)
+            {
+                if (item.getItemId() == R.id.deleteTemplate)
                 {
                     sendDeleteSupermarketsRequest();
                     selectedListItems.addAll(adapter.getSelectedItems());
@@ -315,7 +328,8 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
             }
 
             @Override
-            public void onDestroyActionMode(ActionMode mode) {
+            public void onDestroyActionMode(ActionMode mode)
+            {
                 adapter.clearSelection();
                 actionMode = null;
             }
@@ -323,9 +337,10 @@ public class ManageSupermarketFragment extends Fragment implements SupermarketCa
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
-        if(actionMode != null)
+        if (actionMode != null)
         {
             actionMode.finish();
         }

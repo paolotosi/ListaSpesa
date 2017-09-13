@@ -25,6 +25,8 @@ public class ProductsDatabaseHelper
     private static final String URL_GET_PRODUCTS = "http://" + host + "/listaspesa/android_connect/products/get_all_products.php";
     private static final String URL_GET_PRODUCTS_NOT_FOUND = "http://" + host + "/listaspesa/android_connect/products/get_products_not_found.php";
 
+
+    // DB interaction methods: sending at a specific URL, some data, response is handled by networkResponseHandler
     public static void sendGetAllProductsRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
         NetworkMessageSender.sendHTTPRequest(URL_GET_PRODUCTS, jsonPostData, context, networkResponseHandler);

@@ -49,7 +49,7 @@ public class EmptyTemplateFragment extends Fragment
         goToGroupCreationButton = (Button) loadedFragment.findViewById(R.id.goToGroupCreationButton);
         emptyTemplateMessage = (TextView) loadedFragment.findViewById(R.id.emptyTemplateMessage);
 
-        if(!GlobalValuesManager.getInstance(getContext()).isUserPartOfAGroup())
+        if (!GlobalValuesManager.getInstance(getContext()).isUserPartOfAGroup())
         {
             // Change message
             emptyTemplateMessage.setText(getString(R.string.no_template_no_group_message));
@@ -66,9 +66,11 @@ public class EmptyTemplateFragment extends Fragment
 
     private void setupCreateTemplateButtonListener()
     {
-        createNewTemplateButton.setOnClickListener(new View.OnClickListener() {
+        createNewTemplateButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(true);
                 showCreateTemplateFragment();
             }
@@ -88,9 +90,11 @@ public class EmptyTemplateFragment extends Fragment
 
     private void setupCreateGroupButtonListener()
     {
-        goToGroupCreationButton.setOnClickListener(new View.OnClickListener() {
+        goToGroupCreationButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingGroup(true);
                 showCreateGroupFragment();
             }

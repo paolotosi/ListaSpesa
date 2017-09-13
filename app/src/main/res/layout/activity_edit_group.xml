@@ -9,7 +9,7 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:layout_width="0px"
-        android:layout_height="0px"/>
+        android:layout_height="0px" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
-            android:titleTextColor="@color/blackText"/>
+            android:titleTextColor="@color/blackText" />
 
         <Space
             android:layout_width="match_parent"
@@ -42,7 +42,7 @@
                 android:id="@+id/editNameField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/group_name_hint"/>
+                android:hint="@string/group_name_hint" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -61,7 +61,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:elevation="@dimen/button_elevation"
-            android:text="@string/confirm"/>
+            android:text="@string/confirm" />
 
         <Button
             android:id="@+id/cancelButton"
@@ -71,7 +71,7 @@
             android:layout_marginRight="20dp"
             android:elevation="@dimen/button_elevation"
             android:backgroundTint="@color/materialGrey400"
-            android:text="@string/cancel"/>
+            android:text="@string/cancel" />
 
     </LinearLayout>
 

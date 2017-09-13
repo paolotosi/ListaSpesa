@@ -237,10 +237,4 @@ public class InsertProductsActivity extends AppCompatActivity {
         finish();
     }
 
-    // After the name is changed, the group info saved needs to be updated
-    private void updateSharedPreferences()
-    {
-
-    }
-
 }

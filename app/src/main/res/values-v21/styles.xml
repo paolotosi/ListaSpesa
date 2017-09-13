@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="AppMaterialTheme" parent="SuperMaterialTheme">
         <!-- Customise for only Lollipop and Above Versions features. -->
         <!-- Color customisation. -->
@@ -11,7 +12,7 @@
 
         <!-- Enables activity transitions. -->
         <item name="android:windowContentTransitions">true</item>
-        
+
         <item name="android:actionModeBackground">@color/colorAccent</item>
 
 

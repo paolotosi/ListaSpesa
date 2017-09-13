@@ -27,6 +27,7 @@ public class SupermarketDatabaseHelper
     private static final String URL_ADD_SUPERMARKET = "http://" + host + "/listaspesa/android_connect/supermarkets/add_supermarket.php";
     private static final String URL_DELETE_SUPERMARKET = "http://" + host + "/listaspesa/android_connect/supermarkets/delete_supermarket.php";
 
+    // DB interaction methods: sending at a specific URL, some data, response is handled by networkResponseHandler
     public static void sendGetAllSupermarketsRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
         NetworkMessageSender.sendHTTPRequest(URL_GET_ALL_SUPERMARKETS, jsonPostData, context, networkResponseHandler);
