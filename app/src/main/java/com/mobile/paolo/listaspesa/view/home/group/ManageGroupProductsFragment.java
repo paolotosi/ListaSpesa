@@ -106,14 +106,12 @@ public class ManageGroupProductsFragment extends Fragment
     {
         if(HomeFragmentContainer.getInstance().isStackEmpty())
         {
-            // I arrived here from the EmptySupermarket, no fragment is in the stack
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageGroupFragment());
             transaction.commit();
         }
         else
         {
-            // If I arrived here from ManageSupermarketFragment, pop the fragment from the stack
             getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             HomeFragmentContainer.getInstance().setStackEmpty(true);
         }

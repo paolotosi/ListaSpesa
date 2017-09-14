@@ -156,7 +156,7 @@ public class HomeActivity extends AppCompatActivity
                         // Select the fragment to load
                         Fragment selectedFragment = selectCorrectFragment(selectedTab);
 
-                        // If there's a fragment in the stack (e.g. state in which is shown the 'Up'
+                        // If there's a fragment in the stack (e.g. states in which is shown the 'Up'
                         // button require to save the previous fragment), pop it
                         getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                         HomeFragmentContainer.getInstance().setStackEmpty(true);

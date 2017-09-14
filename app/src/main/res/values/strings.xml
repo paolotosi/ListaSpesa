@@ -141,6 +141,7 @@
 
     <!-- InsertProductsActivity strings. -->
     <string name="insert_product_toolbar">Inserisci nuovo prodotto</string>
+    <string name="modify_product_toolbar">Modifica prodotto</string>
 
     <!-- Generic error strings. -->
     <string name="generic_error">Errore sconosciuto.</string>

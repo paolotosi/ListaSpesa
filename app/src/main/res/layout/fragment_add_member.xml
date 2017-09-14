@@ -16,7 +16,8 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
-            android:titleTextColor="@color/white"/>
+            android:titleTextColor="@color/white"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -109,7 +109,14 @@ public class InsertProductsActivity extends AppCompatActivity {
     private void setupToolbar()
     {
         insertProductToolbar.setTitleTextColor(getColor(R.color.white));
-        insertProductToolbar.setTitle(getString(R.string.insert_product_toolbar));
+        if(flag)
+        {
+            insertProductToolbar.setTitle(getString(R.string.insert_product_toolbar));
+        }
+        else
+        {
+            insertProductToolbar.setTitle(getString(R.string.modify_product_toolbar));
+        }
     }
 
     private void initializeButtonListeners()
@@ -221,8 +228,11 @@ public class InsertProductsActivity extends AppCompatActivity {
         {
             if(editNameField.getText().toString().equalsIgnoreCase(product.getName()) && editBrandField.getText().toString().equalsIgnoreCase(product.getBrand()))
             {
-                isValid = false;
-                Toast.makeText(getApplicationContext(), "Hai già inserito un prodotto della stessa marca con questo nome", Toast.LENGTH_SHORT).show();
+                if(!product.getName().equalsIgnoreCase(oldName) || !product.getBrand().equalsIgnoreCase(oldBrand))
+                {
+                    isValid = false;
+                    Toast.makeText(getApplicationContext(), "Hai già inserito un prodotto della stessa marca con questo nome", Toast.LENGTH_SHORT).show();
+                }
             }
         }
 

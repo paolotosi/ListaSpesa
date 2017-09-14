@@ -3,12 +3,15 @@ package com.mobile.paolo.listaspesa.view.home.group;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -91,7 +94,47 @@ public class AddMemberFragment extends Fragment {
         // Setup the confirm button listener.
         setupConfirmButtonListener(loadedFragment);
 
+        // Otherwise the 'Up' button won't work
+        setHasOptionsMenu(true);
+
         return loadedFragment;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home)
+        {
+            GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingSupermarket(false);
+            showManageGroupFragment();
+        }
+        return true;
+    }
+
+    private void showManageGroupFragment()
+    {
+        if(HomeFragmentContainer.getInstance().isStackEmpty())
+        {
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getManageGroupFragment());
+            transaction.commit();
+        }
+        else
+        {
+            getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            HomeFragmentContainer.getInstance().setStackEmpty(true);
+        }
+    }
+
+    private void setupToolbar(View loadedFragment)
+    {
+        Toolbar toolbar = (Toolbar) loadedFragment.findViewById(R.id.addMembersToolbar);
+        toolbar.setTitle(getString(R.string.add_toolbar));
+        toolbar.setTitleTextColor(0xFFFFFFFF);
+
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     private void initializeWidgets(View loadedFragment)
@@ -254,13 +297,6 @@ public class AddMemberFragment extends Fragment {
 
         // set the adapter object to the Recyclerview
         recyclerView.setAdapter(adapter);
-    }
-
-    private void setupToolbar(View loadedFragment)
-    {
-        Toolbar toolbar = (Toolbar) loadedFragment.findViewById(R.id.addMembersToolbar);
-        toolbar.setTitle(getString(R.string.add_toolbar));
-        toolbar.setTitleTextColor(0xFFFFFFFF);
     }
 
     private void showFeedback(int feedbackCode)

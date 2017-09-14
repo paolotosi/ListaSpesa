@@ -156,8 +156,11 @@ public class ManageGroupFragment extends Fragment {
             public void onClick(View v) {
                 HomeFragmentContainer.getInstance().resetAddMemberFragment();
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getAddMemberFragment());
+                transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getAddMemberFragment()).addToBackStack("ManageGroup");
                 transaction.commit();
+
+                // Signal that the stack is not empty
+                HomeFragmentContainer.getInstance().setStackEmpty(false);
             }
         });
     }

@@ -427,6 +427,19 @@ public class GlobalValuesManager
         sharedPreferencesManager.writeString(context.getString(R.string.products_not_found), jsonProductsNotFound.toString());
     }
 
+    public void removeProductFromProductsNotFound(int productID)
+    {
+        List<Product> productsNotFound = getProductsNotFound();
+        for(int i = productsNotFound.size() - 1; i >= 0; i--)
+        {
+            if(productsNotFound.get(i).getID() == productID)
+            {
+                productsNotFound.remove(i);
+            }
+        }
+        saveProductsNotFound(Product.asJSONProductList(productsNotFound));
+    }
+
     /*
         ------------------
         SUPERMARKET METHODS
