@@ -145,7 +145,7 @@ public class EditGroupActivity extends AppCompatActivity
     {
         boolean isValid = true;
 
-        if(editNameField.getText().toString().isEmpty())
+        if(editNameField.getText().toString().trim().isEmpty())
         {
             isValid = false;
             editNameTextInputLayout.setError(getString(R.string.empty_group_error));

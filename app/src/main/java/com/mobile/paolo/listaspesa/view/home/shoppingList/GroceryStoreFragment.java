@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -393,7 +392,12 @@ public class GroceryStoreFragment extends android.support.v4.app.Fragment {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext(), R.style.MyAlertDialogStyle);
 
         dialogBuilder.setTitle(getString(R.string.end_shopping_title));
-        dialogBuilder.setMessage(getString(R.string.end_shopping_dialog));
+        String alertMessage = getString(R.string.end_shopping_dialog);
+        if(adapter.getCheckedProducts().size() > 0)
+        {
+            alertMessage += "\n\n" + getString(R.string.end_shopping_select_products_alert);
+        }
+        dialogBuilder.setMessage(alertMessage);
         dialogBuilder.setCancelable(true);
 
         dialogBuilder.setPositiveButton(

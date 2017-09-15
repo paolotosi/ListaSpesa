@@ -1,11 +1,13 @@
 package com.mobile.paolo.listaspesa.view.home;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -98,6 +100,50 @@ public class HomeActivity extends AppCompatActivity
         // Determine the context: logged user, group, templates...
         contextualize();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(HomeFragmentContainer.getInstance().isStackEmpty())
+        {
+            showExitApplicationAlertDialog();
+        }
+        else
+        {
+            HomeFragmentContainer.getInstance().setStackEmpty(true);
+            super.onBackPressed();
+        }
+    }
+
+    private void showExitApplicationAlertDialog()
+    {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
+
+        dialogBuilder.setTitle(getString(R.string.alert_exit_title));
+        dialogBuilder.setMessage(getString(R.string.alert_exit_message));
+        dialogBuilder.setCancelable(true);
+
+        dialogBuilder.setPositiveButton(
+                getString(R.string.exit_action),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Send delete request
+                        finish();
+                    }
+                });
+
+        dialogBuilder.setNegativeButton(
+                getString(R.string.cancel_action),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getColor(R.color.materialRed500));
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getColor(R.color.materialGrey600));
     }
 
     private void contextualize()

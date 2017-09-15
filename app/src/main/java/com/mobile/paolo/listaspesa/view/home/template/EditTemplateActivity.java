@@ -167,7 +167,7 @@ public class EditTemplateActivity extends AppCompatActivity {
     private boolean isInsertionValid()
     {
         boolean isValid = true;
-        if(templateNameField.getText().toString().isEmpty())
+        if(templateNameField.getText().toString().trim().isEmpty())
         {
             isValid = false;
             templateNameInputLayout.setError(getString(R.string.template_creation_KO_no_name));

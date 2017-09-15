@@ -156,7 +156,7 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
         HomeFragmentContainer.getInstance().setStackEmpty(false);
 
         // Take note that the user is creating a template
-        GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(true);
+        // GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(true);
     }
 
     private void setupDeleteTemplatesResponseHandler()

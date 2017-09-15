@@ -190,7 +190,7 @@ public class EmptyShoppingListFragment extends Fragment {
         transaction.commit();
 
         // Remember that the user is creating a template
-        GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(true);
+        // GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(true);
     }
 
 }

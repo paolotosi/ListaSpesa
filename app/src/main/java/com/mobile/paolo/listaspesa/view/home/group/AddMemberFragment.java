@@ -344,7 +344,7 @@ public class AddMemberFragment extends Fragment {
                             Group userGroup = GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup();
                             userGroup.setMembers(groupMembers);
                             GlobalValuesManager.getInstance(getContext()).saveLoggedUserGroup(userGroup);
-                            changeFragment();
+                            showManageGroupFragment();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

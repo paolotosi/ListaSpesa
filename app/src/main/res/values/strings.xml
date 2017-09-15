@@ -56,6 +56,8 @@
     <string name="tab_name_templates">Template</string>
     <string name="tab_name_list">Lista</string>
     <string name="tab_name_group">Gruppo</string>
+    <string name="alert_exit_title">Uscire dall\'applicazione?</string>
+    <string name="alert_exit_message">I tuoi dati non andranno persi.</string>
 
     <!-- EmptyGroupFragment strings. -->
     <string name="no_group_message">Non fai parte di nessun gruppo.\nCrea un gruppo per condividere la lista della spesa.</string>
@@ -175,6 +177,7 @@
     <string name="list_completed_button">Crea una nuova lista</string>
     <string name="end_shopping_title">Concludere gli acquisti?</string>
     <string name="end_shopping_dialog">Alcuni prodotti della lista non sono presenti nel tuo carrello. Questi prodotti saranno aggiunti in automatico alla prossima lista della spesa.</string>
+    <string name="end_shopping_select_products_alert">Attenzione: ci sono alcuni prodotti selezionati ma non aggiunti al carrello!</string>
     <string name="end_shopping_action">Concludi</string>
     <string name="list_completed_new_list">Il tuo gruppo ha già iniziato una nuova lista!</string>
     <string name="no_supermarket_selected_toast">Seleziona un supermercato.</string>

@@ -217,7 +217,7 @@ public class CreateGroupFragment extends Fragment
         JSONObject jsonRequest = new JSONObject();
         try {
             // Add user inserted group name in JSON
-            String groupName = ((EditText) fragment.findViewById(R.id.groupNameField)).getText().toString();
+            String groupName = ((EditText) fragment.findViewById(R.id.groupNameField)).getText().toString().trim();
             if(!groupName.isEmpty())
             {
                 jsonRequest.put("groupName", groupName);

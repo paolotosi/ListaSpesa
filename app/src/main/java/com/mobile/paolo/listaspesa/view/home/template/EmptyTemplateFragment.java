@@ -69,7 +69,7 @@ public class EmptyTemplateFragment extends Fragment
         createNewTemplateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(true);
+                //GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(true);
                 showCreateTemplateFragment();
             }
         });

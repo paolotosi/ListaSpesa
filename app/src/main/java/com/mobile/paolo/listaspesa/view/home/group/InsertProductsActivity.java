@@ -212,17 +212,21 @@ public class InsertProductsActivity extends AppCompatActivity {
     {
         boolean isValid = true;
 
-        if(editNameField.getText().toString().isEmpty())
+        if(editNameField.getText().toString().trim().isEmpty())
         {
             isValid = false;
             editNameTextInputLayout.setError(getString(R.string.empty_field_error));
         }
+        else
+            editNameTextInputLayout.setErrorEnabled(false);
 
-        if(editBrandField.getText().toString().isEmpty())
+        if(editBrandField.getText().toString().trim().isEmpty())
         {
             isValid = false;
             editBrandTextInputLayout.setError(getString(R.string.empty_field_error));
         }
+        else
+            editBrandTextInputLayout.setErrorEnabled(false);
 
         for(Product product : GlobalValuesManager.getInstance(getApplicationContext()).getGroupProducts())
         {

@@ -57,6 +57,8 @@ public class AddProductsActivity extends AppCompatActivity implements SearchView
     // The products already present in the template
     private List<Product> currentProductList = new ArrayList<>();
 
+    private SearchView searchView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +89,7 @@ public class AddProductsActivity extends AppCompatActivity implements SearchView
 
         // Get the search bar
         final MenuItem searchItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Setup hint, width and listener
         searchView.setQueryHint(getString(R.string.action_search_hint));
@@ -260,6 +262,10 @@ public class AddProductsActivity extends AppCompatActivity implements SearchView
 
     private void addCheckedProducts()
     {
+        // Close the SearchView (otherwise the adapter will contain only the filtered list)
+        searchView.setIconified(true);
+
+        // Save checked products
         List<Product> productList = adapter.getModelAsCollection();
         for(int i = 0; i < productList.size(); i++)
         {

@@ -89,8 +89,6 @@ public class CreateSupermarketFragment extends Fragment
         // Inflate the layout for this fragment
         View loadedFragment = inflater.inflate(R.layout.fragment_create_supermarket, container, false);
 
-        GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingSupermarket(true);
-
         initializeWidgets(loadedFragment);
 
         setupToolbar();
@@ -135,7 +133,6 @@ public class CreateSupermarketFragment extends Fragment
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home)
         {
-            GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingSupermarket(false);
             showManageSupermarketFragment();
         }
         return true;
@@ -196,7 +193,7 @@ public class CreateSupermarketFragment extends Fragment
     {
         boolean isNameValid = true;
         List<Supermarket> supermarketList = GlobalValuesManager.getInstance(getContext()).getSupermarkets();
-        if(nameField.getText().toString().isEmpty())
+        if(nameField.getText().toString().trim().isEmpty())
         {
             isNameValid = false;
             nameTextInputLayout.setError(getString(R.string.empty_supermarket_name));
@@ -225,7 +222,7 @@ public class CreateSupermarketFragment extends Fragment
     {
         boolean isAddressValid = true;
 
-        if(addressField.getText().toString().isEmpty())
+        if(addressField.getText().toString().trim().isEmpty())
         {
             isAddressValid = false;
             addressTextInputLayout.setError(getString(R.string.empty_supermarket_address));
@@ -248,7 +245,6 @@ public class CreateSupermarketFragment extends Fragment
                     if(response.getInt("success") == 1)
                     {
                         Toast.makeText(getContext(), getString(R.string.supermarket_added), Toast.LENGTH_SHORT).show();
-                        GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingSupermarket(false);
 
                         // Save the added supermarket in the cache
                         int id = response.getInt("id");

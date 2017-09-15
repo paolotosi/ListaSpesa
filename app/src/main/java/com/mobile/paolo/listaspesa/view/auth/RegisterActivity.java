@@ -221,7 +221,7 @@ public class RegisterActivity extends AppCompatActivity {
         boolean isValid = true;
 
         // Check that username field is not empty
-        if(usernameField.getText().toString().isEmpty())
+        if(usernameField.getText().toString().trim().isEmpty())
         {
             isValid = false;
             // Set the error message
@@ -231,7 +231,7 @@ public class RegisterActivity extends AppCompatActivity {
             usernameInputLayout.setErrorEnabled(false);
 
         // Check that password field is not empty
-        if(passwordField.getText().toString().isEmpty())
+        if(passwordField.getText().toString().trim().isEmpty())
         {
             isValid = false;
             // Set the error message
@@ -241,7 +241,7 @@ public class RegisterActivity extends AppCompatActivity {
             passwordInputLayout.setErrorEnabled(false);
 
         // Check that address field is not empty
-        if(addressField.getText().toString().isEmpty())
+        if(addressField.getText().toString().trim().isEmpty())
         {
             isValid = false;
             // Set the error message
