@@ -8,7 +8,7 @@
     <ImageView
         android:layout_width="128dp"
         android:layout_height="128dp"
-        android:src="@drawable/ic_group_blue_24dp"/>
+        android:src="@drawable/ic_group_blue_24dp" />
 
     <Space
         android:layout_width="0dp"
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:text="@string/no_group_message"
         android:textColor="@color/blackText"
-        android:textAlignment="center"/>
+        android:textAlignment="center" />
 
     <Space
         android:layout_width="0dp"
@@ -30,13 +30,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:elevation="@dimen/button_elevation"
-        android:text="@string/create_new_group_button"/>
+        android:text="@string/create_new_group_button" />
 
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Logout"
-        android:backgroundTint="@color/materialRed500"/>
+        android:backgroundTint="@color/materialRed500" />
 
 </LinearLayout>

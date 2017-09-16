@@ -1,19 +1,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/deleteList"
+    <item
+        android:id="@+id/deleteList"
         android:title="@string/action_search"
         android:icon="@drawable/ic_delete_white_24dp"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
-    <item android:id="@+id/takeListInCharge"
+    <item
+        android:id="@+id/takeListInCharge"
         android:title="@string/action_search"
         android:icon="@drawable/ic_local_grocery_store_24dp"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
-    <item android:id="@+id/confirmList"
+    <item
+        android:id="@+id/confirmList"
         android:title="@string/action_search"
         android:icon="@drawable/ic_check_white_24dp"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
 </menu>

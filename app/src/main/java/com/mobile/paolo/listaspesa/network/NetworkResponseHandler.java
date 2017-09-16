@@ -1,7 +1,5 @@
 package com.mobile.paolo.listaspesa.network;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 import org.json.JSONObject;
@@ -13,8 +11,10 @@ import org.json.JSONObject;
  * In this way it's possible to separate the request logic from the request handling logic.
  */
 
-public interface NetworkResponseHandler {
+public interface NetworkResponseHandler
+{
     
     void onSuccess(JSONObject response);
+
     void onError(VolleyError error);
 }

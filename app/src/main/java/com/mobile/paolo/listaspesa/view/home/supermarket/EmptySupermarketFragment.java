@@ -1,4 +1,5 @@
 package com.mobile.paolo.listaspesa.view.home.supermarket;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -17,7 +18,8 @@ import com.mobile.paolo.listaspesa.view.home.HomeFragmentContainer;
  * Created by paolo on 26/08/17.
  */
 
-/** -- EmptySupermarketFragment --
+/**
+ * -- EmptySupermarketFragment --
  * Fragment shown when group hasn't any supermarket
  */
 
@@ -45,7 +47,7 @@ public class EmptySupermarketFragment extends Fragment
         goToGroupCreationButton = (Button) loadedFragment.findViewById(R.id.goToGroupCreationButton);
         emptySupermarketMessage = (TextView) loadedFragment.findViewById(R.id.emptySupermarketMessage);
 
-        if(!GlobalValuesManager.getInstance(getContext()).isUserPartOfAGroup())
+        if (!GlobalValuesManager.getInstance(getContext()).isUserPartOfAGroup())
         {
             // Change message
             emptySupermarketMessage.setText(getString(R.string.no_supermarket_no_group_message));
@@ -64,9 +66,11 @@ public class EmptySupermarketFragment extends Fragment
 
     private void setupCreateGroupButtonListener()
     {
-        goToGroupCreationButton.setOnClickListener(new View.OnClickListener() {
+        goToGroupCreationButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingGroup(true);
                 showCreateGroupFragment();
             }
@@ -86,9 +90,11 @@ public class EmptySupermarketFragment extends Fragment
 
     private void setupCreateNewSupermarketButton()
     {
-        this.createNewSupermarketButton.setOnClickListener(new View.OnClickListener() {
+        this.createNewSupermarketButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 showCreateSupermarketFragment();
             }
         });

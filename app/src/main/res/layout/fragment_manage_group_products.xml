@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
         <TextView
             android:padding="20dp"
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/blackText"
             android:textAlignment="center"
-            android:text="@string/info_produts_matrix"/>
+            android:text="@string/info_produts_matrix" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,7 +36,7 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerViewProductsHandler"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
@@ -51,6 +51,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:elevation="@dimen/button_elevation"
         android:src="@drawable/ic_add_white_24dp"
-        app:fabSize="normal"/>
+        app:fabSize="normal" />
 
 </android.support.design.widget.CoordinatorLayout>

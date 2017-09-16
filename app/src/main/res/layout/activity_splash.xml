@@ -13,7 +13,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:src="@drawable/ic_shopping_cart_white_64dp"
-        android:transitionName="logo_shared"/>
+        android:transitionName="logo_shared" />
 
     <ImageView
         android:id="@+id/logo_blue"
@@ -22,8 +22,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:src="@drawable/ic_shopping_cart_blue_64dp"
-        android:transitionName="logo_shared"/>
-
+        android:transitionName="logo_shared" />
 
 
 </android.widget.RelativeLayout>

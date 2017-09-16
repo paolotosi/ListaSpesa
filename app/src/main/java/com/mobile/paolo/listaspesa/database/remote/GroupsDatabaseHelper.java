@@ -31,6 +31,8 @@ public class GroupsDatabaseHelper
     private static final String URL_DELETE_PRODUCT = "http://" + host + "/listaspesa/android_connect/groups/delete_product.php";
     private static final String URL_GROUP_PRODUCTS = "http://" + host + "/listaspesa/android_connect/groups/get_group_products.php";
 
+
+    // DB interaction methods: sending at a specific URL, some data, response is handled by networkResponseHandler
     public static void sendCreateGroupRequest(JSONObject jsonPostData, Context context, NetworkResponseHandler networkResponseHandler)
     {
         NetworkMessageSender.sendHTTPRequest(URL_CREATE_GROUP, jsonPostData, context, networkResponseHandler);

@@ -20,7 +20,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewTemplates"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
@@ -32,6 +32,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:elevation="@dimen/button_elevation"
         android:src="@drawable/ic_add_white_24dp"
-        app:fabSize="normal"/>
+        app:fabSize="normal" />
 
 </android.support.design.widget.CoordinatorLayout>

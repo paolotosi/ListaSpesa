@@ -46,200 +46,211 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
     // Widgets
     private Toolbar toolbar;
     private FloatingActionButton newTemplateButton;
-
+    
     // RecyclerView, adapter and model
     private RecyclerView recyclerView;
     private TemplateCardViewDataAdapter adapter;
     private List<Template> templateModelList;
-
+    
     // Action mode
     private ActionMode actionMode;
     private ActionMode.Callback actionModeCallback;
-
+    
     // Delete templates response handler
     NetworkResponseHandler deleteTemplateResponseHandler;
     List<Integer> selectedListItems = new ArrayList<>();
     List<Integer> selectedIDs = new ArrayList<>();
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
     }
-
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         // Load fragment.
         View loadedFragment = inflater.inflate(R.layout.fragment_manage_template, container, false);
-
+        
         initializeWidgets(loadedFragment);
-
+        
         setupToolbar();
-
+        
         setupNewTemplateButtonListener();
-
+        
         setupActionModeCallback();
-
+        
         setupRecyclerView();
-
+        
         return loadedFragment;
     }
-
+    
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
-
+        
         // Update adapter list
         List<Template> updatedTemplateList = GlobalValuesManager.getInstance(getContext()).getUserTemplates();
-        if(updatedTemplateList.size() == 0)
+        if (updatedTemplateList.size() == 0)
         {
             showEmptyTemplateFragment();
         }
         adapter.replaceAll(updatedTemplateList);
         adapter.notifyDataSetChanged();
-
+        
     }
-
+    
     private void setupRecyclerView()
     {
         recyclerView.setHasFixedSize(false);
-
+        
         // use a linear layout manager
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-
+        
         templateModelList = GlobalValuesManager.getInstance(getContext()).getUserTemplates();
-
+        
         // This class listens to click events, we pass it to the adapter
         adapter = new TemplateCardViewDataAdapter(templateModelList, this);
-
+        
         recyclerView.setAdapter(adapter);
-
+        
         adapter.notifyDataSetChanged();
-
+        
     }
-
+    
     private void setupToolbar()
     {
         toolbar.setTitle(getString(R.string.manage_fragment_toolbar));
         toolbar.setTitleTextColor(0xFFFFFFFF);
     }
-
+    
     private void initializeWidgets(View loadedFragment)
     {
         recyclerView = (RecyclerView) loadedFragment.findViewById(R.id.recyclerViewTemplates);
         toolbar = (Toolbar) loadedFragment.findViewById(R.id.manageTemplateToolbar);
         newTemplateButton = (FloatingActionButton) loadedFragment.findViewById(R.id.newTemplateButton);
     }
-
+    
     private void setupNewTemplateButtonListener()
     {
-        newTemplateButton.setOnClickListener(new View.OnClickListener() {
+        newTemplateButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 showCreateTemplateFragment();
             }
         });
     }
-
+    
     private void showCreateTemplateFragment()
     {
         // Reset create template fragment (get rid of old insertion)
         HomeFragmentContainer.getInstance().resetCreateTemplateFragment();
-
+        
         // Save this fragment in the stack and change fragment
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getCreateTemplateFragment()).addToBackStack("ManageTemplate");
         transaction.commit();
-
+        
         // Signal that the stack is not empty
         HomeFragmentContainer.getInstance().setStackEmpty(false);
-
+        
         // Take note that the user is creating a template
         // GlobalValuesManager.getInstance(getContext()).saveIsUserCreatingTemplate(true);
     }
-
+    
     private void setupDeleteTemplatesResponseHandler()
     {
-        this.deleteTemplateResponseHandler = new NetworkResponseHandler() {
+        this.deleteTemplateResponseHandler = new NetworkResponseHandler()
+        {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONObject response)
+            {
                 Log.d("DELETE_RESPONSE", response.toString());
-                try {
-                    if(response.getInt("success") == 1)
+                try
+                {
+                    if (response.getInt("success") == 1)
                     {
                         Toast.makeText(getContext(), getString(R.string.template_deletion_ok), Toast.LENGTH_LONG).show();
-
+                        
                         // Update cached template
                         GlobalValuesManager.getInstance(getContext()).removeTemplates(selectedIDs);
-
+                        
                         // Clear list of IDs to delete
                         selectedIDs.clear();
-
+                        
                         adapter.removeItems(selectedListItems);
-
+                        
                         // If all templates have been deleted
-                        if(adapter.getItemCount() == 0)
+                        if (adapter.getItemCount() == 0)
                         {
                             GlobalValuesManager.getInstance(getContext()).saveHasUserTemplates(false);
                             showEmptyTemplateFragment();
                         }
                     }
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
-
+            
             @Override
-            public void onError(VolleyError error) {
+            public void onError(VolleyError error)
+            {
                 error.printStackTrace();
             }
         };
     }
-
+    
     private void sendDeleteTemplatesRequest()
     {
         // Get the selected templates IDs
         List<Template> templateList = adapter.getTemplateList();
-        for(int i = 0; i < adapter.getSelectedItemCount(); i++)
+        for (int i = 0; i < adapter.getSelectedItemCount(); i++)
         {
             selectedIDs.add(templateList.get(adapter.getSelectedItems().get(i)).getID());
         }
-
+        
         // JSON POST request
         JSONObject jsonParams = new JSONObject();
-        try {
+        try
+        {
             jsonParams.put("templateIDs", new JSONArray(selectedIDs));
             jsonParams.put("groupID", GlobalValuesManager.getInstance(getContext()).getLoggedUserGroup().getID());
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
-
+        
         // Debug
         Log.d("DELETE_REQUEST", jsonParams.toString());
-
+        
         // Setup response handler
         setupDeleteTemplatesResponseHandler();
-
+        
         // Send request
         TemplatesDatabaseHelper.sendDeleteTemplatesRequest(jsonParams, getContext(), deleteTemplateResponseHandler);
     }
-
+    
     private void showEmptyTemplateFragment()
     {
         FragmentTransaction transaction = ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_main_content, HomeFragmentContainer.getInstance().getEmptyTemplateFragment());
         transaction.commit();
     }
-
+    
     @Override
     public void onItemClicked(int position)
     {
-        if (actionMode != null) {
+        if (actionMode != null)
+        {
             toggleSelection(position);
         }
     }
-
+    
     @Override
     public boolean onItemLongClicked(int position)
     {
@@ -247,45 +258,49 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
         {
             actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(actionModeCallback);
         }
-
+        
         toggleSelection(position);
-
+        
         return true;
     }
-
-    private void toggleSelection(int position) {
+    
+    private void toggleSelection(int position)
+    {
         adapter.toggleSelection(position);
         int count = adapter.getSelectedItemCount();
-
+        
         if (count == 0)
         {
             actionMode.finish();
-        }
-        else
+        } else
         {
             actionMode.setTitle(String.valueOf(count));
             actionMode.invalidate();
         }
     }
-
+    
     private void setupActionModeCallback()
     {
-        this.actionModeCallback = new ActionMode.Callback() {
+        this.actionModeCallback = new ActionMode.Callback()
+        {
             @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate (R.menu.delete_action_mode, menu);
+            public boolean onCreateActionMode(ActionMode mode, Menu menu)
+            {
+                mode.getMenuInflater().inflate(R.menu.delete_action_mode, menu);
                 selectedListItems.clear();
                 return true;
             }
-
+            
             @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu)
+            {
                 return false;
             }
-
+            
             @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                if(item.getItemId() == R.id.deleteTemplate)
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item)
+            {
+                if (item.getItemId() == R.id.deleteTemplate)
                 {
                     sendDeleteTemplatesRequest();
                     selectedListItems.addAll(adapter.getSelectedItems());
@@ -294,19 +309,21 @@ public class ManageTemplateFragment extends Fragment implements TemplateCardView
                 }
                 return false;
             }
-
+            
             @Override
-            public void onDestroyActionMode(ActionMode mode) {
+            public void onDestroyActionMode(ActionMode mode)
+            {
                 adapter.clearSelection();
                 actionMode = null;
             }
         };
     }
-
+    
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
-        if(actionMode != null)
+        if (actionMode != null)
         {
             actionMode.finish();
         }

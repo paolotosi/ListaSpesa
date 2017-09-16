@@ -13,34 +13,41 @@ import com.android.volley.toolbox.Volley;
  * using the Singleton pattern.
  */
 
-public class NetworkQueueManager {
+public class NetworkQueueManager
+{
     private static NetworkQueueManager instance;
     private RequestQueue requestQueue;
     private static Context context;
-
-    private NetworkQueueManager(Context context) {
+    
+    private NetworkQueueManager(Context context)
+    {
         NetworkQueueManager.context = context;
         requestQueue = getRequestQueue();
     }
-
-    public static synchronized NetworkQueueManager getInstance(Context context) {
-        if (instance == null) {
+    
+    public static synchronized NetworkQueueManager getInstance(Context context)
+    {
+        if (instance == null)
+        {
             instance = new NetworkQueueManager(context);
         }
         return instance;
     }
-
-    public RequestQueue getRequestQueue() {
-        if (requestQueue == null) {
+    
+    public RequestQueue getRequestQueue()
+    {
+        if (requestQueue == null)
+        {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
             requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         }
         return requestQueue;
     }
-
-    public <T> void addToRequestQueue(Request<T> req) {
+    
+    public <T> void addToRequestQueue(Request<T> req)
+    {
         getRequestQueue().add(req);
     }
-
+    
 }

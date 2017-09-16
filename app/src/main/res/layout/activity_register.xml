@@ -30,7 +30,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
-                    android:hint="@string/username"/>
+                    android:hint="@string/username" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -46,7 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/password"
-                    android:inputType="textPassword"/>
+                    android:inputType="textPassword" />
             </android.support.design.widget.TextInputLayout>
 
             <LinearLayout
@@ -60,12 +60,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp">
 
-                <EditText
-                    android:id="@+id/addressField"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/address"
-                    android:inputType="textEmailAddress"/>
+                    <EditText
+                        android:id="@+id/addressField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/address"
+                        android:inputType="textEmailAddress" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -96,6 +96,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:src="@drawable/ic_shopping_cart_blue_64dp"
-        android:transitionName="logo_shared"/>
+        android:transitionName="logo_shared" />
 
 </android.support.design.widget.CoordinatorLayout>

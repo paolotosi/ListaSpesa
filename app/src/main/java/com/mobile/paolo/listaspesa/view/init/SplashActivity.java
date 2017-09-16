@@ -24,17 +24,19 @@ import com.mobile.paolo.listaspesa.view.home.HomeActivity;
  */
 
 
-public class SplashActivity extends Activity {
+public class SplashActivity extends Activity
+{
 
     private ImageView logoBlue, logoWhite;
     private boolean animationStarted = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        if(checkLoggedUser())
+        if (checkLoggedUser())
         {
             String username = GlobalValuesManager.getInstance(getApplicationContext()).getLoggedUser().getUsername();
             Toast.makeText(getApplicationContext(), getString(R.string.welcome_back_user) + " " + username + "!", Toast.LENGTH_SHORT).show();
@@ -42,8 +44,7 @@ public class SplashActivity extends Activity {
             // Remove this activity from stack after loading the new one
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-        }
-        else
+        } else
         {
             // Delete SharedPreferences content
             flushSharedPreferences();
@@ -53,10 +54,12 @@ public class SplashActivity extends Activity {
         logoBlue = (ImageView) findViewById(R.id.logo_blue);
         logoWhite = (ImageView) findViewById(R.id.logo_white);
 
-        logoBlue.setOnClickListener(new View.OnClickListener() {
+        logoBlue.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
-                if(!animationStarted)
+            public void onClick(View v)
+            {
+                if (!animationStarted)
                 {
                     animationStarted = true;
                     rotateLogoAndColorBackground();
@@ -66,11 +69,13 @@ public class SplashActivity extends Activity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         super.onBackPressed();
         finish();
     }
 
+    //Animation handling
     private void rotateLogoAndColorBackground()
     {
         final int aSecond = 1000;
@@ -82,7 +87,8 @@ public class SplashActivity extends Activity {
         rotationAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
         {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
                 float value = Float.parseFloat(animation.getAnimatedValue().toString());
                 logoBlue.setRotation(value);
                 logoWhite.setRotation(value);
@@ -92,25 +98,31 @@ public class SplashActivity extends Activity {
         // colorAnimator colors the background from white to colorPrimary in a second
         ValueAnimator colorAnimator = ValueAnimator.ofArgb(Color.parseColor("#FFFFFF"), Color.parseColor("#303F9F"));
         colorAnimator.setDuration(aSecond);
-        colorAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        colorAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
                 findViewById(R.id.splashView).setBackgroundColor((Integer) animation.getAnimatedValue());
             }
         });
 
         ValueAnimator opacityAnimator = ValueAnimator.ofFloat(1f, 0f);
         opacityAnimator.setDuration(aSecond);
-        opacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        opacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
                 logoBlue.setAlpha((Float) animation.getAnimatedValue());
             }
         });
 
-        colorAnimator.addListener(new AnimatorListenerAdapter() {
+        colorAnimator.addListener(new AnimatorListenerAdapter()
+        {
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(Animator animation)
+            {
                 super.onAnimationEnd(animation);
                 transitionToNextActivity();
             }

@@ -3,17 +3,17 @@
     <item
         android:id="@+id/tab_supermarket"
         android:icon="@drawable/ic_store_mall_directory_blue_24dp"
-        android:title="@string/tab_name_supermarket"/>
+        android:title="@string/tab_name_supermarket" />
     <item
         android:id="@+id/tab_templates"
         android:icon="@drawable/ic_collections_bookmark_blue_24dp"
-        android:title="@string/tab_name_templates"/>
+        android:title="@string/tab_name_templates" />
     <item
         android:id="@+id/tab_list"
         android:icon="@drawable/ic_format_list_bulleted_black_24dp"
-        android:title="@string/tab_name_list"/>
+        android:title="@string/tab_name_list" />
     <item
         android:id="@+id/tab_group"
         android:icon="@drawable/ic_group_black_24dp"
-        android:title="@string/tab_name_group"/>
+        android:title="@string/tab_name_group" />
 </menu>

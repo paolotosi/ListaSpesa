@@ -1,95 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.mobile.paolo.listaspesa.view.home.shoppingList.GroceryStoreFragment">
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.mobile.paolo.listaspesa.view.home.shoppingList.GroceryStoreFragment">
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/groceryToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/groceryToolbar"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
-                android:minHeight="?attr/actionBarSize"/>
+                android:layout_gravity="center_horizontal"
+                android:text="@string/instructions"
+                android:textColor="@color/blackText"
+                android:textSize="14sp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp" />
 
-            <LinearLayout
+            <Spinner
+                android:id="@+id/supermarketSpinner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp">
+                android:layout_height="wrap_content"></Spinner>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="@string/instructions"
-                    android:textColor="@color/blackText"
-                    android:textSize="14sp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"/>
-
-                <Spinner
-                    android:id="@+id/supermarketSpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                </Spinner>
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerViewGrocery"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:scrollbars="vertical"
-                    android:visibility="visible"/>
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/imageLayout"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerViewGrocery"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone"
-                android:alpha="0">
-
-                <ImageView
-                    android:id="@+id/listImage"
-                    android:layout_width="128dp"
-                    android:layout_height="128dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_playlist_add_check_blue_24dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/list_completed"
-                    android:textColor="@color/blackText"
-                    android:textSize="18sp"
-                    android:textAlignment="center"/>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp" />
-
-                <Button
-                    android:id="@+id/finishButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/list_completed_button"/>
-
-            </LinearLayout>
+                android:layout_height="0dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:scrollbars="vertical"
+                android:visibility="visible" />
         </LinearLayout>
 
 
-    </android.support.design.widget.CoordinatorLayout>
+        <LinearLayout
+            android:id="@+id/imageLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:alpha="0">
+
+            <ImageView
+                android:id="@+id/listImage"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_playlist_add_check_blue_24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/list_completed"
+                android:textColor="@color/blackText"
+                android:textSize="18sp"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="24dp" />
+
+            <Button
+                android:id="@+id/finishButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/list_completed_button" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

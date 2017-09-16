@@ -16,15 +16,18 @@ import java.util.HashMap;
 
 public class User implements Serializable
 {
+    //Object fields
     private int id;
     private String username;
     private String password;
     private String address;
     private LatLng cachedAbsolutePosition;
-
+    
     // This attribute will be used only in lists where is required to select users
     private boolean isChecked;
-
+    
+    // ----- CONSTRUCTORS --
+    
     // Default constructor
     public User(int id, String username, String password, String address)
     {
@@ -33,7 +36,8 @@ public class User implements Serializable
         this.password = password;
         this.address = address;
     }
-
+    
+    //Constructor with checkbox state for selection
     public User(int id, String username, String password, String address, boolean isChecked)
     {
         this.id = id;
@@ -42,18 +46,22 @@ public class User implements Serializable
         this.address = address;
         this.isChecked = isChecked;
     }
-
+    
+    //Constructor frm JSONObject
     public User(JSONObject jsonUser)
     {
-        try {
+        try
+        {
             this.id = jsonUser.getInt("id");
             this.username = jsonUser.getString("username");
             this.address = jsonUser.getString("address");
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
     }
-
+    
+    //Build a JSONObject from User object
     public JSONObject toJSON()
     {
         HashMap<String, String> values = new HashMap<>();
@@ -62,51 +70,46 @@ public class User implements Serializable
         values.put("address", address);
         return new JSONObject(values);
     }
-
-    public String getUsername() {
+    
+    //-------------------- Field access methods ------------------
+    public String getUsername()
+    {
         return username;
     }
-
-    public int getID() {
+    
+    public int getID()
+    {
         return id;
     }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getAddress() {
+    
+    public String getAddress()
+    {
         return address;
     }
-
-    public boolean isChecked() {
+    
+    public boolean isChecked()
+    {
         return isChecked;
     }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setAddress(String address) {
+    
+    public void setAddress(String address)
+    {
         this.address = address;
     }
-
-    public void setChecked(boolean checked) {
+    
+    public void setChecked(boolean checked)
+    {
         isChecked = checked;
     }
-
+    
     public LatLng getCachedAbsolutePosition()
     {
         return cachedAbsolutePosition;
     }
-
+    
     public void setCachedAbsolutePosition(LatLng absolutePosition)
     {
         this.cachedAbsolutePosition = absolutePosition;
     }
-
+    
 }
